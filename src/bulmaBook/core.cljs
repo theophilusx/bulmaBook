@@ -3,8 +3,6 @@
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]))
 
-(println "This text is printed from src/bulmaBook/core.cljs. Go ahead and edit it and see reloading in action.")
-
 (defn multiply [a b] (* a b))
 
 
@@ -15,9 +13,37 @@
   (gdom/getElement "app"))
 
 (defn hello-world []
-  [:div
-   [:h1 (:text @app-state)]
-   [:h3 "Edit this in src/bulmaBook/core.cljs and watch it change!"]])
+  [:section.hero.is-primary.is-fullheight
+   [:div.hero-body
+    [:div.container
+     [:div.columns.is-centered
+      [:div.column.is-5-tablet.is-4-desktop.is-3-widescreen
+       [:form.box
+        [:div.field.has-text-centered
+         [:img {:src "images/logo-bis.png" :width "162"}]]
+        [:div.field
+         [:label.label "Email"]
+         [:div.control.has-icons-left
+          [:span.icon.is-small.is-left
+            [:i.fa.fa-envelope]]
+          [:input.input {:type "email"
+                         :placeholder "e.g. alexjohnson@gmail.com"
+                         :required true}]]]
+        [:div.field
+         [:label.label "Password"]
+         [:div.control.has-icons-left
+          [:input.input {:type "password"
+                         :placeholder "********"
+                         :required true}]
+          [:span.icon.is-small.is-left
+           [:i.fa.fa-lock]]]]
+        [:div.field
+         [:label.checkbox
+          [:input {:type "checkbox"}]
+          " Remember me"]]
+        [:div.field
+         [:button.button.is-success "Login"]]
+        ]]]]]])
 
 (defn mount [el]
   (reagent/render-component [hello-world] el))
