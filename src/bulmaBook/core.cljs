@@ -12,7 +12,9 @@
 (defn get-app-element []
   (gdom/getElement "app"))
 
-(defn hello-world []
+(defn login-component
+  "Initial go at the login component. Lots more to do!"
+  []
   [:section.hero.is-primary.is-fullheight
    [:div.hero-body
     [:div.container
@@ -45,8 +47,82 @@
          [:button.button.is-success "Login"]]
         ]]]]]])
 
+(defn wip-component
+  "WIP placeholder"
+  []
+  [:section
+   [:div.container
+    [:div.box
+     [:div.message.has-icons-left
+     [:span.icon.is-small.is-left
+      [:i.fa.fa-hammer]]
+      " Work in progress"]
+     ]
+    ]])
+
+(defn navbar-component []
+  [:nav.navbar.has-shadow
+   [:div.navbar-brand
+    [:a.navbar-item
+     [:img {:src "images/logo.png"}]]
+    [:div.navbar-burger
+     [:span]
+     [:span]
+     [:span]]]
+   [:div.navbar-menu
+    [:div.navbar-start
+     [:div.navbar-item
+      [:small "Publishing at the speed of technology"]]]
+    [:div.navbar-end
+     [:div.navbar-item.has-dropdown.is-hoverable
+      [:div.navbar-link "Alex Johnson"]
+      [:div.navbar-dropdown
+       [:a.navbar-item
+        [:div
+         [:span.icon.is-small
+          [:i.fa.fa-user-circle-o]]
+         " Profile"]]
+       [:a.navbar-item
+        [:div
+         [:span.icon.is-small
+          [:i.fa.fa-bug]]
+         " Report Bug"]]
+       [:a.navbar-item
+        [:div
+         [:span.icon.is-small
+          [:i.fa.fa-sign-out]]
+         " Sign Out"]]]]]]])
+
+(defn homepage-component []
+  [:div
+   [navbar-component]
+   [:section
+    [:div.columns
+     [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
+      [:nav.menu
+       [:p.menu-label "Menu"]
+       [:ul.menu-list
+        [:li [:a {:href "dashboard.html"}
+              [:span.icon
+               [:i.fa.fa-tachometer]]
+              " Dashboard"]]
+        [:li [:a.is-active {:href "books.html"}
+              [:span.icon
+               [:i.fa.fa-book]]
+              " Books"]]
+        [:li [:a {:href "customers.html"}
+              [:span.icon
+               [:i.fa.fa-address-book]]
+              " Customers"]]
+        [:li [:a {:href "orders.html"}
+              [:span.icon
+               [:i.fa.fa-file-text-o]]
+              " Orders"]]]]]
+     [:div.column
+      ]]]])
+
 (defn mount [el]
-  (reagent/render-component [hello-world] el))
+  (reagent/render-component [homepage-component] el))
 
 (defn mount-app-element []
   (when-let [el (get-app-element)]
