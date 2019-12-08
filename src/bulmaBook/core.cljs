@@ -2,6 +2,7 @@
   (:require
    [goog.dom :as gdom]
    [bulmaBook.navbar :as nb]
+   [bulmaBook.vertical-menu :as vm]
    [reagent.core :as reagent :refer [atom]]))
 
 (defn multiply [a b] (* a b))
@@ -74,6 +75,22 @@
    :brand [nb/navbar-brand [:img {:src "images/logo.png"}] :burger true]])
 
 (defn homepage-component []
+  [:div
+   [navbar-component]
+   [:section
+    [:div.columns
+     [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
+      [vm/v-menu
+       "Menu"
+       [[vm/v-menu-item "Dashboard" :href "dashboard.html" :icon "fa-tachometer"]
+        [vm/v-menu-item "Books" :href "books.html" :icon "fa-book"
+         :extra-styles "is-active"]
+        [vm/v-menu-item "Customers" :href "customers.html" :icon "fa-address-book"]
+        [vm/v-menu-item "Orders" :href "orders.html" :icon "fa-file-text-o"]]]]
+     [:div.column
+      ]]]])
+
+(defn old-homepage-component []
   [:div
    [navbar-component]
    [:section
