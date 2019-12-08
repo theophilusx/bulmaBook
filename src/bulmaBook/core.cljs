@@ -1,6 +1,7 @@
 (ns ^:figwheel-hooks bulmaBook.core
   (:require
    [goog.dom :as gdom]
+   [bulmaBook.navbar :as nb]
    [reagent.core :as reagent :refer [atom]]))
 
 (defn multiply [a b] (* a b))
@@ -61,37 +62,16 @@
     ]])
 
 (defn navbar-component []
-  [:nav.navbar.has-shadow
-   [:div.navbar-brand
-    [:a.navbar-item
-     [:img {:src "images/logo.png"}]]
-    [:div.navbar-burger
-     [:span]
-     [:span]
-     [:span]]]
-   [:div.navbar-menu
-    [:div.navbar-start
-     [:div.navbar-item
-      [:small "Publishing at the speed of technology"]]]
-    [:div.navbar-end
-     [:div.navbar-item.has-dropdown.is-hoverable
-      [:div.navbar-link "Alex Johnson"]
-      [:div.navbar-dropdown
-       [:a.navbar-item
-        [:div
-         [:span.icon.is-small
-          [:i.fa.fa-user-circle-o]]
-         " Profile"]]
-       [:a.navbar-item
-        [:div
-         [:span.icon.is-small
-          [:i.fa.fa-bug]]
-         " Report Bug"]]
-       [:a.navbar-item
-        [:div
-         [:span.icon.is-small
-          [:i.fa.fa-sign-out]]
-         " Sign Out"]]]]]]])
+  [nb/navbar
+   [nb/navbar-menu
+    [[nb/navbar-item-div [[:small "Publishing at the speed of technology"]]]]
+    :end [[nb/navbar-dropdown-menu
+           "Alex Johnson"
+           [[nb/navbar-dropdown-item "Profile" :icon "fa-user-circle-o"]
+            [nb/navbar-dropdown-item "Report Bug" :icon "fa-bug"]
+            [nb/navbar-dropdown-item "Sign Out" :icon "fa-sign-out"]]
+           :hoverable true]]]
+   :brand [nb/navbar-brand [:img {:src "images/logo.png"}] :burger true]])
 
 (defn homepage-component []
   [:div
