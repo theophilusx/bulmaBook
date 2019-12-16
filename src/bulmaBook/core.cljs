@@ -90,18 +90,30 @@
    [:section
     [:div.columns
      [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
-      [vm/v-menu
-       "Menu"
-       [[vm/v-menu-item "Dashboard" :href "dashboard.html" :icon "fa-tachometer"]
-        [vm/v-menu-item "Books" :href "books.html" :icon "fa-book"
-         :extra-styles "is-active"]
-        [vm/v-menu-item "Customers" :href "customers.html" :icon "fa-address-book"]
-        [vm/v-menu-item "Orders" :href "orders.html" :icon "fa-file-text-o"]]]]
+      [vm/menu
+       :sidebar-menu
+       (vm/defitem
+         :type :menu
+         :title "Menu"
+         :items
+         [(vm/defitem :title "Dashboard" :icon "fa-tachometer" :id :dashboard)
+          (vm/defitem :title "Books" :icon "fa-book" :id :books)
+          (vm/defitem :title "Customers" :icon "fa-address-book" :id :customers)
+          (vm/defitem :title "Orders" :icon "fa-file-text-o" :id :orders)])]]
      [:div.column
-      [:h6 "Global State"]
-      [:p (str "Session: " @session/state)]
-      [:h6 "Navbar State"]
-      [:p (str "Navbars: " @nb/navbar-state)]]]]])
+      [:h2.title.is-2 (str (name (session/get-in [:main-navbar :choice])) " / "
+                           (name (session/get-in [:sidebar-menu :choice])))]
+      [:p "This is a default page. It will be replaced with real content later."]]]
+    [:div.columns
+     [:div.column
+      [:h4.title.is-4 "Global State"]
+      [:p (str "Session: " @session/state)]]
+     [:div.column
+      [:h4.title.is-4 "Navbar State"]
+      [:p (str "Navbars: " @nb/navbar-state)]]
+     [:div.column
+      [:h4.title.is-4 "Menu State"]
+      [:p (str "Menu: " @vm/menu-state)]]]]])
 
 
 (defn mount [el]
