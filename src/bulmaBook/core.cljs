@@ -51,19 +51,6 @@
          [:button.button.is-success "Login"]]
         ]]]]]])
 
-(defn wip-component
-  "WIP placeholder"
-  []
-  [:section
-   [:div.container
-    [:div.box
-     [:div.message.has-icons-left
-     [:span.icon.is-small.is-left
-      [:i.fa.fa-hammer]]
-      " Work in progress"]
-     ]
-    ]])
-
 (defn navbar-component []
   [nb/navbar
    :main-navbar
@@ -111,35 +98,11 @@
         [vm/v-menu-item "Customers" :href "customers.html" :icon "fa-address-book"]
         [vm/v-menu-item "Orders" :href "orders.html" :icon "fa-file-text-o"]]]]
      [:div.column
-      [:p (str "Session: " @session/state)]]]]])
+      [:h6 "Global State"]
+      [:p (str "Session: " @session/state)]
+      [:h6 "Navbar State"]
+      [:p (str "Navbars: " @nb/navbar-state)]]]]])
 
-(defn old-homepage-component []
-  [:div
-   [navbar-component]
-   [:section
-    [:div.columns
-     [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
-      [:nav.menu
-       [:p.menu-label "Menu"]
-       [:ul.menu-list
-        [:li [:a {:href "dashboard.html"}
-              [:span.icon
-               [:i.fa.fa-tachometer]]
-              " Dashboard"]]
-        [:li [:a.is-active {:href "books.html"}
-              [:span.icon
-               [:i.fa.fa-book]]
-              " Books"]]
-        [:li [:a {:href "customers.html"}
-              [:span.icon
-               [:i.fa.fa-address-book]]
-              " Customers"]]
-        [:li [:a {:href "orders.html"}
-              [:span.icon
-               [:i.fa.fa-file-text-o]]
-              " Orders"]]]]]
-     [:div.column
-      ]]]])
 
 (defn mount [el]
   (reagent/render-component [homepage-component] el))
