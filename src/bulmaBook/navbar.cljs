@@ -1,100 +1,159 @@
-(ns bulmaBook.navbar)
+(ns bulmaBook.navbar
+  (:require [reagent.core :refer [atom]]
+            [reagent.session :as session]
+            [bulmaBook.utils :as utils]))
 
-(defn navbar-brand
-  "Add basic navbar brand component."
-  [body & {:keys [burger]}]
-  (if burger
-    [:div.navbar-brand
-     body
-     [:div.navbar-burger
-      [:span]
-      [:span]
-      [:span]]]
-    [:div.navbar-brand body]))
+(defonce navbar-state (atom {}))
 
-(defn navbar-item-link [title & {:keys [expanded tab href icon extra-styles id]
-                                 :or [expanded false
-                                      tab false
-                                      href "#"
-                                      extra-styles ""]}]
-  (let [opts (cond
-               (and expanded tab)
-               {:class (str "navbar-item is-expanded is-tab" extra-styles)
-                :href href} 
-               expanded {:class (str "navbar-item is-expanded" extra-styles)
-                         :href href} 
-               tab {:class (str "navbar-item is-tab" extra-styles)
-                    :href href} 
-               :default {:class "navbar-item"
-                         :href href})]
-    [:a (if id
-          (assoc opts :id id)
-          opts)
-     (if icon
-       [:div
-        [:span.icon.is-small
-         [:i {:class (str "fa " icon)}]]
-        (str " " title)])]))
-
-(defn navbar-item-div [items & {:keys [expanded tab extra-styles id]
-                                :or {expanded false
-                                     tab false
-                                     extra-styles ""}}]
-  (let [opts (cond
-                (and expanded tab)
-                {:class  (str "navbar-item is-expanded is-tab" extra-styles)}
-                expanded {:class (str "navbar-item is-expanded" extra-styles)}
-                tab {:class (str "navbar-item is-tab" extra-styles)}
-                :default {:class (str "navbar-item" extra-styles)})]
-    (into
-     [:div (if id
-             (assoc opts :id id)
-             opts)]
-     (for [i items]
-       i))))
+;; item hash
+;; {:type :a | :div | :raw | :dropdown
+;;  :classes string of classes
+;;  :href link target (defaults to "#"
+;;  :id unique id for item (will default to gensym keyword)
+;;  :icon an icon to include
+;;  :is-hoverable for dropdown allow hoverable CSS
+;;  :contents what will go into the :a or :div. Can be vector of item hashes
+;;            for a div
+;;  :selectable if true, add click handler to set model and active state
 
 
-(defn navbar-dropdown-item [title & {:keys [icon id extra-styles]
-                                     :or {extra-styles ""}}]
-  [navbar-item-link title :icon icon :id id :extra-styles extra-styles])
+(defn defitem [& {:keys [type title classes href id contents selectable
+                         icon is-hoverable]
+                  :or {type :a
+                       href "#"
+                       id (keyword (gensym "item-"))}}]
+  {:type type
+   :title title
+   :class classes
+   :href href
+   :id id
+   :contents contents
+   :selectable selectable
+   :icon icon
+   :is-hoverable is-hoverable})
 
-(defn navbar-dropdown-menu [title items & {:keys [hoverable extra-styles id]
-                                           :or [extra-styles ""]}]
-  (let [opts (if hoverable
-               {:class (str "navbar-item has-dropdown is-hoverable" extra-styles)}
-               {:class (str "navbar-item has-dropdown" extra-styles)})
-        d-menu (into
-                [:div.navbar-dropdown]
-                (for [i items]
-                  i))]
-    [:div (if id
-            (assoc opts :id id)
-            opts)
-     [:div.navbar-link title]
-     d-menu]))
+(defn is-active [model id]
+  (if (= (get-in @navbar-state [model :activve-item]) id)
+    true
+    false))
 
+(defn is-dropdown-active [model id]
+  (if (= (get-in @navbar-state [model :active-dropdown]) id)
+    true
+    false))
 
-(defn navbar-menu [items & {:keys [end]}]
-  (let [start (into
-               [:div.navbar-start]
-               (for [i items]
-                 i))
-        m-end (if end
-                (into
-                 [:div.navbar-end]
-                 (for [i end]
-                   i)))]
-    (if end
-      [:div.navbar-menu start m-end]
-      [:div.navbar-menu start])))
+(defn toggle-dropdown [model id]
+  (if (nil? id)
+    (swap! navbar-state assoc-in [model :active-dropdown] nil)
+    (if (= (get-in @navbar-state [model :active-dropdown]) id)
+      (swap! navbar-state assoc-in [model :active-dropdown] nil)
+      (swap! navbar-state assoc-in [model :active-dropdown] id))))
 
-(defn navbar [menu & {:keys [shadow brand extra-styles]
-                      :or {extra-styles ""}}]
-  (let [opts (if shadow
-               {:class (str "navbar has-shadow " extra-styles)}
-               {:class (str "navbar " extra-styles)})]
-    (if brand
-      [:nav opts
-       brand
-       menu]
-      [:nav opts menu])))
+(defn set-active [model id]
+  (swap! navbar-state assoc-in [model :active-item] id))
+
+(defn -item-a [a model]
+  [:a {:class (utils/cs "navbar-item" (:class a)
+                        (when (is-active model (:id a)) "is-active"))
+       :href (:href a "#")
+       :on-click (when (:selectable a)
+                   (fn []
+                     (toggle-dropdown model nil)
+                     (set-active model (:id a))
+                     (session/assoc-in! [model :choice] (:id a))))}
+   (if (:icon a)
+     [:div
+      [:span.icon.is-small.is-left
+       [:i {:class (utils/cs "fa" (:icon a))}]]
+      (str " " (:contents a))]
+     (:contents a))])
+
+(defn -item-raw [r model]
+  [:div {:class (utils/cs "content" (:class r))}
+   (:contents r)])
+
+(defn -item-div [d model]
+  (into
+   [:div {:class (utils/cs "navbar-item" (:class d))}]
+   (for [c (:contents d)]
+     (condp = (:type c)
+       :a (-item-a c model)
+       :raw (-item-raw c model)
+       (-item-div c model)))))
+
+(defn -item-dropdown [d model]
+  [:div {:class (utils/cs "navbar-item" "has-dropdown" (:class d)
+                          (when (:is-hoverable d)
+                            "is-hoverable")
+                          (when (and (not (:is-hoverable d))
+                                     (is-dropdown-active model (:id d))) 
+                            "is-active"))}
+   [:a {:class (utils/cs "navbar-link")
+        :id (:id d)
+        :on-click (fn []
+                    (toggle-dropdown model (:id d)))}
+    (:title d)]
+   (into
+    [:div.navbar-dropdown]
+    (for [i (:contents d)]
+      (condp = (:type i)
+        :a (-item-a i model)
+        :dropdown (-item-dropdown i model)
+        :divider [:hr.navbar-divider]
+        (-item-div i model))))])
+
+(defn -make-item [i model]
+  (condp = (:type i)
+    :a (-item-a i model)
+    :raw (-item-raw i model)
+    :dropdown (-item-dropdown i model)
+    :divider [:hr.navbar-divider]
+    (-item-div i model)))
+
+(defn -burger [model]
+  [:a {:class (utils/cs "navbar-burger" "burger"
+                        (when (get-in @navbar-state [model :burger-active])
+                          "is-active"))
+       :role "button"
+       :aria-label "menu"
+       :aria-expanded "false"
+       :data-target model
+       :on-click (fn []
+                   (swap! navbar-state update-in [model :burger-active] not))}
+   [:span {:aria-hidden true}]
+   [:span {:aria-hidden true}]
+   [:span {:aria-hidden true}]])
+
+(defn -brand [model item has-burger]
+  [:div.navbar-brand
+   (-make-item item model)
+   (when has-burger
+     (-burger model))])
+
+(defn -menu [model start end]
+  [:div {:class (utils/cs "navbar-menu"
+                          (when (get-in @navbar-state [model :burger-active])
+                            "is-active"))
+         :id model}
+   (into
+    [:div.navbar-start]
+    (for [s start]
+      (-make-item s model)))
+   (when end
+     (into
+      [:div.navbar-end]
+      (for [e end]
+        (-make-item e model))))])
+
+(defn navbar [model & {:keys [brand has-shadow has-burger start-menu end-menu
+                              classes]}]
+  (swap! navbar-state assoc model {:burger-active false
+                                   :active-item nil})
+  (fn []
+    [:nav {:class      (utils/cs "navbar" classes
+                                 (when has-shadow "has-shadow"))
+           :role       "navigation"
+           :aria-label "main navigation"}
+     (when brand
+       (-brand model brand has-burger))
+     (-menu model start-menu end-menu)]))

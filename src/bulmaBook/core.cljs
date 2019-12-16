@@ -3,7 +3,9 @@
    [goog.dom :as gdom]
    [bulmaBook.navbar :as nb]
    [bulmaBook.vertical-menu :as vm]
-   [reagent.core :as reagent :refer [atom]]))
+   [reagent.core :as reagent :refer [atom]]
+   [reagent.session :as session]
+   [clojure.pprint :refer [pprint]]))
 
 (defn multiply [a b] (* a b))
 
@@ -64,15 +66,36 @@
 
 (defn navbar-component []
   [nb/navbar
-   [nb/navbar-menu
-    [[nb/navbar-item-div [[:small "Publishing at the speed of technology"]]]]
-    :end [[nb/navbar-dropdown-menu
-           "Alex Johnson"
-           [[nb/navbar-dropdown-item "Profile" :icon "fa-user-circle-o"]
-            [nb/navbar-dropdown-item "Report Bug" :icon "fa-bug"]
-            [nb/navbar-dropdown-item "Sign Out" :icon "fa-sign-out"]]
-           :hoverable true]]]
-   :brand [nb/navbar-brand [:img {:src "images/logo.png"}] :burger true]])
+   :main-navbar
+   :has-shadow true
+   :brand (nb/defitem
+            :contents [:img {:src "images/logo.png"}]) 
+   :has-burger true
+   :start-menu
+   [(nb/defitem
+      :type :div
+      :contents [(nb/defitem
+                   :type :raw
+                   :contents [:small "Publishing at the speed of technology"])])]
+   :end-menu [(nb/defitem
+                :type :dropdown
+                :title "Alex Johnson"
+                :is-hoverable true
+                :contents [(nb/defitem
+                             :id :profile
+                             :contents "Profile"
+                             :icon "fa-user-circle-o"
+                             :selectable true)
+                           (nb/defitem
+                             :id :report-bug
+                             :contents "Report Bug"
+                             :icon "fa-bug"
+                             :selectable true)
+                           (nb/defitem
+                             :id :sign-out
+                             :contents "Sign Out"
+                             :icon "fa-sign-out"
+                             :selectable true)])]])
 
 (defn homepage-component []
   [:div
@@ -88,7 +111,7 @@
         [vm/v-menu-item "Customers" :href "customers.html" :icon "fa-address-book"]
         [vm/v-menu-item "Orders" :href "orders.html" :icon "fa-file-text-o"]]]]
      [:div.column
-      ]]]])
+      [:p (str "Session: " @session/state)]]]]])
 
 (defn old-homepage-component []
   [:div
