@@ -3,19 +3,45 @@
             [bulmaBook.navbar :as nb]
             [bulmaBook.vertical-menu :as vm]
             [bulmaBook.toolbar :as tb]
-            [bulmaBook.basic :as b]
+            [bulmaBook.basic :refer [media icon button]]
             [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]
             [clojure.pprint :refer [pprint]]))
 
-(defn multiply [a b] (* a b))
-
-
-;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:text "Hello world!"}))
-
 (defn get-app-element []
   (gdom/getElement "app"))
+
+(defn data-init []
+  (session/assoc-in! [:book-data] [{:title "TensorFlow For Machine Intelligence"
+                                    :image "images/tensorflow.jpg"
+                                    :cost "$22.99"
+                                    :pages 270
+                                    :isbn "9781939902351"}
+                                   {:title "Docker in Production"
+                                    :image "images/docker.jpg"
+                                    :cost "$22.99"
+                                    :pages 156
+                                    :isbn "9781939902184"}
+                                   {:title "Developing a Gulp.js Edge"
+                                    :image "images/gulp.jpg"
+                                    :cost "$22.99"
+                                    :pages 134
+                                    :isbn "9781939902146"}
+                                   {:title "Learning Swift”"
+                                    :image "images/swift.jpg"
+                                    :cost "$22.99"
+                                    :pages 342
+                                    :isbn "9781939902115"}
+                                   {:title "Choosing a JavaScript Framework"
+                                    :image "images/js-framework.jpg"
+                                    :cost "19.99"
+                                    :pages 96
+                                    :isbn "9781939902092"}
+                                   {:title "Deconstructing Google Cardboard Apps"
+                                    :image "images/google-cardboard.jpg"
+                                    :cost "$22.99"
+                                    :pages 179
+                                    :isbn "9781939902092245"}]))
 
 (defn login-component
   "Initial go at the login component. Lots more to do!"
@@ -32,7 +58,7 @@
          [:label.label "Email"]
          [:div.control.has-icons-left
           [:span.icon.is-small.is-left
-            [:i.fa.fa-envelope]]
+           [:i.fa.fa-envelope]]
           [:input.input {:type "email"
                          :placeholder "e.g. alexjohnson@gmail.com"
                          :required true}]]]
@@ -85,6 +111,29 @@
                              :icon-img "fa-sign-out"
                              :selectable true)])]])
 
+(defn book-component [book]
+  [:article.box
+   [media {:content [[:p.title.is-5.is-spaced.is-marginless
+                      [:a {:href "#"} (:title book)]]
+                     [:p.subtitle.is-marginless (:price book)]
+                     [:div.content.is-small
+                      (str (:pages book) " pages")
+                      [:br]
+                      (str "ISBN: " (:isbn book))
+                      [:br]
+                      [:a {:href "#"} "Edit"]
+                      [:span "·"]
+                      [:a {:href "#"} "Delete"]]]}
+    :left {:content [[:img {:src (:image book) :width "80"}]]}]])
+
+(defn book-grid-component []
+  (let [books (session/get-in [:book-data])]
+    (into
+     [:div.columns.is-multiline]
+     (for [b books]
+       [:div.column.is-12-tablet.is-6-desktop.is-4-widescreen
+        [book-component b]]))))
+
 (defn homepage-component []
   [:div
    [navbar-component]
@@ -110,7 +159,7 @@
        :left-items [(tb/defitem :content [:p.subtitle.is-5 [:strong "6"]])
                     (tb/defitem
                       :type :p
-                      :content [b/button :title "New" :class "is-success"])
+                      :content [button :title "New" :class "is-success"])
                     (tb/defitem
                       :class "is-hidden-table-only"
                       :content [:div.field.has-addons
@@ -126,8 +175,8 @@
                                  [:select
                                   [:option "Publish date"]
                                   [:option "Price"]
-                                  [:option "Page count"]]])]
-       ]
+                                  [:option "Page count"]]])]]
+      [book-grid-component]
       [:p "This is a default page. It will be replaced with real content later."]]]
     [:div.columns
      [:div.column
@@ -150,6 +199,7 @@
 
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
+(data-init)
 (mount-app-element)
 
 ;; specify reload hook with ^;after-load metadata

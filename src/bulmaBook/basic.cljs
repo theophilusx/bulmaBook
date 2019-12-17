@@ -19,3 +19,21 @@
    (if icon-image
      [icon icon-image :title title]
      title)])
+
+(defn media [body & {:keys [:left :right :id :class]}]
+  [:article {:class (cs "media" class)
+             :id id}
+   (when left
+     (into
+      [:aside {:class (cs "media-left" (:class left))}]
+      (for [c (:content left)]
+        c)))
+   (into
+    [:div {:class (cs "media-content" (:class body))}]
+    (for [c (:content body)]
+      c))
+   (when right
+     (into
+      [:aside {:class (cs "media-right" (:class right))}]
+      (for [c (:content right)]
+        c)))])
