@@ -1,7 +1,8 @@
 (ns bulmaBook.navbar
   (:require [reagent.core :refer [atom]]
             [reagent.session :as session]
-            [bulmaBook.utils :as utils]))
+            [bulmaBook.utils :as utils]
+            [bulmaBook.basic :refer [icon]]))
 
 (defonce navbar-state (atom {}))
 
@@ -10,7 +11,7 @@
 ;;  :classes string of classes
 ;;  :href link target (defaults to "#"
 ;;  :id unique id for item (will default to gensym keyword)
-;;  :icon an icon to include
+;;  :icon-img an icon to include
 ;;  :is-hoverable for dropdown allow hoverable CSS
 ;;  :contents what will go into the :a or :div. Can be vector of item hashes
 ;;            for a div
@@ -18,7 +19,7 @@
 
 
 (defn defitem [& {:keys [type title classes href id contents selectable
-                         icon is-hoverable]
+                         icon-img is-hoverable]
                   :or {type :a
                        href "#"
                        id (keyword (gensym "item-"))}}]
@@ -29,7 +30,7 @@
    :id id
    :contents contents
    :selectable selectable
-   :icon icon
+   :icon-img icon-img
    :is-hoverable is-hoverable})
 
 (defn is-active [model id]
@@ -61,11 +62,8 @@
                      (toggle-dropdown model nil)
                      (set-active model (:id a))
                      (session/assoc-in! [model :choice] (:id a))))}
-   (if (:icon a)
-     [:div
-      [:span.icon.is-small.is-left
-       [:i {:class (utils/cs "fa" (:icon a))}]]
-      (str " " (:contents a))]
+   (if (:icon-img a)
+     [icon (:icon-img a) :title (:contents a)]
      (:contents a))])
 
 (defn -item-raw [r model]

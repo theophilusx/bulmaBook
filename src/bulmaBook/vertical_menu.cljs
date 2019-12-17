@@ -1,19 +1,20 @@
 (ns bulmaBook.vertical-menu
-  (:require [reagent.core :refer [atom]]
-            [reagent.session :as session]
-            [bulmaBook.utils :as utils]))
+  (:require [bulmaBook.utils :refer [cs]]
+            [bulmaBook.basic :refer [icon]]
+            [reagent.core :refer [atom]]
+            [reagent.session :as session]))
 
 
 (def menu-state (atom {}))
 
-(defn defitem [& {:keys [type title href icon id items class]
+(defn defitem [& {:keys [type title href icon-img id items class]
                   :or {type :item
                        href "#"
                        id (keyword (gensym "menu-item-"))}}]
   {:type type
    :title title
    :href href
-   :icon icon
+   :icon-img icon-img
    :id id
    :items items
    :class class})
@@ -29,17 +30,14 @@
 
 (defn -make-item [i model]
   [:li 
-   [:a {:class (utils/cs (:class i)
-                         (when (is-active? model (:id i))
-                           "is-active"))
+   [:a {:class (cs (:class i)
+                   (when (is-active? model (:id i)) "is-active"))
         :href  (:href i)
         :id    (:id i)
         :on-click (fn []
                     (set-active model (:id i)))}
-    (if (:icon i)
-      [:div
-       [:span.icon [:i {:class (utils/cs "fa" (:icon i))}]]
-       (str " " (:title i))]
+    (if (:icon-img i)
+      [icon (:icon-img i) :title (:title i)]
       (:title i))]])
 
 (defn -make-menu [m model]
@@ -55,5 +53,5 @@
 (defn menu [model item]
   (swap! menu-state assoc model {:active-menu nil})
   (fn []
-    [:nav {:class (utils/cs "menu" (:class item))}
+    [:nav {:class (cs "menu" (:class item))}
      (-make-menu item model)]))
