@@ -91,25 +91,50 @@
       :contents [(nb/defitem
                    :type :raw
                    :contents [:small "Publishing at the speed of technology"])])]
-   :end-menu [(nb/defitem
-                :type :dropdown
-                :title "Alex Johnson"
-                :is-hoverable true
-                :contents [(nb/defitem
-                             :id :profile
-                             :contents "Profile"
-                             :icon-img "fa-user-circle-o"
-                             :selectable true)
-                           (nb/defitem
-                             :id :report-bug
-                             :contents "Report Bug"
-                             :icon-img "fa-bug"
-                             :selectable true)
-                           (nb/defitem
-                             :id :sign-out
-                             :contents "Sign Out"
-                             :icon-img "fa-sign-out"
-                             :selectable true)])]])
+   :end-menu
+   [(nb/defitem
+      :type :dropdown
+      :title "Alex Johnson"
+      :is-hoverable true
+      :contents [(nb/defitem :id :profile :contents "Profile"
+                   :icon-img "fa-user-circle-o" :selectable true)
+                 (nb/defitem :id :report-bug :contents "Report Bug"
+                   :icon-img "fa-bug" :selectable true)
+                 (nb/defitem :id :sign-out :contents "Sign Out"
+                   :icon-img "fa-sign-out" :selectable true)])]])
+
+(defn sidebar-component []
+  [vm/menu
+   :sidebar-menu
+   (vm/defitem
+     :type :menu
+     :title "Menu"
+     :items
+     [(vm/defitem :title "Dashboard" :icon-img "fa-tachometer" :id :dashboard)
+      (vm/defitem :title "Books" :icon-img "fa-book" :id :books)
+      (vm/defitem :title "Customers" :icon-img "fa-address-book" :id :customers)
+      (vm/defitem :title "Orders" :icon-img "fa-file-text-o" :id :orders)])])
+
+(defn toolbar-component []
+  [tb/toolbar
+   :left-items
+   [(tb/defitem :content [:p.subtitle.is-5 [:strong "6"]])
+    (tb/defitem :type :p :content [button :title "New" :class "is-success"])
+    (tb/defitem
+      :class "is-hidden-table-only"
+      :content [:div.field.has-addons
+                [:p.control
+                 [:input.input {:type "text"
+                                :placeholder "Book name, ISBN"}]]
+                [:p.control
+                 [:button.button "Search"]]])]
+   :right-items [(tb/defitem :content "Order by")
+                 (tb/defitem
+                   :content [:div.select
+                             [:select
+                              [:option "Publish date"]
+                              [:option "Price"]
+                              [:option "Page count"]]])]])
 
 (defn book-component [book]
   [:article.box
@@ -140,42 +165,13 @@
    [:section
     [:div.columns
      [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
-      [vm/menu
-       :sidebar-menu
-       (vm/defitem
-         :type :menu
-         :title "Menu"
-         :items
-         [(vm/defitem :title "Dashboard" :icon-img "fa-tachometer" :id :dashboard)
-          (vm/defitem :title "Books" :icon-img "fa-book" :id :books)
-          (vm/defitem :title "Customers" :icon-img "fa-address-book" :id :customers)
-          (vm/defitem :title "Orders" :icon-img "fa-file-text-o" :id :orders)])]]
+      [sidebar-component]]
      [:div.column
       [:h2.title.is-2 (str (name (or (session/get-in [:main-navbar :choice])
                                      "Unknown")) " / "
                            (name (or (session/get-in [:sidebar-menu :choice])
                                      "Unknown")))]
-      [tb/toolbar
-       :left-items [(tb/defitem :content [:p.subtitle.is-5 [:strong "6"]])
-                    (tb/defitem
-                      :type :p
-                      :content [button :title "New" :class "is-success"])
-                    (tb/defitem
-                      :class "is-hidden-table-only"
-                      :content [:div.field.has-addons
-                                [:p.control
-                                 [:input.input {:type "text"
-                                                :placeholder "Book name, ISBN"}]]
-                                [:p.control
-                                 [:button.button "Search"]]])
-                    ]
-       :right-items [(tb/defitem :content "Order by")
-                     (tb/defitem
-                       :content [:div.select
-                                 [:select
-                                  [:option "Publish date"]
-                                  [:option "Price"]
-                                  [:option "Page count"]]])]]
+      [toolbar-component]
       [book-grid-component]
       [:p "This is a default page. It will be replaced with real content later."]]]
     [:div.columns
