@@ -4,6 +4,7 @@
             [bulmaBook.vertical-menu :as vm]
             [bulmaBook.toolbar :as tb]
             [bulmaBook.basic :refer [media icon button]]
+            [bulmaBook.paginate :refer [paginate]]
             [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]
             [clojure.pprint :refer [pprint]]))
@@ -151,13 +152,15 @@
                       [:a {:href "#"} "Delete"]]]}
     :left {:content [[:img {:src (:image book) :width "80"}]]}]])
 
-(defn book-grid-component []
+(defn book-grid-component [books]
+  (into
+   [:div.columns.is-multiline]
+   (for [b books]
+     [book-component b])))
+
+(defn book-pages-component []
   (let [books (session/get-in [:book-data])]
-    (into
-     [:div.columns.is-multiline]
-     (for [b books]
-       [:div.column.is-12-tablet.is-6-desktop.is-4-widescreen
-        [book-component b]]))))
+    (paginate books book-grid-component :page-size 3)))
 
 (defn homepage-component []
   [:div
@@ -172,7 +175,7 @@
                            (name (or (session/get-in [:sidebar-menu :choice])
                                      "Unknown")))]
       [toolbar-component]
-      [book-grid-component]
+      [book-pages-component]
       [:p "This is a default page. It will be replaced with real content later."]]]
     [:div.columns
      [:div.column
