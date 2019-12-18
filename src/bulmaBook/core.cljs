@@ -160,7 +160,7 @@
 
 (defn book-pages-component []
   (let [books (session/get-in [:book-data])]
-    (paginate books book-grid-component :page-size 3)))
+    (paginate books book-grid-component :page-size 2)))
 
 (defn homepage-component []
   [:div

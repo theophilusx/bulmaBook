@@ -32,7 +32,8 @@
                     (set-current state page))}
     (str page)]])
 
-(defn paginate [records page-render-fn & {:keys [page-size]
+(defn paginate [records page-render-fn & {:keys [page-size is-rounded is-small
+                                                  is-medium is-large]
                                           :or {page-size 10}}]
   (let [pages (reduce merge
                       (map-indexed
@@ -45,10 +46,16 @@
                      :total-pages total
                      :current 1
                      :first 1
-                     :last (inc total)})]
+                     :last total})]
     (fn []
       [:div
-       [:nav.pagination
+       [:nav {:class (cs "pagination"
+                         (when is-rounded "is-rounded")
+                         (when is-small "is-small")
+                         (when is-medium "is-medium")
+                         (when is-large "is-large"))
+              :role "navigation"
+              :aria-label "pagination"}
         (when (not (= (get-current state) 1))
           [:a.pagination-previous
            {:on-click (fn []
