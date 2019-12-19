@@ -1,6 +1,6 @@
-(ns bulmaBook.vertical-menu
+(ns bulmaBook.components.vertical-menu
   (:require [bulmaBook.utils :refer [cs]]
-            [bulmaBook.basic :refer [icon]]
+            [bulmaBook.components.basic :refer [icon]]
             [reagent.core :refer [atom]]
             [reagent.session :as session]))
 

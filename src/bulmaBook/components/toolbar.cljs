@@ -1,4 +1,4 @@
-(ns bulmaBook.toolbar
+(ns bulmaBook.components.toolbar
   (:require [bulmaBook.utils :as utils]))
 
 (defn defitem [& {:keys [type class content]

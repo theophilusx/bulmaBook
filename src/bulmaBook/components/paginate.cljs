@@ -1,4 +1,4 @@
-(ns bulmaBook.paginate
+(ns bulmaBook.components.paginate
   (:require [bulmaBook.utils :refer [cs]]
             [reagent.core :refer [atom]]
             [reagent.session :as session]))
