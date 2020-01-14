@@ -1,6 +1,7 @@
 (ns bulmaBook.components.basic
   (:require [bulmaBook.utils :refer [cs]]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [clojure.string :as string]))
 
 (defn icon [icon-img & {:keys [title classes]}]
   [:div
@@ -45,3 +46,42 @@
                :id (:id right)}]
       (for [c (:content right)]
         c)))])
+
+(declare render-map)
+(declare render-set)
+
+(defn render-vec
+  "Vector display component. Will render vector as an un-ordered list"
+  [v]
+  (into
+   [:ul]
+   (for [i v]
+     (cond
+       (vector? i) [:li [:div.box (render-vec i)]]
+       (map? i)    [:li [:div.box (render-map  i)]]
+       (set? i)    [:li [:div.box (render-set i)]]
+       :default    [:li (str i)]))))
+
+(defn render-set [s]
+  [:div.box
+   (str "(" (string/join ", " s) ")")])
+
+(defn render-map [m]
+  (into
+   [:table.table]
+   (for [k (keys m)]
+     (cond
+       (map? (k m)) [:tr
+                     [:td [:strong (str k)]]
+                     [:td (render-map (k m))]]
+       (set? (k m)) [:tr
+                     [:td [:strong (str k)]]
+                     [:td (str (k m))]]
+       (vector? (k m)) [:tr
+                        [:td [:string (str k)]]
+                        [:td (render-vec (k m))]]
+       :default [:tr
+                 [:td [:strong (str k)]]
+                 [:td (str (k m))]]))))
+
+

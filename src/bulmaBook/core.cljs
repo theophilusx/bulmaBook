@@ -2,10 +2,10 @@
   (:require [goog.dom :as gdom]
             [bulmaBook.data.books :as book-data]
             [bulmaBook.pages.books :as bks]
-            [bulmaBook.components.navbar :as nb]
-            [bulmaBook.components.vertical-menu :as vm]
+            [bulmaBook.pages.navbar :as navbar]
+            [bulmaBook.pages.home-sidebar :as home-sb]
             [bulmaBook.components.toolbar :as tb]
-            [bulmaBook.components.basic :refer [media icon button]]
+            [bulmaBook.components.basic :refer [media icon button render-map]]
             [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]
             [clojure.pprint :refer [pprint]]))
@@ -13,47 +13,9 @@
 (defn get-app-element []
   (gdom/getElement "app"))
 
-(defn navbar-component []
-  [nb/navbar
-   [:main-navbar]
-   :has-shadow true
-   :class "is-dark"
-   :default-link :home
-   :brand (nb/defitem
-            :contents [:img {:src "images/logo.png"}]) 
-   :has-burger true
-   :start-menu
-   [(nb/defitem
-      :type :div
-      :contents [(nb/defitem
-                   :type :raw
-                   :contents [:small "Publishing at the speed of technology"])])
-    (nb/defitem
-      :contents "Home"
-      :id :home)]
-   :end-menu
-   [(nb/defitem
-      :type :dropdown
-      :title "Alex Johnson"
-      :is-hoverable true
-      :contents [(nb/defitem :id :profile :contents "Profile"
-                   :icon-img "fa-user-circle-o")
-                 (nb/defitem :id :report-bug :contents "Report Bug"
-                   :icon-img "fa-bug")
-                 (nb/defitem :id :sign-out :contents "Sign Out"
-                   :icon-img "fa-sign-out")])]])
 
-(defn sidebar-component []
-  [vm/menu
-   :sidebar-menu
-   (vm/defitem
-     :type :menu
-     :title "Menu"
-     :items
-     [(vm/defitem :title "Dashboard" :icon-img "fa-tachometer" :id :dashboard)
-      (vm/defitem :title "Books" :icon-img "fa-book" :id :books)
-      (vm/defitem :title "Customers" :icon-img "fa-address-book" :id :customers)
-      (vm/defitem :title "Orders" :icon-img "fa-file-text-o" :id :orders)])])
+
+
 
 (defn toolbar-component []
   [tb/toolbar
@@ -79,26 +41,24 @@
 
 (defn homepage-component []
   [:div
-   [navbar-component]
+   [navbar/navbar-component]
    [:section
-    [:div.columns
-     [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
-      [sidebar-component]]
-     [:div.column
-      [:h2.title.is-2 (str (name (or (session/get-in [:main-navbar :choice])
-                                     "Unknown")) " / "
-                           (name (or (session/get-in [:sidebar-menu :choice])
-                                     "Unknown")))]
-      [toolbar-component]
-      [bks/book-pages-component]
-      [:p "This is a default page. It will be replaced with real content later."]]]
-    [:div.columns
-     [:div.column
-      [:h4.title.is-4 "Global State"]
-      [:p (str "Session: " @session/state)]]
-     [:div.column
-      [:h4.title.is-4 "Menu State"]
-      [:p (str "Menu: " @vm/menu-state)]]]]])
+    [:div.container
+     [:div.columns
+      [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
+       [home-sb/sidebar-component]]
+      [:div.column
+       [:h2.title.is-2 (str (name (or (session/get-in [:main-navbar :choice])
+                                      "Unknown")) " / "
+                            (name (or (session/get-in [:sidebar-menu :choice])
+                                      "Unknown")))]
+       [toolbar-component]
+       [bks/book-pages-component]
+       [:p "This is a default page. It will be replaced with real content later."]]]
+     [:div.columns
+      [:div.column
+       [:h4.title.is-4 "Global State"]
+       [:div (render-map @session/state)]]]]]])
 
 
 (defn mount [el]
