@@ -6,24 +6,29 @@
 
 (defonce navbar-state (atom {}))
 
-;; item hash
-;; {:type :a | :div | :raw | :dropdown
-;;  :classes string of classes
-;;  :href link target (defaults to "#"
-;;  :id unique id for item (will default to gensym keyword)
-;;  :icon-img an icon to include
-;;  :is-hoverable for dropdown allow hoverable CSS
-;;  :contents what will go into the :a or :div. Can be vector of item hashes
-;;            for a div
-;;  :selectable if true, add click handler to set model and active state
 
 
-(defn defitem [& {:keys [type title classes href id contents selectable
-                         icon-img is-hoverable]
-                  :or {type :a
-                       href "#"
-                       id (keyword (gensym "item-"))
-                       selectable true}}]
+(defn defnavbar-item
+  "Define navbar entry items map. Supported keys are
+  `:type` - the entry type. Possible values `:a` = link, `:div` = arbitrary div
+            `:dropdown` = a dropdown menu and `:raw` = just added 'as is'. 
+            Defaults to `:a`
+   `:title` - The item title to appear in the navbar 
+   `:class` - additional classes to add to the element
+   `:href` - hypertext url for `:a` items. Defaults to `#`
+   `:id` - Add an id attribute to this item. Defaultw to `nav-<n>` 
+           where `<n>` is a unique value
+   `:contents` - the actual item contents
+   `:selectable` - determines if the item has a click handler attached. 
+                   Defaults to true.
+   `:is-hoverable` - for dropdown menus determines if the menu will dropdown
+                     when mouse hovers over it"
+  [& {:keys [type title classes href id contents selectable
+             icon-img is-hoverable]
+      :or {type :a
+           href "#"
+           id (keyword (gensym "nav-"))
+           selectable true}}]
   {:type type
    :title title
    :class classes
@@ -145,16 +150,31 @@
       (for [e end]
         (-make-item e state model))))])
 
-(defn navbar [model & {:keys [brand has-shadow has-burger start-menu end-menu
-                              class default-link]}]
-  (let [state (atom {:burger-active false
-                     :active-item default-link})]
-    (session/assoc-in! (conj model :choice) default-link)
+(defn navbar
+  "Define an application navbar. The `data` argument is a map which can 
+  have the following keys -
+  `:session-key` - where in the session state the menu choice is recorded
+  `:has-shadow` - true if the navbar has a shadow effect. Default true
+  `:is-dark` - if true, navbar is a dark colour. Default is false
+  `:has-burger` - true if navabar should include a 'burger' menu. Defaault true
+  `:class` - additional class attributes to be added to main nav tag
+  `:default-link` - the default (active) link set when navbar first loaded
+  `:brand` - Brand definition (use defnavbar-item to define)
+  `:menus` - the navbar menus = vector of defnavbar-item items
+  `:end-menu` - vector of menus to be added after main menus i.e. to the right."
+  [nb-def]
+  (let [data (merge {:has-shadow true
+                       :has-burger true
+                       :is-dark false}
+                      nb-def)
+        state (atom {:burger-active false
+                     :active-item (:default-link data)})]
+    (session/assoc-in! (conj (:session-key data) :choice) (:default-link data))
     (fn []
       [:nav {:class      (cs "navbar" class
-                             (when has-shadow "has-shadow"))
+                             (when (:has-shadow data) "has-shadow"))
              :role       "navigation"
              :aria-label "main navigation"}
-       (when brand
-         (-brand state model brand has-burger))
-       (-menu state model start-menu end-menu)])))
+       (when (:brand data)
+         (-brand state (:session-key data) (:brand data) (:has-burger data)))
+       (-menu state (:session-key data) (:menus data) (:end-menu data))])))

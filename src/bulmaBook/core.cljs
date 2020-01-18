@@ -6,14 +6,42 @@
             [bulmaBook.pages.home-sidebar :as home-sb]
             [bulmaBook.components.toolbar :as tb]
             [bulmaBook.components.basic :refer [media icon button render-map]]
+            [bulmaBook.components.navbar :refer [defnavbar-item]]
             [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]
-            [clojure.pprint :refer [pprint]]))
+            ;; [clojure.pprint :refer [pprint]]
+            ))
 
 (defn get-app-element []
   (gdom/getElement "app"))
 
-
+(def navbar-data
+  {:session-key [:main-navbar]
+   :has-shadow true
+   :class "is-dark"
+   :default-link :home
+   :has-burger true
+   :brand (defnavbar-item
+            :contents [:img {:src "images/logo.png"}])
+   :menus [(defnavbar-item
+             :type :div
+             :contents
+             [(defnavbar-item
+                :type :raw
+                :contents [:small "Publishing at the speed of technology"])])
+           (defnavbar-item
+             :contents "Home"
+             :id :home)]
+   :end-menu [(defnavbar-item
+                :type :dropdown
+                :title "Alex Johnson"
+                :is-hoverable true
+                :contents [(defnavbar-item :id :profile :contents "Profile"
+                             :icon-img "fa-user-circle-o")
+                           (defnavbar-item :id :report-bug
+                             :contents "Report Bug" :icon-img "fa-bug")
+                           (defnavbar-item :id :sign-out :contents "Sign Out"
+                             :icon-img "fa-sign-out")])]})
 
 
 
@@ -41,7 +69,7 @@
 
 (defn homepage-component []
   [:div
-   [navbar/navbar-component]
+   [navbar/navbar-component navbar-data]
    [:section
     [:div.container
      [:div.columns
