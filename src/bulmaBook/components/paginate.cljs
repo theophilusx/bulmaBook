@@ -52,10 +52,10 @@
   in the sequence will be rendered using `page-render-fn`. The optional 
   key `:page-size` can be used to set how many records are shown per page 
   (defaults to 10). The `is-rounded` key can be set to true to have the 
-  page navigation items rendered with rounded corners. The keys `is-small`
-  `is-meidum` and `is-large` set the size of the navigation items."
-  [records page-render-fn & {:keys [page-size is-rounded is-small
-                                    is-medium is-large]
+  page navigation items rendered with rounded corners. The keys `:button-size`
+  sets the size of navigation buttons and can have the value `:small`,
+  `:medium` or `:large`"
+  [records page-render-fn & {:keys [page-size is-rounded button-size]
                              :or {page-size 10}}]
   (let [pages (reduce merge
                       (map-indexed
@@ -72,10 +72,12 @@
     (fn []
       [:div
        [:nav {:class (cs "pagination"
-                         (when is-rounded "is-rounded")
-                         (when is-small "is-small")
-                         (when is-medium "is-medium")
-                         (when is-large "is-large"))
+                         (condp = button-size
+                           :small "is-small"
+                           :medium "is-medium"
+                           :large "is-large"
+                           "")
+                         (when is-rounded "is-rounded"))
               :role "navigation"
               :aria-label "pagination"}
         (when (not (= (-get-current state) 1))

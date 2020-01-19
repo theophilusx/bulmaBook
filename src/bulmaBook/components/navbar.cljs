@@ -4,40 +4,7 @@
             [bulmaBook.utils :refer [cs]]
             [bulmaBook.components.basic :refer [icon]]))
 
-(defonce navbar-state (atom {}))
-
-
-
-(defn defnavbar-item
-  "Define navbar entry items map. Supported keys are
-  `:type` - the entry type. Possible values `:a` = link, `:div` = arbitrary div
-            `:dropdown` = a dropdown menu and `:raw` = just added 'as is'. 
-            Defaults to `:a`
-   `:title` - The item title to appear in the navbar 
-   `:class` - additional classes to add to the element
-   `:href` - hypertext url for `:a` items. Defaults to `#`
-   `:id` - Add an id attribute to this item. Defaultw to `nav-<n>` 
-           where `<n>` is a unique value
-   `:contents` - the actual item contents
-   `:selectable` - determines if the item has a click handler attached. 
-                   Defaults to true.
-   `:is-hoverable` - for dropdown menus determines if the menu will dropdown
-                     when mouse hovers over it"
-  [& {:keys [type title classes href id contents selectable
-             icon-img is-hoverable]
-      :or {type :a
-           href "#"
-           id (keyword (gensym "nav-"))
-           selectable true}}]
-  {:type type
-   :title title
-   :class classes
-   :href href
-   :id id
-   :contents contents
-   :selectable selectable
-   :icon-img icon-img
-   :is-hoverable is-hoverable})
+;; (defonce navbar-state (atom {}))
 
 (defn active? [state id]
   (if (= (get @state :active-item) id)
@@ -150,6 +117,37 @@
       (for [e end]
         (-make-item e state model))))])
 
+(defn defnavbar-item
+  "Define navbar entry items map. Supported keys are
+  `:type` - the entry type. Possible values `:a` = link, `:div` = arbitrary div
+            `:dropdown` = a dropdown menu and `:raw` = just added 'as is'. 
+            Defaults to `:a`
+   `:title` - The item title to appear in the navbar 
+   `:class` - additional classes to add to the element
+   `:href` - hypertext url for `:a` items. Defaults to `#`
+   `:id` - Add an id attribute to this item. Defaultw to `nav-<n>` 
+           where `<n>` is a unique value
+   `:contents` - the actual item contents
+   `:selectable` - determines if the item has a click handler attached. 
+                   Defaults to true.
+   `:is-hoverable` - for dropdown menus determines if the menu will dropdown
+                     when mouse hovers over it"
+  [& {:keys [type title classes href id contents selectable
+             icon-img is-hoverable]
+      :or {type :a
+           href "#"
+           id (keyword (gensym "nav-"))
+           selectable true}}]
+  {:type type
+   :title title
+   :class classes
+   :href href
+   :id id
+   :contents contents
+   :selectable selectable
+   :icon-img icon-img
+   :is-hoverable is-hoverable})
+
 (defn navbar
   "Define an application navbar. The `data` argument is a map which can 
   have the following keys -
@@ -164,14 +162,14 @@
   `:end-menu` - vector of menus to be added after main menus i.e. to the right."
   [nb-def]
   (let [data (merge {:has-shadow true
-                       :has-burger true
-                       :is-dark false}
-                      nb-def)
+                     :has-burger true
+                     :is-dark false}
+                    nb-def)
         state (atom {:burger-active false
                      :active-item (:default-link data)})]
     (session/assoc-in! (conj (:session-key data) :choice) (:default-link data))
     (fn []
-      [:nav {:class      (cs "navbar" class
+      [:nav {:class      (cs "navbar" (:class data)
                              (when (:has-shadow data) "has-shadow"))
              :role       "navigation"
              :aria-label "main navigation"}
