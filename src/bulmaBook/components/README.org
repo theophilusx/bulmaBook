@@ -206,6 +206,32 @@
 
     #+end_src
 
+** Toolbars
+
+*** The deftoolbar-item Function
+
+    The ~deftoolbar-item~ function is used to define the ~map~ used to represent
+    a toolbar item. The map is very simple and only supports three keys
+
+    - :type :: A hiccup tag or reagent component name. The content will be
+      wrapped in this element. Defaults to ~:div~.
+    - :class :: Any additional class attributes to add to the wrapping element
+    - :content :: The actual conent for this item. Can be any valid hiccup or
+      reagent component, 
+
+*** The toolbar Component
+
+    The ~toolbar~ component provides a basic horizontal ~toolbar~ which can be
+    used at the top of pages to provide in-page navigation. The component accepts
+    a ~map~ as the only argument. This map must contain at least the
+    ~:left-items~ key. The ~:right-tiems~ and ~:class~ keys are optional.
+
+   - :let-items :: A vector of toolbar item maps. These maps are created by the
+     ~:deftoolbar-item~ function.
+   - :right-items :: A vector of toolbar item maps which are placed to the right
+     of the ~:left-items~ in the toolbar
+   - :class :: Any additional class atttriutes to add to the toolbar
+ 
 * Technical Notes
 
 A main objective of the components is to provide flexibility with reasonable
