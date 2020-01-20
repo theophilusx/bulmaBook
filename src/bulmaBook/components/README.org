@@ -232,6 +232,46 @@
      of the ~:left-items~ in the toolbar
    - :class :: Any additional class atttriutes to add to the toolbar
  
+** Sidebar
+
+   The ~sidebar~ component provides a basic vertical menu sidebar. Menu choices
+   are recorded in the global session atom. Items in the sidebar can be simple
+   menu choices (links) or nested menus. 
+
+*** The defsidebar-item Function
+
+    The ~defsidebar-item~ function is used to define the ~map~ used to represent
+    sidebar menu items. It supports the following keyname argumentds
+
+    - :type :: The type of the item, either ~:item~, representing a simple menu
+      link item or ~:menu~, representing a menu item with sub-menu links. The
+      default is ~:item~. 
+    - :title :: Either the menu title (if ~:type~ is ~:menu~) or the /name/
+      (text) to be used in the menu.
+    - :href :: For menu items, this is the ~href~ attribute for the link. The
+      default is ~#~.
+    - :icon-image :: An icon image to be associated with the menu entry.
+    - :id :: The ~id~ attribute to be added to this element. If not provided, a
+      unique default value with a prefix of ~side-bar-~ will be used.
+    - :items :: In the case where the ~:type~ is ~:menu~, this key contains a
+      vector of ~defsidebar-item~ maps representing sub-menu entries.
+    - :class :: Any additional class attriutes to add to the enclosing element
+
+*** The sidebar Component 
+
+    The ~sidebar~ component will display a vertical menu on the page. The
+    sidebar is defined via a ~map~, which is created using the ~defsidebar-item~
+    function. The component expects a ~map~ with the following keys
+
+    - :session-key :: A path into the global session atom where this component
+      instance will record menu choices
+    - :default-link :: The ~id~ of the default link to set as active when the
+      sidebar is first loaded
+    - :item :: The /parent/ menu item. A ~map~ defined using ~defsidebar-item~
+      representing the parent (head) of the sidebar. This value will have a
+      vector of additional ~defsidebar-item~ maps representing menu and sub-menu
+      links in the sidebar.
+ 
 * Technical Notes
 
 A main objective of the components is to provide flexibility with reasonable
@@ -258,3 +298,20 @@ definition, any item which is not supplied with an Id will have one
 automatically generated. This will work for internal housekeeping purposes, but
 if the ID is required by external components, it will be necessary to specify it
 manually when defining the item. 
+
+** Menus, Nabvars, Sidebars and Toolbars
+
+   Many of the components represent a UI element which the user interacts with,
+   such as selecting menu items or navigating to specific application pages. In
+   order to track which items have been selected by the user, these components
+   use the ~reagent-session~ library to maintain a global session atom. 
+
+   When defining a navbar, toolbar, sidebar or menu, you specify a
+   ~:session-key~. This is a path key into the global session atom managed by
+   ~reagent.sessin~. Each component will add a ~:choice~ key to this path that
+   contains the ~id~ of the active menu selection. 
+
+   Most components allow you to set a ~:default-link~, which is the ~id~ of the
+   default item within the component. If a ~:default-link~ is defined, that link
+   will be marked as /active/ when the component is first loaded. This typically
+   means the associated link or menu item is highlighted.  
