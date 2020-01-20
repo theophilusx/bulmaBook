@@ -1,12 +1,11 @@
 (ns ^:figwheel-hooks bulmaBook.core
   (:require [goog.dom :as gdom]
-            [bulmaBook.data.books :as book-data]
+            [bulmaBook.data :as data]
             [bulmaBook.pages.books :as bks]
             [bulmaBook.pages.navbar :as navbar]
             [bulmaBook.pages.home-sidebar :as home-sb]
             [bulmaBook.components.toolbar :as tb]
-            [bulmaBook.components.basic :refer [media icon button render-map]]
-            [bulmaBook.components.navbar :refer [defnavbar-item]]
+            [bulmaBook.components.basic :refer [media icon render-map]]
             [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]
             ;; [clojure.pprint :refer [pprint]]
@@ -15,61 +14,9 @@
 (defn get-app-element []
   (gdom/getElement "app"))
 
-(def navbar-data
-  {:session-key [:main-navbar]
-   :has-shadow true
-   :class "is-dark"
-   :default-link :home
-   :has-burger true
-   :brand (defnavbar-item
-            :contents [:img {:src "images/logo.png"}])
-   :menus [(defnavbar-item
-             :type :div
-             :contents
-             [(defnavbar-item
-                :type :raw
-                :contents [:small "Publishing at the speed of technology"])])
-           (defnavbar-item
-             :contents "Home"
-             :id :home)]
-   :end-menu [(defnavbar-item
-                :type :dropdown
-                :title "Alex Johnson"
-                :is-hoverable true
-                :contents [(defnavbar-item :id :profile :contents "Profile"
-                             :icon-img "fa-user-circle-o")
-                           (defnavbar-item :id :report-bug
-                             :contents "Report Bug" :icon-img "fa-bug")
-                           (defnavbar-item :id :sign-out :contents "Sign Out"
-                             :icon-img "fa-sign-out")])]})
-
-
-
-(defn toolbar-component []
-  [tb/toolbar
-   :left-items
-   [(tb/defitem :content [:p.subtitle.is-5 [:strong "6"]])
-    (tb/defitem :type :p :content [button :title "New" :class "is-success"])
-    (tb/defitem
-      :class "is-hidden-table-only"
-      :content [:div.field.has-addons
-                [:p.control
-                 [:input.input {:type "text"
-                                :placeholder "Book name, ISBN"}]]
-                [:p.control
-                 [:button.button "Search"]]])]
-   :right-items [(tb/defitem :content "Order by")
-                 (tb/defitem
-                   :content [:div.select
-                             [:select
-                              [:option "Publish date"]
-                              [:option "Price"]
-                              [:option "Page count"]]])]])
-
-
 (defn homepage-component []
   [:div
-   [navbar/navbar-component navbar-data]
+   [navbar/navbar-component data/navbar-data]
    [:section
     [:div.container
      [:div.columns
@@ -80,7 +27,7 @@
                                       "Unknown")) " / "
                             (name (or (session/get-in [:sidebar-menu :choice])
                                       "Unknown")))]
-       [toolbar-component]
+       [tb/toolbar data/books-toolbar]
        [bks/book-pages-component]
        [:p "This is a default page. It will be replaced with real content later."]]]
      [:div.columns
@@ -98,7 +45,7 @@
 
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
-(book-data/init)
+(session/assoc-in! [:data :book-data] data/book-data)
 (mount-app-element)
 
 ;; specify reload hook with ^;after-load metadata
