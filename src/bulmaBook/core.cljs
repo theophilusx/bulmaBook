@@ -3,7 +3,7 @@
             [bulmaBook.data :as data]
             [bulmaBook.pages.books :as bks]
             [bulmaBook.pages.navbar :as navbar]
-            [bulmaBook.pages.home-sidebar :as home-sb]
+            [bulmaBook.components.sidebar :refer [sidebar]]
             [bulmaBook.components.toolbar :as tb]
             [bulmaBook.components.basic :refer [media icon render-map]]
             [reagent.core :as reagent :refer [atom]]
@@ -21,7 +21,7 @@
     [:div.container
      [:div.columns
       [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
-       [home-sb/sidebar-component]]
+       [sidebar data/books-sidebar]]
       [:div.column
        [:h2.title.is-2 (str (name (or (session/get-in [:main-navbar :choice])
                                       "Unknown")) " / "

@@ -1,7 +1,8 @@
 (ns bulmaBook.data
   (:require [bulmaBook.components.navbar :refer [defnavbar-item]]
             [bulmaBook.components.toolbar :refer [deftoolbar-item]]
-            [bulmaBook.components.basic :refer [button]]))
+            [bulmaBook.components.basic :refer [button]]
+            [bulmaBook.components.sidebar :refer [defsidebar-item]]))
 
 (def book-data [{:title "TensorFlow For Machine Intelligence"
                  :image "images/tensorflow.jpg"
@@ -84,3 +85,25 @@
                               [:option "Publish date"]
                               [:option "Price"]
                               [:option "Page count"]]])]})
+
+(def books-sidebar {:session-key [:books-sidebar]
+                    :default-link nil
+                    :item (defsidebar-item
+                            :type :menu
+                            :title "Menu"
+                            :items [(defsidebar-item
+                                      :title "Dashboard"
+                                      :icon-image "fa-tachometer"
+                                      :id :dashboard)
+                                    (defsidebar-item
+                                      :title "Books"
+                                      :icon-img "fa-book"
+                                      :id :books)
+                                    (defsidebar-item
+                                      :title "Customers"
+                                      :icon-img "fa-address-book"
+                                      :id :customers)
+                                    (defsidebar-item
+                                      :title "Orders"
+                                      :icon-img "fa-file-text-o"
+                                      :id :orders)])})
