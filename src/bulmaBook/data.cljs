@@ -1,0 +1,86 @@
+(ns bulmaBook.data
+  (:require [bulmaBook.components.navbar :refer [defnavbar-item]]
+            [bulmaBook.components.toolbar :refer [deftoolbar-item]]
+            [bulmaBook.components.basic :refer [button]]))
+
+(def book-data [{:title "TensorFlow For Machine Intelligence"
+                 :image "images/tensorflow.jpg"
+                 :cost "$22.99"
+                 :pages 270
+                 :isbn "9781939902351"}
+                {:title "Docker in Production"
+                 :image "images/docker.jpg"
+                 :cost "$22.99"
+                 :pages 156
+                 :isbn "9781939902184"}
+                {:title "Developing a Gulp.js Edge"
+                 :image "images/gulp.jpg"
+                 :cost "$22.99"
+                 :pages 134
+                 :isbn "9781939902146"}
+                {:title "Learning Swift”"
+                 :image "images/swift.jpg"
+                 :cost "$22.99"
+                 :pages 342
+                 :isbn "9781939902115"}
+                {:title "Choosing a JavaScript Framework"
+                 :image "images/js-framework.jpg"
+                 :cost "19.99"
+                 :pages 96
+                 :isbn "9781939902092"}
+                {:title "Deconstructing Google Cardboard Apps"
+                 :image "images/google-cardboard.jpg"
+                 :cost "$22.99"
+                 :pages 179
+                 :isbn "9781939902092245"}])
+
+(def navbar-data
+  {:session-key [:main-navbar]
+   :has-shadow true
+   :class "is-dark"
+   :default-link :home
+   :has-burger true
+   :brand (defnavbar-item
+            :contents [:img {:src "images/logo.png"}])
+   :menus [(defnavbar-item
+             :type :div
+             :contents
+             [(defnavbar-item
+                :type :raw
+                :contents [:small "Publishing at the speed of technology"])])
+           (defnavbar-item
+             :contents "Home"
+             :id :home)]
+   :end-menu [(defnavbar-item
+                :type :dropdown
+                :title "Alex Johnson"
+                :is-hoverable true
+                :contents [(defnavbar-item :id :profile :contents "Profile"
+                             :icon-img "fa-user-circle-o")
+                           (defnavbar-item :id :report-bug
+                             :contents "Report Bug" :icon-img "fa-bug")
+                           (defnavbar-item :id :sign-out :contents "Sign Out"
+                             :icon-img "fa-sign-out")])]})
+
+(def books-toolbar
+  {:left-items [(deftoolbar-item
+                  :content [:p.subtitle.is-5 [:strong "6"]])
+                (deftoolbar-item
+                  :type :p
+                  :content [button :title "New" :class "is-success"])
+                (deftoolbar-item
+                  :class "is-hidden-table-only"
+                  :content [:div.field.has-addons
+                            [:p.control
+                             [:input.input {:type "text"
+                                            :placeholder "Book name, ISBN"}]]
+                            [:p.control
+                             [:button.button "Search"]]])]
+   :right-items [(deftoolbar-item
+                   :content "Order by")
+                 (deftoolbar-item
+                   :content [:div.select
+                             [:select
+                              [:option "Publish date"]
+                              [:option "Price"]
+                              [:option "Page count"]]])]})
