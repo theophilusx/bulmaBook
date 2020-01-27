@@ -1,7 +1,7 @@
 (ns bulmaBook.components.navbar
   (:require [reagent.core :refer [atom]]
             [reagent.session :as session]
-            [bulmaBook.utils :refer [cs]]
+            [bulmaBook.utils :refer [cs ensure-vector]]
             [bulmaBook.components.basic :refer [icon]]))
 
 ;; (defonce navbar-state (atom {}))
@@ -151,7 +151,8 @@
 (defn navbar
   "Define an application navbar. The `data` argument is a map which can 
   have the following keys -
-  `:session-key` - where in the session state the menu choice is recorded
+  `:session-key` - A vector representing the path into the global session
+                   atom where menu choices will be stored
   `:has-shadow` - true if the navbar has a shadow effect. Default true
   `:is-dark` - if true, navbar is a dark colour. Default is false
   `:has-burger` - true if navabar should include a 'burger' menu. Defaault true
@@ -167,6 +168,7 @@
                     nb-def)
         state (atom {:burger-active false
                      :active-item (:default-link data)})]
+    (update-in data [:session-key] ensure-vector)
     (session/assoc-in! (conj (:session-key data) :choice) (:default-link data))
     (fn []
       [:nav {:class      (cs "navbar" (:class data)

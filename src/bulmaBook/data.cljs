@@ -93,7 +93,7 @@
                             :title "Menu"
                             :items [(defsidebar-item
                                       :title "Dashboard"
-                                      :icon-image "fa-tachometer"
+                                      :icon-img "fa-tachometer"
                                       :id :dashboard)
                                     (defsidebar-item
                                       :title "Books"

@@ -10,4 +10,9 @@
 (defn vector-of-vectors [v]
   (every? vector? v))
 
+(defn ensure-vector [v]
+  (if (not (vector? v))
+    [v]
+    v))
+
 

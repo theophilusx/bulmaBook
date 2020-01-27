@@ -27,3 +27,4 @@
 (defn book-pages-component []
   (let [books (session/get-in [:data :book-data])]
     (paginate books book-grid-component :page-size 2)))
+

@@ -1,5 +1,5 @@
 (ns bulmaBook.components.sidebar
-  (:require [bulmaBook.utils :refer [cs]]
+  (:require [bulmaBook.utils :refer [cs ensure-vector]]
             [bulmaBook.components.basic :refer [icon]]
             [reagent.session :as session]))
 
@@ -68,6 +68,7 @@
   `:item` A `defsidebar-item` map defining the parent menu with sub-menus as a 
           vector of `defsidebar-tiem` items in the `:items` key"
   [data]
+  (update-in data [:session-key] ensure-vector)
   (session/assoc-in! (conj (:session-key data) :choice) (:default-link data))
   (fn []
     [:nav {:class (cs "menu" (:class (:item data)))}
