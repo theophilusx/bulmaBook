@@ -5,7 +5,7 @@
 
 (defn icon [icon-img & {:keys [title classes]}]
   [:div
-   [:span {:class (cs "icon" classes)} 
+   [:span {:class (cs "icon" classes)}
     [:i {:class (cs "fa" icon-img)}]]
    (when title (str " " title))])
 
@@ -60,28 +60,27 @@
        (vector? i) [:li [:div.box (render-vec i)]]
        (map? i)    [:li [:div.box (render-map  i)]]
        (set? i)    [:li [:div.box (render-set i)]]
-       :default    [:li (str i)]))))
+       :else [:li (str i)]))))
 
 (defn render-set [s]
   [:div.box
    (str "(" (string/join ", " s) ")")])
 
 (defn render-map [m]
-  (into
-   [:table.table]
-   (for [k (keys m)]
-     (cond
-       (map? (k m)) [:tr
-                     [:td [:strong (str k)]]
-                     [:td (render-map (k m))]]
-       (set? (k m)) [:tr
-                     [:td [:strong (str k)]]
-                     [:td (str (k m))]]
-       (vector? (k m)) [:tr
-                        [:td [:string (str k)]]
-                        [:td (render-vec (k m))]]
-       :default [:tr
-                 [:td [:strong (str k)]]
-                 [:td (str (k m))]]))))
-
-
+  [:table.table
+   (into
+    [:tbody]
+    (for [k (keys m)]
+      (cond
+        (map? (k m)) [:tr
+                      [:td [:strong (str k)]]
+                      [:td (render-map (k m))]]
+        (set? (k m)) [:tr
+                      [:td [:strong (str k)]]
+                      [:td (str (k m))]]
+        (vector? (k m)) [:tr
+                         [:td [:strong (str k)]]
+                         [:td (render-vec (k m))]]
+        :else [:tr
+                  [:td [:strong (str k)]]
+                  [:td (str (k m))]])))])
