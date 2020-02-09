@@ -3,7 +3,7 @@
             [reagent.core :refer [atom]]))
 
 (defn -is-current?
-  "Returns true if the supplied page numer is the current page. 
+  "Returns true if the supplied page numer is the current page.
   False otherwise."
   [state page]
   (if (= (get-in @state [:current]) page)
@@ -47,11 +47,11 @@
     (str page)]])
 
 (defn paginate
-  "Generate a paginated page of records. The `records` argument is a 
-  sequence of records that will be partitioned into pages. Each record 
-  in the sequence will be rendered using `page-render-fn`. The optional 
-  key `:page-size` can be used to set how many records are shown per page 
-  (defaults to 10). The `is-rounded` key can be set to true to have the 
+  "Generate a paginated page of records. The `records` argument is a
+  sequence of records that will be partitioned into pages. Each record
+  in the sequence will be rendered using `page-render-fn`. The optional
+  key `:page-size` can be used to set how many records are shown per page
+  (defaults to 10). The `is-rounded` key can be set to true to have the
   page navigation items rendered with rounded corners. The keys `:button-size`
   sets the size of navigation buttons and can have the value `:small`,
   `:medium` or `:large`"
@@ -63,12 +63,11 @@
                          {(keyword (str "page-" (inc idx)))
                           (vec v)})
                        (partition-all page-size records)))
-        total (count (keys pages))
         state (atom {:pages pages
-                     :total-pages total
+                     :total-pages (count (keys pages))
                      :current 1
                      :first 1
-                     :last total})]
+                     :last (count (keys pages))})]
     (fn []
       [:div
        [:nav {:class (cs "pagination"
@@ -111,7 +110,7 @@
              (if (= (- (-get-last state) 4) i)
                [:li [:a.pagination-ellipsis "\u2026"]]
                [-make-link state i])))
-          :default
+          :else
           (into
            [:ul.pagination-list
             [-make-link state 1]]
