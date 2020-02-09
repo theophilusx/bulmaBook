@@ -12,13 +12,25 @@
     [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
      [sidebar data/books-sidebar]]
     [:div.column
-     [:h2.title.is-2 (str (name (or (session/get-in [:main-navbar :choice])
-                                    "Unknown")) " / "
-                          (name (or (session/get-in [:sidebar-menu :choice])
-                                    "Unknown")))]
-     [tb/toolbar data/books-toolbar]
-     [bks/book-pages-component]
-     [:p "This is a default page. It will be replaced with real content later."]]]
+     (condp = (session/get-in [:books-sidebar :choice])
+       :books [:div
+               [:h2.title.is-2 (str "Page: " (session/get-in [:books-sidebar :choice]))]
+               [tb/toolbar data/books-toolbar]
+               [bks/book-pages-component]
+               [:p "This is a default page. It will be replaced with real content later."]
+               ]
+       :dashboard [:div
+                   [:h2.title.is-2
+                    (str "Default Dashboard Page")]]
+       :customers [:div
+                   [:h2.title.is-2
+                    (str "Default Customers Page")]]
+       :orders [:div
+                [:h2.title.is-2
+                 (str "Default Orders Page")]]
+       [:div
+        [:h2.title.is-2 (str "Unknown sub-page name: " (session/get-in [:books-sidebar :choice]))]]
+       )]]
    [:div.columns
     [:div.column
      [:h4.title.is-4 "Global State"]
