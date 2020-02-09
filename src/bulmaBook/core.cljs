@@ -1,14 +1,12 @@
 (ns ^:figwheel-hooks bulmaBook.core
   (:require [goog.dom :as gdom]
             [bulmaBook.data :as data]
-            [bulmaBook.pages.home :refer [home-page]]
+            [bulmaBook.pages.core :refer [current-page]]
             [bulmaBook.pages.navbar :as navbar]
             [reagent.core :as reagent ]
             [reagent.session :as session]
             ;; [clojure.pprint :refer [pprint]]
             ))
-
-(session/assoc-in! [:page-mapping] {:home home-page})
 
 (defn get-element [name]
   (gdom/getElement name))
@@ -20,7 +18,7 @@
   (when-let [nb (get-element "navbar")]
     (mount nb [navbar/navbar-component data/navbar-data]))
   (when-let [el (get-element "app")]
-    (mount el [home-page])))
+    (mount el [current-page])))
 
 
 ;; conditionally start your application based on the presence of an "app" element
