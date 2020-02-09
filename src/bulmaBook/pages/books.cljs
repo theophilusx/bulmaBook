@@ -1,6 +1,8 @@
 (ns bulmaBook.pages.books
   (:require [bulmaBook.components.basic :refer [media]]
             [bulmaBook.components.paginate :refer [paginate]]
+            [bulmaBook.data :as data]
+            [bulmaBook.components.toolbar :refer [toolbar]]
             [reagent.session :as session]))
 
 (defn book-component [book]
@@ -24,7 +26,10 @@
    (for [b books]
      [book-component b])))
 
-(defn book-pages-component []
+(defn books-page []
   (let [books (session/get-in [:data :book-data])]
-    (paginate books book-grid-component :page-size 2)))
-
+    [:div
+     [:h2.title.is-2 (str "Page: " (session/get-in [:books-sidebar :choice]))]
+     [toolbar data/books-toolbar]
+     [paginate books book-grid-component :page-size 2]
+     [:p "This is a default page. It will be replaced with real content later."]]))

@@ -1,8 +1,7 @@
 (ns bulmaBook.pages.home
   (:require [bulmaBook.components.sidebar :refer [sidebar]]
             [bulmaBook.components.basic :refer [render-map]]
-            [bulmaBook.pages.books :as bks]
-            [bulmaBook.components.toolbar :as tb]
+            [bulmaBook.pages.books :refer [books-page]]
             [bulmaBook.data :as data]
             [reagent.session :as session]))
 
@@ -13,12 +12,7 @@
      [sidebar data/books-sidebar]]
     [:div.column
      (condp = (session/get-in [:books-sidebar :choice])
-       :books [:div
-               [:h2.title.is-2 (str "Page: " (session/get-in [:books-sidebar :choice]))]
-               [tb/toolbar data/books-toolbar]
-               [bks/book-pages-component]
-               [:p "This is a default page. It will be replaced with real content later."]
-               ]
+       :books [books-page]
        :dashboard [:div
                    [:h2.title.is-2
                     (str "Default Dashboard Page")]]
