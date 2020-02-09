@@ -87,7 +87,7 @@
                               [:option "Page count"]]])]})
 
 (def books-sidebar {:session-key [:books-sidebar]
-                    :default-link nil
+                    :default-link :dashboard
                     :item (defsidebar-item
                             :type :menu
                             :title "Menu"
