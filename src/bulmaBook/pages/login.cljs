@@ -1,4 +1,5 @@
-(ns bulmaBook.pages.login)
+(ns bulmaBook.pages.login
+  (:require [bulmaBook.components.form :as form]))
 
 (defn login-component
   "Initial go at the login component. Lots more to do!"
@@ -9,28 +10,13 @@
      [:div.columns.is-centered
       [:div.column.is-5-tablet.is-4-desktop.is-3-widescreen
        [:form.box
-        [:div.field.has-text-centered
-         [:img {:src "images/logo-bis.png" :width "162"}]]
-        [:div.field
-         [:label.label "Email"]
-         [:div.control.has-icons-left
-          [:span.icon.is-small.is-left
-           [:i.fa.fa-envelope]]
-          [:input.input {:type "email"
-                         :placeholder "e.g. alexjohnson@gmail.com"
-                         :required true}]]]
-        [:div.field
-         [:label.label "Password"]
-         [:div.control.has-icons-left
-          [:input.input {:type "password"
-                         :placeholder "********"
-                         :required true}]
-          [:span.icon.is-small.is-left
-           [:i.fa.fa-lock]]]]
-        [:div.field
-         [:label.checkbox
-          [:input {:type "checkbox"}]
-          " Remember me"]]
-        [:div.field
-         [:button.button.is-success "Login"]]
-        ]]]]]])
+        [form/field [[:img {:src "images/logo-bis.png" :width "1627"}]]
+         :field-class "has-text-centered"]
+        [form/input :email "Email" :login.email :control-class "has-icons-left"
+         :icon "fa fa-envelope" :placeholder "e.g. alexjohnson@example.com"
+         :icon-class "is-small is-left" :required true]
+        [form/input :password "Password" :login.password
+         :control-class "has-icon-left" :icon-class "is-small is-left"
+         :icon "fa fa-lock" :placeholder "secret" :required true]
+        [form/input :checkbox "Remember me" :login.remember]
+        [form/field [[:button.button.is-success "Login"]]]]]]]]])
