@@ -15,4 +15,10 @@
     [v]
     v))
 
-
+(defn session-path [kw & {:keys [prefix]}]
+  (let [init (if prefix
+               [prefix]
+               [])]
+    (reduce (fn [acc v]
+              (conj acc (keyword v)))
+            init (string/split (name kw) #"\."))))
