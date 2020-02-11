@@ -1,4 +1,4 @@
-(ns bulmaBook.components.forms
+(ns bulmaBook.components.form
   (:require [bulmaBook.utils :refer [cs session-path value-of]]
             [reagent.session :as session]))
 
@@ -23,9 +23,8 @@
                                      icon required]}]
   (let [path (session-path id)]
     [:div {:class (cs "field" field-class)}
+     [:label {:class (cs "label" label-class)} label]
      [:div {:class (cs "control" control-class)}
-      [:label {:class (cs "label" label-class)}
-       label]
       (when icon
         [:span {:class (cs "icon" icon-class)}
          [:i {:class (cs icon)}]])
@@ -36,4 +35,24 @@
                :placeholder placeholder
                :required required
                :on-change (fn [e]
-                            (session/asoc-in! path (value-of e)))}]]]))
+                            (session/assoc-in! path (value-of e)))}]]]))
+
+(defn checkbox [label id & {:keys [field-class label-class control-class]}]
+  (let [path (session-path id)]
+    [:div {:class (cs "field" field-class)}
+     [:div {:class (cs "control" control-class)}
+      [:label {:class (cs "checkbox" label-class)}
+       [:input {:type "checkbox"
+                :id (name id)
+                :name (name id)
+                :on-change (fn []
+                             (session/update-in! path not))}]
+       (str " " label)]]]))
+
+(defn button [title action & {:keys [field-class control-class button-class]}]
+  [:div {:class (cs "field" field-class)}
+   [:div {:class (cs "control" control-class)}
+    [:button {:class (cs "button" button-class)
+              :type "button"
+              :on-click action}
+     title]]])
