@@ -35,6 +35,24 @@
                  :pages 179
                  :isbn "9781939902092245"}])
 
+(def login-navbar
+  {:session-key [:main-navbar]
+   :has-shadow true
+   :class "is-dark"
+   :default-link :register
+   :has-burger true
+   :brand (defnavbar-item
+            :contents [:img {:src "images/logo.png"}])
+   :menus [(defnavbar-item
+             :type :div
+             :contents
+             [(defnavbar-item
+                :type :raw
+                :contents [:small "Publishing at the speed of technology"])])]
+   :end-menu [(defnavbar-item
+                :contents "Login"
+                :id :login)]})
+
 (def navbar-data
   {:session-key [:main-navbar]
    :has-shadow true
