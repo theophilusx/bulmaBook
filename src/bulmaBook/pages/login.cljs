@@ -1,7 +1,8 @@
 (ns bulmaBook.pages.login
-  (:require [bulmaBook.components.form :as form]))
+  (:require [bulmaBook.components.form :as form]
+            [reagent.session :as session]))
 
-(defn login-component
+(defn login
   "Initial go at the login component. Lots more to do!"
   []
   [:section.hero.is-primary.is-fullheight
@@ -16,7 +17,11 @@
          :icon "fa fa-envelope" :placeholder "e.g. alexjohnson@example.com"
          :icon-class "is-small is-left" :required true]
         [form/input :password "Password" :login.password
-         :control-class "has-icon-left" :icon-class "is-small is-left"
+         :control-class "has-icons-left" :icon-class "is-small is-left"
          :icon "fa fa-lock" :placeholder "secret" :required true]
-        [form/input :checkbox "Remember me" :login.remember]
-        [form/field [[:button.button.is-success "Login"]]]]]]]]])
+        [form/checkbox "Remember me" :login.remember]
+        [form/button "Login" (fn []
+                               (println "Do login process")
+                               (session/assoc-in! [:main-navbar :choice] :home))
+         :button-class "is-success"]
+        ]]]]]])
