@@ -10,14 +10,13 @@
 
 (defn horizontal-field [label body & {:keys [field-class label-class]}]
   [:div {:class (cs "field" "is-horizontal" field-class)}
-   (when label
-     [:div {:class (cs "field-label" label-class)}
-      [:label {:class (cs "label" label-class)}
-       label]])
+   [:div {:class (cs "field-label" label-class)}
+    [:label {:class (cs "label" label-class)}
+     label]]
    (into
     [:div {:class (cs "field-body"
                       (when (> (count body) 1)
-                        "has-addons"))}]
+                        "has-grouped"))}]
     (for [el body]
       el))])
 
@@ -27,8 +26,9 @@
                                      icon required]}]
   (let [path (session-path id)]
     [:div {:class (cs "field" field-class)}
-     [:label {:class (cs "label" label-class)} label]
-     [:div {:class (cs "control" control-class)}
+     (when label
+       [:label {:class (cs "label" label-class)} label])
+     [:p {:class (cs "control" control-class)}
       (when icon
         [:span {:class (cs "icon" icon-class)}
          [:i {:class (cs icon)}]])
