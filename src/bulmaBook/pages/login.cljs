@@ -25,5 +25,4 @@
         [form/button "Login" (fn []
                                (println "Do login process")
                                (session/assoc-in! (session-path data/navbar-id) :home))
-         :button-class "is-success"]
-        ]]]]]])
+         :button-class "is-success"]]]]]]])

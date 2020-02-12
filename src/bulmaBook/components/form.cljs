@@ -10,10 +10,14 @@
 
 (defn horizontal-field [label body & {:keys [field-class label-class]}]
   [:div {:class (cs "field" "is-horizontal" field-class)}
-   [:div {:class (cs "field-label" label-class)}
-    label]
+   (when label
+     [:div {:class (cs "field-label" label-class)}
+      [:label {:class (cs "label" label-class)}
+       label]])
    (into
-    [:div.field-body]
+    [:div {:class (cs "field-body"
+                      (when (> (count body) 1)
+                        "has-addons"))}]
     (for [el body]
       el))])
 
