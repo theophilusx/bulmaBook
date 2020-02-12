@@ -35,8 +35,10 @@
                  :pages 179
                  :isbn "9781939902092245"}])
 
+(def navbar-id :ui.navbar)
+
 (def login-navbar
-  {:session-key [:main-navbar]
+  {:session-id navbar-id
    :has-shadow true
    :class "is-dark"
    :default-link :register
@@ -54,7 +56,7 @@
                 :id :login)]})
 
 (def navbar-data
-  {:session-key [:main-navbar]
+  {:session-id navbar-id
    :has-shadow true
    :class "is-dark"
    :default-link :home
