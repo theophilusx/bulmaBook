@@ -4,6 +4,6 @@
             [reagent.session :as session]))
 
 (defn top-navbar []
-  (let [email (session/get-in [:login :email])
+  (let [email (session/get-in [:session :user :email])
         data (if email data/navbar-data data/login-navbar)]
     [navbar data]))

@@ -4,6 +4,15 @@
             [bulmaBook.data :as data]
             [bulmaBook.utils :refer [session-path]]))
 
+(defn do-registration []
+  (let [reg (session/get :register)]
+    (if (not (contains? (session/get :users) (:email reg)))
+      (do
+        (session/assoc-in! [:users (:email reg)] reg)
+        (session/remove! :register)
+        (session/assoc-in! (session-path data/navbar-id) :login))
+      (println "Registration failed: Email already exists"))))
+
 (defn register []
   [:section
    [:div.container
@@ -20,11 +29,11 @@
           :control-class "has-icons-left" :icon-class "is-small is-left"
           :icon "fa fa-lock" :placeholder "secret" :required true]]]
        [form/horizontal-field "Name"
-        [[form/input :text nil :register.fname :required true
+        [[form/input :text nil :register.first-name :required true
           :placeholder "First name"]
-         [form/input :text nil :register.lname :required true
+         [form/input :text nil :register.last-name :required true
           :placeholder "Last name"]]]
        [form/button "Login" (fn []
                               (println "Do register process")
-                              (session/assoc-in! (session-path data/navbar-id) :home))
+                              (do-registration))
         :button-class "is-success"]]]]]] )

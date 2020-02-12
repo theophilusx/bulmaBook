@@ -4,6 +4,22 @@
             [bulmaBook.utils :refer [session-path]]
             [reagent.session :as session]))
 
+
+(defn do-login []
+  (let [email (session/get-in [:login :email])
+        user-profile (session/get-in [:users email])]
+    (println (str "Email: " email))
+    (println (str "User profile: " user-profile))
+    (if (= (session/get-in [:login :password]) (:password user-profile))
+      (do
+        (session/assoc-in! [:session :user] {:name (str
+                                                    (:first-name user-profile) " "
+                                                    (:last-name user-profile))
+                                             :email (:email user-profile)})
+        (session/remove! :login)
+        (session/assoc-in! (session-path data/navbar-id) :home))
+      (println "Bad user or login password"))))
+
 (defn login
   "Initial go at the login component. Lots more to do!"
   []
@@ -24,5 +40,5 @@
         [form/checkbox "Remember me" :login.remember]
         [form/button "Login" (fn []
                                (println "Do login process")
-                               (session/assoc-in! (session-path data/navbar-id) :home))
+                               (do-login))
          :button-class "is-success"]]]]]]])
