@@ -2,7 +2,7 @@
   (:require [goog.dom :as gdom]
             [bulmaBook.data :as data]
             [bulmaBook.pages.core :refer [current-page]]
-            [bulmaBook.pages.navbar :as navbar]
+            [bulmaBook.pages.navbar :refer [top-navbar]]
             [reagent.core :as reagent ]
             [reagent.session :as session]
             ;; [clojure.pprint :refer [pprint]]
@@ -16,7 +16,7 @@
 
 (defn mount-app []
   (when-let [nb (get-element "navbar")]
-    (mount nb [navbar/navbar-component data/navbar-data]))
+    (mount nb [top-navbar]))
   (when-let [el (get-element "app")]
     (mount el [current-page])))
 
