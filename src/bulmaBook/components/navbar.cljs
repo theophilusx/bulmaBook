@@ -1,13 +1,13 @@
 (ns bulmaBook.components.navbar
   (:require [reagent.core :refer [atom]]
             [reagent.session :as session]
-            [bulmaBook.utils :refer [cs ensure-vector]]
+            [bulmaBook.utils :refer [cs session-path]]
             [bulmaBook.components.basic :refer [icon]]))
 
 ;; (defonce navbar-state (atom {}))
 
 (defn active? [state id]
-  (if (= (get @state :active-item) id)
+  (if (= (:active-item @state) id)
     true
     false))
 
@@ -15,21 +15,21 @@
   (swap! state assoc :active-item (first id)))
 
 (defn dropdown-active? [state id]
-  (if (= (get @state :active-dropdown) id)
+  (if (= (:active-dropdown @state) id)
     true
     false))
 
 (defn toggle-dropdown [state & id]
   (if (nil? id)
     (swap! state assoc :active-dropdown nil)
-    (if (= (get @state :active-dropdown) (first id))
+    (if (= (:active-dropdown @state) (first id))
       (swap! state assoc :active-dropdown nil)
       (swap! state assoc :active-dropdown (first id)))))
 
-(defn set-choice [model & id]
-  (session/assoc-in! (conj model :choice) (first id)))
+(defn set-choice [path & id]
+  (session/assoc-in! (session-path path) (first id)))
 
-(defn -item-a [a state model]
+(defn -item-a [a state]
   [:a {:class (cs "navbar-item" (:class a)
                   (when (active? state (:id a)) "is-active"))
        :href (:href a)
@@ -37,28 +37,28 @@
                    (fn []
                      (toggle-dropdown state)
                      (set-active state (:id a))
-                     (set-choice model (:id a))))}
+                     (set-choice (:session-id @state) (:id a))))}
    (if (:icon-img a)
      [icon (:icon-img a) :title (:contents a)]
      (:contents a))])
 
-(defn -item-raw [r state model]
+(defn -item-raw [r _]
   [:div {:class (cs "content" (:class r))}
    (:contents r)])
 
-(defn -item-div [d state model]
+(defn -item-div [d state]
   (into
    [:div {:class (cs "navbar-item" (:class d))}]
    (for [c (:contents d)]
      (condp = (:type c)
-       :a (-item-a c state model)
-       :raw (-item-raw c state model)
-       (-item-div c state model)))))
+       :a (-item-a c state)
+       :raw (-item-raw c state)
+       (-item-div c state)))))
 
-(defn -item-dropdown [d state model]
+(defn -item-dropdown [d state]
   [:div {:class (cs "navbar-item" "has-dropdown" (:class d)
                           (when (:is-hoverable d) "is-hoverable")
-                          (when (dropdown-active? state (:id d)) 
+                          (when (dropdown-active? state (:id d))
                             "is-active"))}
    [:a {:class (cs "navbar-link")
         :id (:id d)
@@ -69,66 +69,66 @@
     [:div.navbar-dropdown]
     (for [i (:contents d)]
       (condp = (:type i)
-        :a (-item-a i state model)
-        :dropdown (-item-dropdown i state model)
+        :a (-item-a i state)
+        :dropdown (-item-dropdown i state)
         :divider [:hr.navbar-divider]
-        (-item-div i state model))))])
+        (-item-div i state))))])
 
-(defn -make-item [i state model]
+(defn -make-item [i state]
   (condp = (:type i)
-    :a (-item-a i state model)
-    :raw (-item-raw i state model)
-    :dropdown (-item-dropdown i state model)
+    :a (-item-a i state)
+    :raw (-item-raw i state)
+    :dropdown (-item-dropdown i state)
     :divider [:hr.navbar-divider]
-    (-item-div i state model)))
+    (-item-div i state)))
 
-(defn -burger [state model]
+(defn -burger [state]
   [:a {:class (cs "navbar-burger" "burger"
                         (when (get @state :burger-active)
                           "is-active"))
        :role "button"
        :aria-label "menu"
        :aria-expanded "false"
-       :data-target model
+       :data-target (:session-id @state)
        :on-click (fn []
                    (swap! state update :burger-active not))}
    [:span {:aria-hidden true}]
    [:span {:aria-hidden true}]
    [:span {:aria-hidden true}]])
 
-(defn -brand [state model item has-burger]
+(defn -brand [state]
   [:div.navbar-brand
-   (-make-item item state model)
-   (when has-burger
-     (-burger state model))])
+   (-make-item (:brand @state) state)
+   (when (:has-burger @state)
+     (-burger state))])
 
-(defn -menu [state model start end]
+(defn -menu [state]
   [:div {:class (cs "navbar-menu"
-                    (when (get @state :burger-active)
+                    (when (:burger-active @state)
                       "is-active"))
-         :id model}
+         :id (:session-id @state)}
    (into
     [:div.navbar-start]
-    (for [s start]
-      (-make-item s state model)))
-   (when end
+    (for [s (:menus @state)]
+      (-make-item s state)))
+   (when (:end-menu @state)
      (into
       [:div.navbar-end]
-      (for [e end]
-        (-make-item e state model))))])
+      (for [e (:end-menu @state)]
+        (-make-item e state))))])
 
 (defn defnavbar-item
   "Define navbar entry items map. Supported keys are
   `:type` - the entry type. Possible values `:a` = link, `:div` = arbitrary div
-            `:dropdown` = a dropdown menu and `:raw` = just added 'as is'. 
+            `:dropdown` = a dropdown menu and `:raw` = just added 'as is'.
             Defaults to `:a`
-   `:title` - The item title to appear in the navbar 
+   `:title` - The item title to appear in the navbar
    `:class` - additional classes to add to the element
    `:href` - hypertext url for `:a` items. Defaults to `#`
-   `:id` - Add an id attribute to this item. Defaultw to `nav-<n>` 
+   `:id` - Add an id attribute to this item. Defaultw to `nav-<n>`
            where `<n>` is a unique value
    `:contents` - the actual item contents
-   `:selectable` - determines if the item has a click handler attached. 
+   `:selectable` - determines if the item has a click handler attached.
                    Defaults to true.
    `:is-hoverable` - for dropdown menus determines if the menu will dropdown
                      when mouse hovers over it"
@@ -149,10 +149,9 @@
    :is-hoverable is-hoverable})
 
 (defn navbar
-  "Define an application navbar. The `data` argument is a map which can 
+  "Define an application navbar. The `data` argument is a map which can
   have the following keys -
-  `:session-key` - A vector representing the path into the global session
-                   atom where menu choices will be stored
+  `:session-id` - A keyword representing the session ID. e.g :topbar or :top.bar
   `:has-shadow` - true if the navbar has a shadow effect. Default true
   `:is-dark` - if true, navbar is a dark colour. Default is false
   `:has-burger` - true if navabar should include a 'burger' menu. Defaault true
@@ -162,19 +161,22 @@
   `:menus` - the navbar menus = vector of defnavbar-item items
   `:end-menu` - vector of menus to be added after main menus i.e. to the right."
   [nb-def]
-  (let [data (merge {:has-shadow true
-                     :has-burger true
-                     :is-dark false}
-                    nb-def)
-        state (atom {:burger-active false
-                     :active-item (:default-link data)})]
-    (update-in data [:session-key] ensure-vector)
-    (session/assoc-in! (conj (:session-key data) :choice) (:default-link data))
-    (fn []
-      [:nav {:class      (cs "navbar" (:class data)
-                             (when (:has-shadow data) "has-shadow"))
+  (let [state (atom (merge {:has-shadow true
+                            :has-burger true
+                            :is-dark false
+                            :burger-active false
+                            :active-item (:default-link nb-def)
+                            :dropdown-active false}
+                           nb-def))]
+    (set-choice (:session-id @state) (:default-link @state))
+    (fn [nb-def]
+      (swap! state assoc :menus (:menus nb-def)
+             :end-menu (:end-menu nb-def))
+      (println (str "Navbar state: " @state))
+      [:nav {:class      (cs "navbar" (:class @state)
+                             (when (:has-shadow @state) "has-shadow"))
              :role       "navigation"
              :aria-label "main navigation"}
-       (when (:brand data)
-         (-brand state (:session-key data) (:brand data) (:has-burger data)))
-       (-menu state (:session-key data) (:menus data) (:end-menu data))])))
+       (when (:brand @state)
+         (-brand state))
+       (-menu state)])))
