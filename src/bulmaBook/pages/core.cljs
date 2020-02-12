@@ -1,10 +1,13 @@
 (ns bulmaBook.pages.core
   (:require [bulmaBook.pages.home :refer [home-page]]
+            [bulmaBook.utils :refer [session-path]]
+            [bulmaBook.pages.login :refer [login]]
             [bulmaBook.components.basic :refer [render-map]]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [bulmaBook.data :as data]))
 
 (defn current-page []
-  (condp = (session/get-in [:main-navbar :choice])
+  (condp = (session/get-in (session-path data/navbar-id))
     :home [home-page]
     :profile [:div
               [:h2.h2.title "Profile page goes here"]
@@ -16,8 +19,9 @@
                [:h2.h2.title "Sign Out page goes here"]
                [render-map @session/state]]
     :login [:div
-            [:h2.h2.title "Login page goes here"]
+            [login]
             [render-map @session/state]]
     [:div
-     [:h2.h2.title "Bad page name: " (session/get-in [:main-navbar :choice])]
+     [:h2.h2.title "Bad page name: " (session/get-in
+                                      (session-path data/navbar-id))]
      [render-map @session/state]]))

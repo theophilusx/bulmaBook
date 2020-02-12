@@ -1,5 +1,7 @@
 (ns bulmaBook.pages.login
   (:require [bulmaBook.components.form :as form]
+            [bulmaBook.data :as data]
+            [bulmaBook.utils :refer [session-path]]
             [reagent.session :as session]))
 
 (defn login
@@ -22,6 +24,6 @@
         [form/checkbox "Remember me" :login.remember]
         [form/button "Login" (fn []
                                (println "Do login process")
-                               (session/assoc-in! [:main-navbar :choice] :home))
+                               (session/assoc-in! (session-path data/navbar-id) :home))
          :button-class "is-success"]
         ]]]]]])
