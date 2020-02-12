@@ -72,15 +72,15 @@
     [:tbody]
     (for [k (keys m)]
       (cond
-        (map? (k m)) [:tr
-                      [:td [:strong (str k)]]
-                      [:td (render-map (k m))]]
-        (set? (k m)) [:tr
-                      [:td [:strong (str k)]]
-                      [:td (str (k m))]]
-        (vector? (k m)) [:tr
-                         [:td [:strong (str k)]]
-                         [:td (render-vec (k m))]]
+        (map? (get m k)) [:tr
+                          [:td [:strong (str k)]]
+                          [:td (render-map (get m k))]]
+        (set? (get m k)) [:tr
+                          [:td [:strong (str k)]]
+                          [:td (str (get m k))]]
+        (vector? (get m k)) [:tr
+                             [:td [:strong (str k)]]
+                             [:td (render-vec (get m k))]]
         :else [:tr
                   [:td [:strong (str k)]]
-                  [:td (str (k m))]])))])
+                  [:td (str (get m k))]])))])
