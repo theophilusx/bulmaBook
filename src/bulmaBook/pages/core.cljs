@@ -3,6 +3,7 @@
             [bulmaBook.utils :refer [session-path]]
             [bulmaBook.pages.login :refer [login]]
             [bulmaBook.pages.register :refer [register]]
+            [bulmaBook.pages.profile :refer [profile]]
             [bulmaBook.components.basic :refer [render-map]]
             [reagent.session :as session]
             [bulmaBook.data :as data]))
@@ -11,7 +12,7 @@
   (condp = (session/get-in (session-path data/navbar-id))
     :home [home-page]
     :profile [:div
-              [:h2.h2.title "Profile page goes here"]
+              [profile]
               [render-map @session/state]]
     :report-bug [:div
                  [:h2.h2.title "Report bug page goes here"]

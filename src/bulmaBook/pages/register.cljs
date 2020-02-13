@@ -16,10 +16,10 @@
 (defn register []
   [:section
    [:div.container
-    [:h2.title.is-2 "Register Account"]
-    [:div.columns
+    [:div.columns.is-centered
      [:div.column.is-6-tablet.is-7-desktop.is-5-widescreen
       [:form.box
+       [:h2.title.is-2 "Register Account"]
        [form/horizontal-field "Email"
         [[form/input :email nil :register.email :control-class "has-icons-left"
           :icon "fa fa-envelope" :placeholder "e.g. alexjohnson@example.com"
