@@ -1,9 +1,7 @@
 (ns bulmaBook.pages.navbar
   (:require [bulmaBook.components.navbar :refer [navbar]]
-            [bulmaBook.data :as data]
-            [reagent.session :as session]))
+            [bulmaBook.data :as data]))
 
 (defn top-navbar []
-  (let [email (session/get-in [:session :user :email])
-        data (if email data/navbar-data data/login-navbar)]
+  (let [data (data/get-navabar-data)]
     [navbar data]))
