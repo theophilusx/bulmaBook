@@ -29,7 +29,7 @@
 (defn books-page []
   (let [books (session/get-in [:data :book-data])]
     [:div
-     [:h2.title.is-2 (str "Page: " (session/get-in [:books-sidebar :choice]))]
+     [:h2.title.is-2 (str "Page: " (session/get-in [:ui :books :sidebar]))]
      [toolbar data/books-toolbar]
      [paginate books book-grid-component :page-size 2]
      [:p "This is a default page. It will be replaced with real content later."]]))

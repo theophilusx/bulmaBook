@@ -1,37 +1,37 @@
 (ns bulmaBook.components.sidebar
-  (:require [bulmaBook.utils :refer [cs ensure-vector]]
+  (:require [bulmaBook.utils :refer [cs session-path]]
             [bulmaBook.components.basic :refer [icon]]
             [reagent.session :as session]))
 
-(defn is-active? [model id]
-  (if (= (session/get-in (conj model :choice)) id)
+(defn is-active? [session-id id]
+  (if (= (session/get-in (session-path session-id)) id)
     true
     false))
 
-(defn set-active [model id]
-  (session/assoc-in! (conj model :choice) id))
+(defn set-active [session-id id]
+  (session/assoc-in! (session-path session-id) id))
 
-(defn -make-item [i model]
+(defn -make-item [i session-id]
   [:li
    [:a {:class (cs (:class i)
-                   (when (is-active? model (:id i)) "is-active"))
+                   (when (is-active? session-id (:id i)) "is-active"))
         :href  (:href i)
         :id    (:id i)
         :on-click (fn []
-                    (set-active model (:id i)))}
+                    (set-active session-id (:id i)))}
     (if (:icon-img i)
       [icon (:icon-img i) :title (:title i)]
       (:title i))]])
 
-(defn -make-menu [m model]
-  [:div
-   [:p.menu-label (:title m)]
+(defn -make-menu [m session-id]
+  [:aside.menu
+   [:h3.is-3.menu-label (:title m)]
    (into
     [:ul.menu-list]
     (for [i (:items m)]
       (if (= (:type i) :item)
-        (-make-item i model)
-        (-make-menu i model))))])
+        (-make-item i session-id)
+        (-make-menu i session-id))))])
 
 (defn defsidebar-item
   "Define an item for the sidebar. The item can either be a simple link item
@@ -61,15 +61,15 @@
 
 (defn sidebar
   "Defines a sidebar menu. A sidebar is defined by a `map` with the keys
-  `:sessin-key` Vector representing the path into the global state atom where
-                this component will store its state.
+  `:sessin-id` A keyword representing a path into the global state atom e.g.
+               :place. If keyword has a `.` it is interpreted as a delimiter for
+               another path level e.g. :place.sub-place = [:place :sub-place].
   `:default-link` The default menu id to be set as active when sidebar is first
                    loaded
   `:item` A `defsidebar-item` map defining the parent menu with sub-menus as a
           vector of `defsidebar-tiem` items in the `:items` key"
   [data]
-  (update-in data [:session-key] ensure-vector)
-  (session/assoc-in! (conj (:session-key data) :choice) (:default-link data))
+  (session/assoc-in! (session-path (:session-id data)) (:default-link data))
   (fn []
     [:nav {:class (cs "menu" (:class (:item data)))}
-     (-make-menu (:item data) (:session-key data))]))
+     (-make-menu (:item data) (:session-id data))]))

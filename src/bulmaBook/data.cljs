@@ -43,7 +43,6 @@
     (if session-name
       {:session-id navbar-id
        :has-shadow true
-       :class "is-dark"
        :default-link :home
        :has-burger true
        :brand (defnavbar-item
@@ -69,7 +68,6 @@
                                  :icon-img "fa-sign-out")])]}
       {:session-id navbar-id
        :has-shadow true
-       :class "is-dark"
        :default-link :register
        :has-burger true
        :brand (defnavbar-item
@@ -108,7 +106,7 @@
                               [:option "Price"]
                               [:option "Page count"]]])]})
 
-(def books-sidebar {:session-key [:books-sidebar]
+(def books-sidebar {:session-id :ui.books.sidebar
                     :default-link :dashboard
                     :item (defsidebar-item
                             :type :menu

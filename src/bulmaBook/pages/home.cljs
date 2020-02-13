@@ -11,7 +11,7 @@
     [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
      [sidebar data/books-sidebar]]
     [:div.column
-     (condp = (session/get-in [:books-sidebar :choice])
+     (condp = (session/get-in [:ui :books :sidebar])
        :books [books-page]
        :dashboard [:div
                    [:h2.title.is-2
