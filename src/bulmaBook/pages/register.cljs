@@ -2,13 +2,14 @@
   (:require [bulmaBook.components.form :as form]
             [reagent.session :as session]
             [bulmaBook.data :as data]
-            [bulmaBook.utils :refer [session-path]]))
+            [bulmaBook.utils :refer [session-path value->keyword]]))
 
 (defn do-registration []
-  (let [reg (session/get :register)]
-    (if (not (contains? (session/get :users) (:email reg)))
+  (let [reg (session/get :register)
+        email-key (value->keyword (:email reg))]
+    (if (not (contains? (session/get :users) email-key))
       (do
-        (session/assoc-in! [:users (:email reg)] reg)
+        (session/assoc-in! [:users email-key] reg)
         (session/remove! :register)
         (session/assoc-in! (session-path data/navbar-id) :login))
       (println "Registration failed: Email already exists"))))

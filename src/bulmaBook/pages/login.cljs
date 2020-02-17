@@ -1,14 +1,14 @@
 (ns bulmaBook.pages.login
   (:require [bulmaBook.components.form :as form]
             [bulmaBook.data :as data]
-            [bulmaBook.utils :refer [session-path]]
+            [bulmaBook.utils :refer [session-path value->keyword]]
             [reagent.session :as session]))
 
 
 (defn do-login []
-  (let [email (session/get-in [:login :email])
-        user-profile (session/get-in [:users email])]
-    (println (str "Email: " email))
+  (let [email-key (value->keyword (session/get-in [:login :email]))
+        user-profile (session/get-in [:users email-key])]
+    (println (str "Email key: " email-key))
     (println (str "User profile: " user-profile))
     (if (= (session/get-in [:login :password]) (:password user-profile))
       (do

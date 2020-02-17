@@ -1,10 +1,10 @@
 (ns bulmaBook.pages.profile
   (:require [bulmaBook.components.form :as form]
+            [bulmaBook.utils :refer [value->keyword]]
             [reagent.session :as session]))
 
 (defn profile []
-  (let [email (session/get-in [:session :user :email])
-        user-profile (session/get-in [:users email])]
+  (let [email-key (value->keyword (session/get-in [:session :user :email]))]
     [:section
      [:div.container
       [:div.columns.is-centered
@@ -12,7 +12,7 @@
         [:form.box
          [:h2.title.is-2 "User Profile"]
          [form/horizontal-field "Email"
-          [[form/field [[:div.content email]]]]]
+          [[form/field [[:div.content (session/get-in [:session :user :email])]]]]]
          [form/horizontal-field "Name"
-          [[form/field [[:div.content (:first-name user-profile)]]]
-           [form/field [[:div.content (:last-name user-profile)]]]]]]]]]]))
+          [[form/editable-field nil (keyword (str "users." (name email-key) ".first-name")) :text]
+           [form/editable-field nil (keyword (str "users." (name email-key) ".last-name")) :text]]]]]]]]))
