@@ -12,7 +12,11 @@
         [:form.box
          [:h2.title.is-2 "User Profile"]
          [form/horizontal-field "Email"
-          [[form/field [[:div.content (session/get-in [:session :user :email])]]]]]
-         [form/horizontal-field "Name"
-          [[form/editable-field nil (keyword (str "users." (name email-key) ".first-name")) :text]
-           [form/editable-field nil (keyword (str "users." (name email-key) ".last-name")) :text]]]]]]]]))
+          [[form/field [[:div.content
+                         (session/get-in [:session :user :email])]]]]]
+         [form/horizontal-field "First Name"
+          [[form/editable-field nil
+            (keyword (str "users." (name email-key) ".first-name")) :text]]]
+         [form/horizontal-field "Last Name"
+          [[form/editable-field nil
+            (keyword (str "users." (name email-key) ".first-name")) :text]]]]]]]]))
