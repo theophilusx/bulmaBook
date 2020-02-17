@@ -57,7 +57,7 @@
 (defn button [title action & {:keys [field-class control-class button-class]}]
   [:div {:class (cs "field" field-class)}
    [:div {:class (cs "control" control-class)}
-    [:button {:class (cs "button" button-class)
+    [:a {:class (cs "button" button-class)
               :type "button"
               :on-click action}
      title]]])
@@ -77,22 +77,27 @@
                        :editing false})]
     (fn []
       (println (str "editable-field state: " @state))
-      [:div {:class (cs "field" "has-grouped" field-class)}
-       (when label
-         [:label {:class (cs "label" label-class)} label])
-       (if (get @state :editing)
+      (if (get @state :editing)
+        [:div {:class (cs "field" "is-grouped" field-class)}
+         (when label
+           [:label {:class (cs "label" label-class)} label])
          [:p {:class (cs "control" control-class)}
           [:input {:type (name type)
-                   :class (cs "input" input-class)
+                   :class (cs "input" "is-small" input-class)
                    :value (:value @state)
                    :id (name (:session-id @state))
                    :name (name (:session-id @state))
                    :on-change (fn [e]
-                                (swap! state assoc :value (value-of e)))}]
-          [button "Save" #(do-save state)]
-          [button "Reset" #(do-reset state)]]
+                                (swap! state assoc :value (value-of e)))}]]
+         [:p {:class (cs "control")}
+          [button "Save" #(do-save state) :button-class "is-primary is-small"]]
+         [:p {:class (cs "control")}
+          [button "Reset" #(do-reset state) :button-class "is-small"]]]
+        [:div {:class (cs "field" field-class)}
+         (when label
+           [:label {:class (cs "label" label-class)} label])
          [:p {:class (cs "control" control-class)}
           (str (:value @state) " ")
           [:span {:class (cs "icon")
                   :on-click #(swap! state assoc :editing true)}
-           [:i {:class (cs "fa" "fa-pencil")}]]])])))
+           [:i {:class (cs "fa" "fa-pencil")}]]]]))))
