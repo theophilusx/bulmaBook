@@ -22,3 +22,7 @@
     (reduce (fn [acc v]
               (conj acc (keyword v)))
             init (string/split (name kw) #"\."))))
+
+(defn value->keyword [v]
+  (keyword (string/replace v #"\.|:|@" "-")))
+
