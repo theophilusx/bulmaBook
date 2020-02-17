@@ -1,6 +1,7 @@
 (ns bulmaBook.components.form
   (:require [bulmaBook.utils :refer [cs session-path value-of]]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [reagent.core :as r]))
 
 (defn field [body & {:keys [class]}]
   (into
@@ -60,3 +61,38 @@
               :type "button"
               :on-click action}
      title]]])
+
+(defn do-save [s]
+  (session/assoc-in! (session-path (:session-id @s)) (:value @s))
+  (swap! s assoc :editing false))
+
+(defn do-reset [s]
+  (swap! s assoc :value (session/get-in (session-path (:session-id @s))))
+  (swap! s assoc :editing false))
+
+(defn editable-field [label session-id type & {:keys [field-class label-class
+                                               control-class input-class]}]
+  (let [state (r/atom {:value (session/get-in (session-path session-id))
+                       :session-id session-id
+                       :editing false})]
+    (fn []
+      (println (str "editable-field state: " @state))
+      [:div {:class (cs "field" "has-grouped" field-class)}
+       (when label
+         [:label {:class (cs "label" label-class)} label])
+       (if (get @state :editing)
+         [:p {:class (cs "control" control-class)}
+          [:input {:type (name type)
+                   :class (cs "input" input-class)
+                   :value (:value @state)
+                   :id (name (:session-id @state))
+                   :name (name (:session-id @state))
+                   :on-change (fn [e]
+                                (swap! state assoc :value (value-of e)))}]
+          [button "Save" #(do-save state)]
+          [button "Reset" #(do-reset state)]]
+         [:p {:class (cs "control" control-class)}
+          (str (:value @state) " ")
+          [:span {:class (cs "icon")
+                  :on-click #(swap! state assoc :editing true)}
+           [:i {:class (cs "fa" "fa-pencil")}]]])])))
