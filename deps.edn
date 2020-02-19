@@ -1,5 +1,5 @@
-{:deps {org.clojure/clojure {:mvn/version "1.10.1"}
-        org.clojure/clojurescript {:mvn/version "1.10.597"}
+{:deps {org.clojure/clojure {:mvn/version "1.9.0"}
+        org.clojure/clojurescript {:mvn/version "1.10.520"}
         reagent {:mvn/version "0.9.1"}
         reagent-utils {:mvn/version "0.3.3"}}
  :paths ["src" "resources"]
@@ -8,5 +8,7 @@
                    com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
                  :extra-paths ["target" "test"]}
            :build {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
-           :min   {:main-opts ["-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]}
-           :test  {:main-opts ["-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "bulmaBook.test-runner"]}}}
+           :min   {:main-opts ["-m" "figwheel.main" "-O" "advanced"
+                               "-bo" "dev"]}
+           :test  {:main-opts ["-m" "figwheel.main" "-co" "test.cljs.edn"
+                               "-m" "bulmaBook.test-runner"]}}}
