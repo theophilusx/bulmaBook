@@ -101,3 +101,16 @@
           [:span {:class (cs "icon")
                   :on-click #(swap! state assoc :editing true)}
            [:i {:class (cs "fa" "fa-pencil")}]]]]))))
+
+(defn textarea [label session-id & {:keys [field-class control-class label-class
+                                          textarea-class placeholder]}]
+  [:div {:class (cs "field" field-class)}
+   (when label
+     [:label {:class (cs "label" label-class)} label])
+   [:p {:class (cs "control" control-class)}
+    [:textarea {:class (cs "textarea" textarea-class)
+                :placeholder placeholder
+                :id (name session-id)
+                :name (name session-id)
+                :on-change #(session/assoc-in!
+                             (session-path session-id) (value-of %))}]]])
