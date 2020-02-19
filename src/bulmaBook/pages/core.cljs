@@ -4,6 +4,7 @@
             [bulmaBook.pages.login :refer [login]]
             [bulmaBook.pages.register :refer [register]]
             [bulmaBook.pages.profile :refer [profile]]
+            [bulmaBook.pages.bug :refer [bug-report]]
             [bulmaBook.components.basic :refer [render-map]]
             [reagent.session :as session]
             [bulmaBook.data :as data]))
@@ -15,7 +16,7 @@
               [profile]
               [render-map @session/state]]
     :report-bug [:div
-                 [:h2.h2.title "Report bug page goes here"]
+                 [bug-report]
                  [render-map @session/state]]
     :sign-out [:div
                [:h2.h2.title "Sign Out page goes here"]
