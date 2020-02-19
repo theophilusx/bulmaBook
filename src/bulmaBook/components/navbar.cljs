@@ -172,7 +172,6 @@
     (fn [nb-def]
       (swap! state assoc :menus (:menus nb-def)
              :end-menu (:end-menu nb-def))
-      (println (str "Navbar state: " @state))
       [:nav {:class      (cs "navbar" (:class @state)
                              (when (:has-shadow @state) "has-shadow"))
              :role       "navigation"
