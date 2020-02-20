@@ -1,46 +1,58 @@
 (ns bulmaBook.components.form
   (:require [bulmaBook.utils :refer [cs session-path value-of]]
+            [bulmaBook.components.basic :as basic]
             [reagent.session :as session]
             [reagent.core :as r]))
 
-(defn field [body & {:keys [class]}]
+(defn field [body & {:keys [label field-class label-class]}]
   (into
-   [:div {:class (cs "field" class)}]
+   [:div {:class (cs "field" field-class)}
+    (when label
+      [:label {:class (cs "label" label-class)} label])]
    (for [el body]
      el)))
 
-(defn horizontal-field [label body & {:keys [field-class label-class]}]
+(defn horizontal-field [label body & {:keys [field-class label-class body-class]}]
   [:div {:class (cs "field" "is-horizontal" field-class)}
-   [:div {:class (cs "field-label" label-class)}
+   [:div {:class (cs "field-label" field-class)}
     [:label {:class (cs "label" label-class)}
      label]]
    (into
-    [:div {:class (cs "field-body"
+    [:div {:class (cs "field-body" body-class
                       (when (> (count body) 1)
                         "has-grouped"))}]
     (for [el body]
       el))])
 
+(defn input-helper [type id class placeholder required]
+  [:input {:type (name type)
+           :class (cs "input" class)
+           :id (name id)
+           :name (name id)
+           :placeholder placeholder
+           :required required
+           :on-change #(session/assoc-in! (session-path id) (value-of %))}])
 
-(defn input [type label id & {:keys [field-class label-class control-class
-                                     input-class placeholder icon-class
-                                     icon required]}]
-  (let [path (session-path id)]
-    [:div {:class (cs "field" field-class)}
-     (when label
-       [:label {:class (cs "label" label-class)} label])
-     [:p {:class (cs "control" control-class)}
-      (when icon
-        [:span {:class (cs "icon" icon-class)}
-         [:i {:class (cs icon)}]])
-      [:input {:type (name type)
-               :class (cs "input" input-class)
-               :id (name id)
-               :name (name id)
-               :placeholder placeholder
-               :required required
-               :on-change (fn [e]
-                            (session/assoc-in! path (value-of e)))}]]]))
+(defn input [type id & {:keys [control-class input-class placeholder required
+                               icon]}]
+  (if icon
+    (into
+     [:div {:class (cs "control" control-class
+                     (when icon
+                       (basic/icon-control-class icon)))}
+      (input-helper type id input-class placeholder required)]
+     (for [i (basic/icon icon)]
+       i))
+    [:p {:class (cs "control" control-class)}
+     (input-helper type id input-class placeholder required)]))
+
+(defn input-field [label type id & {:keys [field-class label-class control-class
+                                           input-class placeholder required
+                                           value icon]}]
+  (field [[input type id :control-class control-class :input-class input-class
+           :placeholder placeholder :required required :value value
+           :icon icon]]
+         :label label :field-class field-class :label-class label-class))
 
 (defn checkbox [label id & {:keys [field-class label-class control-class]}]
   (let [path (session-path id)]
