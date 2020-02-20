@@ -1,9 +1,7 @@
 (ns bulmaBook.data
   (:require [bulmaBook.components.navbar :refer [defnavbar-item]]
-            [bulmaBook.components.toolbar :refer [deftoolbar-item]]
             [bulmaBook.components.sidebar :refer [defsidebar-item]]
-            [reagent.session :as session]
-            [bulmaBook.components.form :as form]))
+            [reagent.session :as session]))
 
 (def book-data [{:title "TensorFlow For Machine Intelligence"
                  :image "images/tensorflow.jpg"
@@ -83,31 +81,7 @@
                     :contents "Login"
                     :id :login)]})))
 
-(defn get-book-toolbar-data []
-  {:left-items [(deftoolbar-item
-                  :content [:p.subtitle.is-5
-                            [:strong
-                             (count (session/get-in [:data :book-data]))]
-                            " books"])
-                (deftoolbar-item
-                  :type :div
-                  :content [form/button "New" #(println "Add new book")
-                            :button-class "is-success"])
-                (deftoolbar-item
-                  :class "is-hidden-table-only"
-                  :content [form/field
-                            [[form/input :text :data.search
-                              :placeholder "Book name, ISBN, author"]
-                             [form/button "Search" #(println "do search")]]
-                            :field-class "has-addons"])]
-   :right-items [(deftoolbar-item
-                   :content "Order by")
-                 (deftoolbar-item
-                   :content [:div.select
-                             [:select
-                              [:option "Publish date"]
-                              [:option "Price"]
-                              [:option "Page count"]]])]})
+
 
 (def books-sidebar {:session-id :ui.books.sidebar
                     :default-link :dashboard
