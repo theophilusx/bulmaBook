@@ -1,9 +1,9 @@
 (ns bulmaBook.data
   (:require [bulmaBook.components.navbar :refer [defnavbar-item]]
             [bulmaBook.components.toolbar :refer [deftoolbar-item]]
-            [bulmaBook.components.basic :refer [button]]
             [bulmaBook.components.sidebar :refer [defsidebar-item]]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [bulmaBook.components.form :as form]))
 
 (def book-data [{:title "TensorFlow For Machine Intelligence"
                  :image "images/tensorflow.jpg"
@@ -61,11 +61,11 @@
                     :title session-name
                     :is-hoverable true
                     :contents [(defnavbar-item :id :profile :contents "Profile"
-                                 :icon-img "fa-user-circle-o")
+                                 :icon {:name "fa-user-circle-o"})
                                (defnavbar-item :id :report-bug
-                                 :contents "Report Bug" :icon-img "fa-bug")
+                                 :contents "Report Bug" :icon {:name "fa-bug"})
                                (defnavbar-item :id :sign-out :contents "Sign Out"
-                                 :icon-img "fa-sign-out")])]}
+                                 :icon {:name "fa-sign-out"})])]}
       {:session-id navbar-id
        :has-shadow true
        :default-link :register
@@ -83,20 +83,23 @@
                     :contents "Login"
                     :id :login)]})))
 
-(def books-toolbar
+(defn get-book-toolbar-data []
   {:left-items [(deftoolbar-item
-                  :content [:p.subtitle.is-5 [:strong "6"]])
+                  :content [:p.subtitle.is-5
+                            [:strong
+                             (count (session/get-in [:data :book-data]))]
+                            " books"])
                 (deftoolbar-item
                   :type :p
-                  :content [button :title "New" :class "is-success"])
+                  :content [form/button "New" #(println "Add new book")
+                            :button-class "is-success"])
                 (deftoolbar-item
                   :class "is-hidden-table-only"
-                  :content [:div.field.has-addons
-                            [:p.control
-                             [:input.input {:type "text"
-                                            :placeholder "Book name, ISBN"}]]
-                            [:p.control
-                             [:button.button "Search"]]])]
+                  :content [form/field
+                            [[form/input :text :data.search
+                              :placeholder "Book name, ISBN, author"]
+                             [form/button "Search" #(println "do search")]]
+                            :field-class "has-addons"])]
    :right-items [(deftoolbar-item
                    :content "Order by")
                  (deftoolbar-item
@@ -113,17 +116,17 @@
                             :title "Menu"
                             :items [(defsidebar-item
                                       :title "Dashboard"
-                                      :icon-img "fa-tachometer"
+                                      :icon {:name "fa-tachometer"}
                                       :id :dashboard)
                                     (defsidebar-item
                                       :title "Books"
-                                      :icon-img "fa-book"
+                                      :icon {:name "fa-book"}
                                       :id :books)
                                     (defsidebar-item
                                       :title "Customers"
-                                      :icon-img "fa-address-book"
+                                      :icon {:name "fa-address-book"}
                                       :id :customers)
                                     (defsidebar-item
                                       :title "Orders"
-                                      :icon-img "fa-file-text-o"
+                                      :icon {:name "fa-file-text-o"}
                                       :id :orders)])})
