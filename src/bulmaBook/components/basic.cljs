@@ -77,9 +77,9 @@
    [:ul]
    (for [i v]
      (cond
-       (vector? i) [:li [:div.box (render-vec i)]]
-       (map? i)    [:li [:div.box (render-map  i)]]
-       (set? i)    [:li [:div.box (render-set i)]]
+       (vector? i) [:li (render-vec i)]
+       (map? i)    [:li (render-map  i)]
+       (set? i)    [:li (render-set i)]
        :else [:li (str i)]))))
 
 (defn render-set [s]
