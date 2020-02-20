@@ -43,7 +43,7 @@
       (input-helper type id input-class placeholder required)]
      (for [i (basic/icon icon)]
        i))
-    [:p {:class (cs "control" control-class)}
+    [:div {:class (cs "control" control-class)}
      (input-helper type id input-class placeholder required)]))
 
 (defn input-field [label type id & {:keys [field-class label-class control-class
@@ -69,7 +69,7 @@
 (defn button [title action & {:keys [field-class control-class button-class]}]
   [:div {:class (cs "field" field-class)}
    [:div {:class (cs "control" control-class)}
-    [:a {:class (cs "button" button-class)
+    [:button {:class (cs "button" button-class)
               :type "button"
               :on-click action}
      title]]])

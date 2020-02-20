@@ -90,7 +90,7 @@
                              (count (session/get-in [:data :book-data]))]
                             " books"])
                 (deftoolbar-item
-                  :type :p
+                  :type :div
                   :content [form/button "New" #(println "Add new book")
                             :button-class "is-success"])
                 (deftoolbar-item
