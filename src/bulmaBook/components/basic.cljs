@@ -1,30 +1,50 @@
 (ns bulmaBook.components.basic
   (:require [bulmaBook.utils :refer [cs]]
-            [reagent.session :as session]
             [clojure.string :as string]))
 
-(defn icon [icon-img & {:keys [title classes]}]
-  [:div
-   [:span {:class (cs "icon" classes)}
-    [:i {:class (cs "fa" icon-img)}]]
-   (when title (str " " title))])
+(defn icon-component
+  "Generate an icon component. `icon-data` is a map containing the keys
+  `:position` - place icon to the `:left` or `:right`
+  `:span-class` - additional class attributes to add to `span` element
+  `:name` - name of the font awesome icon to add
+  `:icon-class` - additional class attributes to add to the `icon` element"
+  [icon-data]
+  [:span {:class (cs "icon" (:span-class icon-data)
+                     (when (contains? icon-data :position)
+                       (condp = (:position icon-data)
+                         :left "is-left"
+                         :right "is-right"
+                         (println (str "Unsupported value for position in icon "
+                                       (:position icon-data))))))}
+   [:i {:class (cs "fa" (:name icon-data) (:icon-class icon-data))}]])
 
-(defn button [& {:keys [title href icon-image class id model]
-                 :or {href "#"
-                      id (keyword (gensym "button-"))
-                      model [(keyword (gensym "button-"))]}}]
-  (let [state (atom false)]
-    (fn []
-      [:a {:class (cs "button" class
-                      (when @state "is-active"))
-           :href href
-           :id id
-           :on-click (fn []
-                       (swap! state not)
-                       (session/update-in! (conj model id) not))}
-       (if icon-image
-         [icon icon-image :title title]
-         title)])))
+(defn icon
+  "Generates a `vector` of `icon` components from icon data. The `icon-data`
+  can be either a `map` or a `vector` of icon data `maps`"
+  [icon-data]
+  (if (map? icon-data)
+    [(icon-component icon-data)]
+    (into
+     []
+     (for [i icon-data]
+       (icon-component i)))))
+
+(defn icon-control-class [icon-data]
+  (if (map? icon-data)
+    (when (contains? icon-data :position)
+      (condp = (:position icon-data)
+        :left "has-icons-left"
+        :right "has-icons-right"
+        (println (str "Unsupported value for position in icon "
+                      (:position icon-data)))))
+    (string/join (map (fn [i]
+                        (when (contains? i :position)
+                          (condp = (:position i)
+                            :left "has-icon-left"
+                            :right "has-icon-right"
+                            (println (str "Unsupported value for position in "
+                                          "icon: " (:position i))))))
+                      icon-data) " ")))
 
 (defn media [body & {:keys [left right id class]}]
   [:article {:class (cs "media" class)
