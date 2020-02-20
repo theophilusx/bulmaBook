@@ -2,9 +2,7 @@
   (:require [reagent.core :refer [atom]]
             [reagent.session :as session]
             [bulmaBook.utils :refer [cs session-path]]
-            [bulmaBook.components.basic :refer [icon]]))
-
-;; (defonce navbar-state (atom {}))
+            [bulmaBook.components.basic :refer [icon-component]]))
 
 (defn active? [state id]
   (if (= (:active-item @state) id)
@@ -38,9 +36,9 @@
                      (toggle-dropdown state)
                      (set-active state (:id a))
                      (set-choice (:session-id @state) (:id a))))}
-   (if (:icon-img a)
-     [icon (:icon-img a) :title (:contents a)]
-     (:contents a))])
+   (when (:icon a)
+     [icon-component (:icon a)])
+   (:contents a)])
 
 (defn -item-raw [r _]
   [:div {:class (cs "content" (:class r))}
@@ -128,12 +126,13 @@
    `:id` - Add an id attribute to this item. Defaultw to `nav-<n>`
            where `<n>` is a unique value
    `:contents` - the actual item contents
+   `:icon` - An icon data `map` (see `bulmaBook.components.basic`)
    `:selectable` - determines if the item has a click handler attached.
                    Defaults to true.
    `:is-hoverable` - for dropdown menus determines if the menu will dropdown
                      when mouse hovers over it"
   [& {:keys [type title classes href id contents selectable
-             icon-img is-hoverable]
+             icon is-hoverable]
       :or {type :a
            href "#"
            id (keyword (gensym "nav-"))
@@ -145,7 +144,7 @@
    :id id
    :contents contents
    :selectable selectable
-   :icon-img icon-img
+   :icon icon
    :is-hoverable is-hoverable})
 
 (defn navbar

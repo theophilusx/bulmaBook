@@ -8,8 +8,6 @@
 (defn do-login []
   (let [email-key (value->keyword (session/get-in [:login :email]))
         user-profile (session/get-in [:users email-key])]
-    (println (str "Email key: " email-key))
-    (println (str "User profile: " user-profile))
     (if (= (session/get-in [:login :password]) (:password user-profile))
       (do
         (session/assoc-in! [:session :user] {:name (str
@@ -31,14 +29,13 @@
        [:form.box
         [form/field [[:img {:src "images/logo-bis.png" :width "1627"}]]
          :field-class "has-text-centered"]
-        [form/input :email "Email" :login.email :control-class "has-icons-left"
-         :icon "fa fa-envelope" :placeholder "e.g. alexjohnson@example.com"
-         :icon-class "is-small is-left" :required true]
-        [form/input :password "Password" :login.password
-         :control-class "has-icons-left" :icon-class "is-small is-left"
-         :icon "fa fa-lock" :placeholder "secret" :required true]
+        [form/input-field "Email" :email :login.email
+         :icon {:name "fa-envelope" :position :left :icon-class "is-small"}
+         :placeholder "e.g. alexjohnson@example.com"
+         :required true]
+        [form/input-field "Password" :password :login.password
+         :icon {:name "fa-lock" :position :left :icon-class "is-small"}
+         :placeholder "secret" :required true]
         [form/checkbox "Remember me" :login.remember]
-        [form/button "Login" (fn []
-                               (println "Do login process")
-                               (do-login))
+        [form/button "Login" do-login
          :button-class "is-success"]]]]]]])

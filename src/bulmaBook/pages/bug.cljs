@@ -27,7 +27,7 @@
         [:li "Minimal set of steps to follow to reproduce the issue"]
         [:li "Any special or specific configuration used"]]]
       [form/horizontal-field "Subject"
-       [[form/input :text nil :bug.subject]]]
+       [[form/input :text :bug.subject]]]
       [form/horizontal-field "Expected Behaviour"
        [[form/textarea nil :bug.expected :placeholder "What did you expect to happen?"]]]
       [form/horizontal-field "Actual Behaviour"

@@ -1,6 +1,6 @@
 (ns bulmaBook.components.sidebar
   (:require [bulmaBook.utils :refer [cs session-path]]
-            [bulmaBook.components.basic :refer [icon]]
+            [bulmaBook.components.basic :refer [icon-component]]
             [reagent.session :as session]))
 
 (defn is-active? [session-id id]
@@ -19,9 +19,9 @@
         :id    (:id i)
         :on-click (fn []
                     (set-active session-id (:id i)))}
-    (if (:icon-img i)
-      [icon (:icon-img i) :title (:title i)]
-      (:title i))]])
+    (when (:icon i)
+      [icon-component (:icon i)])
+    (:title i)]])
 
 (defn -make-menu [m session-id]
   [:aside.menu
@@ -43,18 +43,18 @@
   `:href` The href for the link. Defaults to `#`.
   `::id` An id attribute for the item. If not provided, defaults to a unique
          value with the prefix `side-bar-`.
-  `:icon-image` Name of an icon image to include in the menu.
+  `:icon` An icon data `map` (see `bulmaBook.components.basic`)
   `:class` Any additional class attributes to add to the element.
   `:items` For items of type `:menu`, this key is a vector of `defsidebar-item`
            maps representing the sub-menu items."
-  [& {:keys [type title href icon-img id items class]
+  [& {:keys [type title href icon id items class]
       :or {type :item
            href "#"
            id (keyword (gensym "side-bar-"))}}]
   {:type type
    :title title
    :href href
-   :icon-img icon-img
+   :icon icon
    :id id
    :items items
    :class class})

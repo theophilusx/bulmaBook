@@ -22,19 +22,17 @@
       [:form.box
        [:h2.title.is-2 "Register Account"]
        [form/horizontal-field "Email"
-        [[form/input :email nil :register.email :control-class "has-icons-left"
-          :icon "fa fa-envelope" :placeholder "e.g. alexjohnson@example.com"
-          :icon-class "is-small is-left" :required true]]]
+        [[form/input :email :register.email :control-class "has-icons-left"
+          :icon {:name "fa-envelope" :position :left :icon-class "is-small"}
+          :placeholder "e.g. alexjohnson@example.com" :required true]]]
        [form/horizontal-field "Password"
-        [[form/input :password nil :register.password
-          :control-class "has-icons-left" :icon-class "is-small is-left"
-          :icon "fa fa-lock" :placeholder "secret" :required true]]]
+        [[form/input :password :register.password
+          :icon {:name "fa-lock" :position :left :icon-class "is-small"}
+          :placeholder "secret" :required true]]]
        [form/horizontal-field "Name"
-        [[form/input :text nil :register.first-name :required true
+        [[form/input :text :register.first-name :required true
           :placeholder "First name"]
-         [form/input :text nil :register.last-name :required true
+         [form/input :text :register.last-name :required true
           :placeholder "Last name"]]]
-       [form/button "Login" (fn []
-                              (println "Do register process")
-                              (do-registration))
+       [form/button "Login" do-registration
         :button-class "is-success"]]]]]] )

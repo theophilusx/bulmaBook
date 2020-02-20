@@ -30,6 +30,6 @@
   (let [books (session/get-in [:data :book-data])]
     [:div
      [:h2.title.is-2 (str "Page: " (session/get-in [:ui :books :sidebar]))]
-     [toolbar data/books-toolbar]
+     [toolbar (data/get-book-toolbar-data)]
      [paginate books book-grid-component :page-size 2]
      [:p "This is a default page. It will be replaced with real content later."]]))
