@@ -2,8 +2,20 @@
   (:require [bulmaBook.components.basic :refer [media]]
             [bulmaBook.components.paginate :refer [paginate]]
             [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
+            [bulmaBook.components.modal :refer [modal-card]]
             [bulmaBook.components.form :as form]
+            [bulmaBook.utils :refer [session-path]]
             [reagent.session :as session]))
+
+(def new-book-id :ui.books.new-book)
+
+(defn new-book []
+  [modal-card [[:p "The body of the card goes here"]] new-book-id
+   :header [[:p {:class "modal-card-title"} "Add Book"]
+            [:button {:class "delete"
+                      :aria-label "close"
+                      :on-click #(session/assoc-in! (session-path new-book-id) false)}]]
+   :footer [[:p "This is the footer section"]]])
 
 (defn get-toolbar-data []
   {:left-items [(deftoolbar-item
@@ -13,7 +25,7 @@
                             " books"])
                 (deftoolbar-item
                   :type :div
-                  :content [form/button "New" #(println "Add new book")
+                  :content [form/button "New" #(session/assoc-in! (session-path new-book-id) true)
                             :button-class "is-success"])
                 (deftoolbar-item
                   :class "is-hidden-table-only"
@@ -56,6 +68,6 @@
   (let [books (session/get-in [:data :book-data])]
     [:div
      [:h2.title.is-2 (str "Page: " (session/get-in [:ui :books :sidebar]))]
+     [new-book]
      [toolbar (get-toolbar-data)]
-     [paginate books book-grid-component :page-size 2]
-     [:p "This is a default page. It will be replaced with real content later."]]))
+     [paginate books book-grid-component :page-size 2]]))
