@@ -9,13 +9,35 @@
 
 (def new-book-id :ui.books.new-book)
 
+(defn save-new-book []
+  (let [bk {:title (session/get-in! [:data :new-book :title])
+            :image (session/get-in! [:data :new-book :image])
+            :cost (session/get-in! [:data :new-book :cost])
+            :pages (session/get-in! [:data :new-book :pages])
+            :isbn (session/get-in! [:data :new-book :isbn])}]
+    (session/update-in! [:data :book-data] conj bk)
+    (session/assoc-in! (session-path new-book-id) false)))
+
+(defn clear-new-book []
+  (session/assoc-in! [:data :new-book] {})
+  (session/assoc-in! (session-path new-book-id) false))
+
+(defn new-book-component []
+  [:div.box
+   [form/horizontal-field "Title" [[form/input :text :data.new-book.title]]]
+   [form/horizontal-field "Image" [[form/input :text :data.new-book.image]]]
+   [form/horizontal-field "Cost" [[form/input :text :data.new-book.cost]]]
+   [form/horizontal-field "Pages" [[form/input :text :data.new-book.pages]]]
+   [form/horizontal-field "ISBN" [[form/input :text :data.new-book.isbn]]]])
+
 (defn new-book []
-  [modal-card [[:p "The body of the card goes here"]] new-book-id
+  [modal-card [[new-book-component]] new-book-id
    :header [[:p {:class "modal-card-title"} "Add Book"]
             [:button {:class "delete"
                       :aria-label "close"
                       :on-click #(session/assoc-in! (session-path new-book-id) false)}]]
-   :footer [[:p "This is the footer section"]]])
+   :footer [[form/horizontal-field nil [[form/button "Save" save-new-book :button-class "is-success"]
+                         [form/button "Clear" clear-new-book]]]]])
 
 (defn get-toolbar-data []
   {:left-items [(deftoolbar-item
@@ -67,7 +89,7 @@
 (defn books-page []
   (let [books (session/get-in [:data :book-data])]
     [:div
-     [:h2.title.is-2 (str "Page: " (session/get-in [:ui :books :sidebar]))]
+     [:h2.title.is-2 "Books"]
      [new-book]
      [toolbar (get-toolbar-data)]
      [paginate books book-grid-component :page-size 2]]))
