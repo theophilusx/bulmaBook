@@ -5,8 +5,10 @@
             [bulmaBook.components.modal :refer [modal-card]]
             [bulmaBook.components.form :as form]
             [bulmaBook.utils :refer [session-path]]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [reagent.core :as r]))
 
+(def books (r/atom (session/get-in [:data :book-data])))
 (def new-book-id :ui.books.new-book)
 
 (defn save-new-book []
@@ -16,6 +18,7 @@
             :pages (session/get-in! [:data :new-book :pages])
             :isbn (session/get-in! [:data :new-book :isbn])}]
     (session/update-in! [:data :book-data] conj bk)
+    (reset! books (session/get-in [:data :book-data]))
     (session/assoc-in! (session-path new-book-id) false)))
 
 (defn clear-new-book []
@@ -87,9 +90,8 @@
      [book-component b])))
 
 (defn books-page []
-  (let [books (session/get-in [:data :book-data])]
-    [:div
-     [:h2.title.is-2 "Books"]
-     [new-book]
-     [toolbar (get-toolbar-data)]
-     [paginate books book-grid-component :page-size 2]]))
+  [:div
+   [:h2.title.is-2 "Books"]
+   [new-book]
+   [toolbar (get-toolbar-data)]
+   [paginate (session/get-in [:data :book-data]) book-grid-component :page-size 2]])
