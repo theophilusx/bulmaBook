@@ -4,11 +4,12 @@
             [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
             [bulmaBook.components.modal :refer [modal-card]]
             [bulmaBook.components.form :as form]
-            [bulmaBook.utils :refer [session-path]]
+            [bulmaBook.utils :refer [session-path value-of]]
             [reagent.session :as session]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [clojure.string :as string]))
 
-(def books (r/atom (session/get-in [:data :book-data])))
+(def book-list (r/atom (session/get-in [:data :book-data])))
 (def new-book-id :ui.books.new-book)
 
 (defn save-new-book []
@@ -18,7 +19,7 @@
             :pages (session/get-in! [:data :new-book :pages])
             :isbn (session/get-in! [:data :new-book :isbn])}]
     (session/update-in! [:data :book-data] conj bk)
-    (reset! books (session/get-in [:data :book-data]))
+    (reset! book-list (session/get-in [:data :book-data]))
     (session/assoc-in! (session-path new-book-id) false)))
 
 (defn clear-new-book []
@@ -38,9 +39,21 @@
    :header [[:p {:class "modal-card-title"} "Add Book"]
             [:button {:class "delete"
                       :aria-label "close"
-                      :on-click #(session/assoc-in! (session-path new-book-id) false)}]]
-   :footer [[form/horizontal-field nil [[form/button "Save" save-new-book :button-class "is-success"]
-                         [form/button "Clear" clear-new-book]]]]])
+                      :on-click #(session/assoc-in!
+                                  (session-path new-book-id) false)}]]
+   :footer [[form/horizontal-field nil
+             [[form/button "Save" save-new-book :button-class "is-success"]
+              [form/button "Clear" clear-new-book]]]]])
+
+(defn filter-books [search-data]
+  (println (str "searching for: " search-data))
+  (reset! book-list (into []
+                          (filter (fn [m]
+                                    (or (string/includes? (str (:title m)) search-data)
+                                        (string/includes? (str (:cost m)) search-data)
+                                        (string/includes? (str (:pages m)) search-data)
+                                        (string/includes? (str (:isbn m)) search-data)))
+                                  (session/get-in [:data :book-data])))))
 
 (defn get-toolbar-data []
   {:left-items [(deftoolbar-item
@@ -50,14 +63,15 @@
                             " books"])
                 (deftoolbar-item
                   :type :div
-                  :content [form/button "New" #(session/assoc-in! (session-path new-book-id) true)
+                  :content [form/button "New" #(session/assoc-in!
+                                                (session-path new-book-id) true)
                             :button-class "is-success"])
                 (deftoolbar-item
                   :class "is-hidden-table-only"
                   :content [form/field
                             [[form/input :text :data.search
                               :placeholder "Book name, ISBN, author"]
-                             [form/button "Search" #(println "do search")]]
+                             [form/button "Search" #(filter-books (session/get-in [:data :search]))]]
                             :field-class "has-addons"])]
    :right-items [(deftoolbar-item
                    :content "Order by")
@@ -94,4 +108,4 @@
    [:h2.title.is-2 "Books"]
    [new-book]
    [toolbar (get-toolbar-data)]
-   [paginate (session/get-in [:data :book-data]) book-grid-component :page-size 2]])
+   [paginate @book-list book-grid-component :page-size 2]])
