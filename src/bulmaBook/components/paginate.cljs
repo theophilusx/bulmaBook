@@ -5,9 +5,6 @@
 (defn get-page
   "Return the page associated with a page number."
   [pages page]
-  (println (str "pages: " pages))
-  (println (str "page key: " (keyword (str "page-" page))))
-  (println (str "the page: " (get pages (keyword (str "page-" page)))))
   (get pages (keyword (str "page-" page))))
 
 (defn make-link
