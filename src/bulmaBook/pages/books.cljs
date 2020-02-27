@@ -4,7 +4,7 @@
             [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
             [bulmaBook.components.modal :refer [modal-card]]
             [bulmaBook.components.form :as form]
-            [bulmaBook.utils :refer [session-path value-of]]
+            [bulmaBook.utils :refer [session-path]]
             [reagent.session :as session]
             [reagent.core :as r]
             [clojure.string :as string]))
@@ -48,12 +48,13 @@
 (defn filter-books [search-data]
   (println (str "searching for: " search-data))
   (reset! book-list (into []
-                          (filter (fn [m]
-                                    (or (string/includes? (str (:title m)) search-data)
-                                        (string/includes? (str (:cost m)) search-data)
-                                        (string/includes? (str (:pages m)) search-data)
-                                        (string/includes? (str (:isbn m)) search-data)))
-                                  (session/get-in [:data :book-data])))))
+                          (filter
+                           (fn [m]
+                             (or (string/includes? (str (:title m)) search-data)
+                                 (string/includes? (str (:cost m)) search-data)
+                                 (string/includes? (str (:pages m)) search-data)
+                                 (string/includes? (str (:isbn m)) search-data)))
+                           (session/get-in [:data :book-data])))))
 
 (defn get-toolbar-data []
   {:left-items [(deftoolbar-item
@@ -71,16 +72,17 @@
                   :content [form/field
                             [[form/input :text :data.search
                               :placeholder "Book name, ISBN, author"]
-                             [form/button "Search" #(filter-books (session/get-in [:data :search]))]]
+                             [form/button "Search"
+                              #(filter-books (session/get-in [:data :search]))]]
                             :field-class "has-addons"])]
    :right-items [(deftoolbar-item
                    :content "Order by")
                  (deftoolbar-item
-                   :content [:div.select
-                             [:select
-                              [:option "Publish date"]
-                              [:option "Price"]
-                              [:option "Page count"]]])]})
+                   :content [form/select-field :data.sort
+                             [[form/option "Title" :title]
+                              [form/option "Price" :cost]
+                              [form/option "Page Count" :pages]
+                              [form/option "ISBN" :isbn]]])]})
 
 (defn book-component [book]
   [:article.box
@@ -104,8 +106,15 @@
      [book-component b])))
 
 (defn books-page []
-  [:div
-   [:h2.title.is-2 "Books"]
-   [new-book]
-   [toolbar (get-toolbar-data)]
-   [paginate @book-list book-grid-component :page-size 2]])
+  (reset! book-list (session/get-in [:data :book-data]))
+  (fn []
+    (when (session/get-in [:data :sort])
+      (reset! book-list (into
+                         []
+                         (sort-by (session/get-in [:data :sort])
+                                  (session/get-in [:data :book-data])))))
+    [:div
+     [:h2.title.is-2 "Books"]
+     [new-book]
+     [toolbar (get-toolbar-data)]
+     [paginate @book-list book-grid-component :page-size 2]]))
