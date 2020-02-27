@@ -126,3 +126,40 @@
                 :name (name session-id)
                 :on-change #(session/assoc-in!
                              (session-path session-id) (value-of %))}]]])
+
+(defn option [title val & {:keys [option-class disabled selected label]}]
+  [:option {:class option-class
+            :disabled disabled
+            :selected selected
+            :label label
+            :value val}
+   title])
+
+(defn select [id options & {:keys [select-class multiple rounded select-size
+                                  icon]}]
+  [:div {:class (cs "select" select-class
+                    (when rounded "is-rounded")
+                    (when select-size
+                      (condp = select-size
+                        :small "is-small"
+                        :medium "is-medium"
+                        :large "is-large"
+                        (println (str "Unknown select size: " select-size))))
+                    (when multiple "is-multiple"))}
+   (into
+    [:select {:id (name id)
+              :name (name id)
+              :multiple (when multiple true false)
+              :size multiple
+              :on-change #(session/assoc-in! (session-path id) (keyword (value-of %)))}]
+    (for [o options]
+      o))
+   [basic/icon-component icon]])
+
+(defn select-field [id options & {:keys [title field-class select-class multiple
+                                         rounded select-size icon]}]
+  [:div {:class (cs "field" field-class)}
+   (when title
+     [:div {:class "label"} title])
+   [select id options :select-class select-class :multiple multiple
+    :rounded rounded :select-size select-size :icon icon]])
