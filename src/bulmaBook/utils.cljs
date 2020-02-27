@@ -25,4 +25,3 @@
 
 (defn value->keyword [v]
   (keyword (string/replace v #"\.|:|@" "-")))
-
