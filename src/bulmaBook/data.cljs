@@ -18,7 +18,7 @@
                  :cost "$22.99"
                  :pages 134
                  :isbn "9781939902146"}
-                {:title "Learning Swift”"
+                {:title "Learning Swift"
                  :image "images/swift.jpg"
                  :cost "$22.99"
                  :pages 342
