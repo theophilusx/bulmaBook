@@ -1,0 +1,11 @@
+#+TITLE: Bulma Book Example
+
+* TODO Fix navbar dropdown menus
+  [2020-02-28 Fri]
+
+  In navbar menus, dropdown menus are not closing once clicked. You currently
+  need to click the mouse to close the menu (does not require the click to be
+  performed ont he menu)
+
+  [[file:~/Projects/clojure/bulmaBook/TODOs.org::*Fix
+  navbar dropdown][Fix navbar dropdown]]
