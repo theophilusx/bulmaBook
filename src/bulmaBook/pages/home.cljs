@@ -1,7 +1,7 @@
 (ns bulmaBook.pages.home
   (:require [bulmaBook.components.sidebar :refer [sidebar]]
             [bulmaBook.components.basic :refer [render-map]]
-            [bulmaBook.pages.books :refer [books-page]]
+            [bulmaBook.pages.books :refer [books-page new-book-page]]
             [bulmaBook.data :as data]
             [reagent.session :as session]))
 
@@ -12,7 +12,9 @@
      [sidebar data/books-sidebar]]
     [:div.column
      (condp = (session/get-in [:ui :books :sidebar])
-       :books [books-page]
+       :books (if (= (session/get-in [:ui :books :page]) :new-book)
+                [new-book-page]
+                [books-page])
        :dashboard [:div
                    [:h2.title.is-2
                     (str "Default Dashboard Page")]]

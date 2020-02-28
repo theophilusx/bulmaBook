@@ -1,14 +1,11 @@
 (ns bulmaBook.pages.books
-  (:require [bulmaBook.components.basic :refer [media breadcrumbs]]
+  (:require [bulmaBook.components.basic :refer [media breadcrumbs breadcrumbs]]
             [bulmaBook.components.paginate :refer [paginate]]
             [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
-            [bulmaBook.components.modal :refer [modal-card]]
             [bulmaBook.components.form :as form]
-            [bulmaBook.utils :refer [session-path]]
             [reagent.session :as session]
             [reagent.core :as r]
-            [clojure.string :as string]
-            [bulmaBook.components.basic :as basic]))
+            [clojure.string :as string]))
 
 (def book-list (r/atom (session/get-in [:data :book-data])))
 (def new-book-id :ui.books.new-book)
@@ -21,30 +18,30 @@
             :isbn (session/get-in! [:data :new-book :isbn])}]
     (session/update-in! [:data :book-data] conj bk)
     (reset! book-list (session/get-in [:data :book-data]))
-    (session/assoc-in! (session-path new-book-id) false)))
+    (session/assoc-in! [:ui :books :page] :books)))
 
 (defn clear-new-book []
   (session/assoc-in! [:data :new-book] {})
-  (session/assoc-in! (session-path new-book-id) false))
+  (session/assoc-in! [:ui :books :page] :books))
 
-(defn new-book-component []
-  [:div.box
-   [form/horizontal-field "Title" [[form/input :text :data.new-book.title]]]
-   [form/horizontal-field "Image" [[form/input :text :data.new-book.image]]]
-   [form/horizontal-field "Cost" [[form/input :text :data.new-book.cost]]]
-   [form/horizontal-field "Pages" [[form/input :text :data.new-book.pages]]]
-   [form/horizontal-field "ISBN" [[form/input :text :data.new-book.isbn]]]])
-
-(defn new-book []
-  [modal-card [[new-book-component]] new-book-id
-   :header [[:p {:class "modal-card-title"} "Add Book"]
-            [:button {:class "delete"
-                      :aria-label "close"
-                      :on-click #(session/assoc-in!
-                                  (session-path new-book-id) false)}]]
-   :footer [[form/horizontal-field nil
-             [[form/button "Save" save-new-book :button-class "is-success"]
-              [form/button "Clear" clear-new-book]]]]])
+(defn new-book-page []
+  [:div
+   [breadcrumbs :ui.books.page
+    [{:name "Books"
+      :value :books
+      :active false}
+     {:name "New Book"
+      :value :new-book
+      :active true}]]
+   [:form.box
+    [form/horizontal-field "Title" [[form/input :text :data.new-book.title]]]
+    [form/horizontal-field "Image" [[form/input :text :data.new-book.image]]]
+    [form/horizontal-field "Cost" [[form/input :text :data.new-book.cost]]]
+    [form/horizontal-field "Pages" [[form/input :text :data.new-book.pages]]]
+    [form/horizontal-field "ISBN" [[form/input :text :data.new-book.isbn]]]
+    [form/horizontal-field nil
+     [[form/button "Save" save-new-book :button-class "is-success"]
+      [form/button "Clear" clear-new-book]]]]])
 
 (defn filter-books [search-data]
   (println (str "searching for: " search-data))
@@ -66,7 +63,7 @@
                 (deftoolbar-item
                   :type :div
                   :content [form/button "New" #(session/assoc-in!
-                                                (session-path new-book-id) true)
+                                                [:ui :books :page] :new-book)
                             :button-class "is-success"])
                 (deftoolbar-item
                   :class "is-hidden-table-only"
@@ -119,6 +116,5 @@
       [{:name "Books"
         :value :books
         :active true}]]
-     [new-book]
      [toolbar (get-toolbar-data)]
      [paginate @book-list book-grid-component :page-size 2]]))
