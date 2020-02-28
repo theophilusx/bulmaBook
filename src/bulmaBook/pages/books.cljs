@@ -1,5 +1,5 @@
 (ns bulmaBook.pages.books
-  (:require [bulmaBook.components.basic :refer [media]]
+  (:require [bulmaBook.components.basic :refer [media breadcrumbs]]
             [bulmaBook.components.paginate :refer [paginate]]
             [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
             [bulmaBook.components.modal :refer [modal-card]]
@@ -7,7 +7,8 @@
             [bulmaBook.utils :refer [session-path]]
             [reagent.session :as session]
             [reagent.core :as r]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [bulmaBook.components.basic :as basic]))
 
 (def book-list (r/atom (session/get-in [:data :book-data])))
 (def new-book-id :ui.books.new-book)
@@ -114,7 +115,10 @@
                          (sort-by (session/get-in [:data :sort])
                                   (session/get-in [:data :book-data])))))
     [:div
-     [:h2.title.is-2 "Books"]
+     [breadcrumbs :ui.books.page
+      [{:name "Books"
+        :value :books
+        :active true}]]
      [new-book]
      [toolbar (get-toolbar-data)]
      [paginate @book-list book-grid-component :page-size 2]]))
