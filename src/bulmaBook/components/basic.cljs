@@ -151,5 +151,8 @@
            [:i {:class (cs "fas" (:name (:icon c)))
                 :aria-hidden "true"}]]
           [:span (:name c)]]]
-        [:li {:class (when (= (session/get-in (session-path id)) (:value c))
-                       "is-active")} (:name c)])))])
+        [:li {:class (when (:active c)
+                       "is-active")}
+         [:a {:href "#"
+              :on-click #(session/assoc-in! (session-path id) (:value c))}
+          (:name c)]])))])
