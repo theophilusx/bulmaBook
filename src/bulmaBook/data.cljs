@@ -3,6 +3,15 @@
             [bulmaBook.components.sidebar :refer [defsidebar-item]]
             [reagent.session :as session]))
 
+(def user-data {:fred-example-com {:email "fred@example.com"
+                                   :password "secret"
+                                   :first-name "Fred"
+                                   :last-name "Flintstone"}
+                :barney-email-com {:email "barney@email.com"
+                                   :password "secret"
+                                   :first-name "Barney"
+                                   :last-name "Rubble"}})
+
 (def book-data [{:title "TensorFlow For Machine Intelligence"
                  :image "images/tensorflow.jpg"
                  :cost "$22.99"
@@ -66,7 +75,7 @@
                                  :icon {:name "fa-sign-out"})])]}
       {:session-id navbar-id
        :has-shadow true
-       :default-link :register
+       :default-link :login
        :has-burger true
        :brand (defnavbar-item
                 :contents [:img {:src "images/logo.png"}])
@@ -78,8 +87,8 @@
                     :contents
                     [:small "Publishing at the speed of technology"])])]
        :end-menu [(defnavbar-item
-                    :contents "Login"
-                    :id :login)]})))
+                    :contents "Register"
+                    :id :register)]})))
 
 
 
