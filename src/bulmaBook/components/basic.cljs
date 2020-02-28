@@ -1,6 +1,7 @@
 (ns bulmaBook.components.basic
-  (:require [bulmaBook.utils :refer [cs]]
-            [clojure.string :as string]))
+  (:require [bulmaBook.utils :refer [cs session-path]]
+            [clojure.string :as string]
+            [reagent.session :as session]))
 
 (defn icon-component
   "Generate an icon component. `icon-data` is a map containing the keys
@@ -104,3 +105,51 @@
         :else [:tr
                   [:td [:strong (str k)]]
                   [:td (str (get m k))]])))])
+
+(defn breadcrumbs [id crumbs & {:keys [nav-class position separator size]}]
+  [:nav {:class (cs "breadcrumb" nav-class
+                     (when position
+                       (condp = position
+                         :center "is-centered"
+                         :left ""
+                         :right "is-right"
+                         (println (str "Unknown position for breadcromb: "
+                                       position))))
+                     (when separator
+                       (condp = separator
+                         :arrow "has-arrow-separator"
+                         :bullet "has-bullet-separator"
+                         :dot "has-dot-separator"
+                         :succeeds "has-succeeds-separator"
+                         (println (str "Unknown breadcromb separator: "
+                                       separator))))
+                     (when size
+                       (condp = size
+                         :small "is-small"
+                         :medium "is-medium"
+                         :large "is-large"
+                         :normal ""
+                         (println (str "Unknown size value: " size)))))
+         :aria-label "breadcrumbs"}
+   (into
+    [:ul]
+    (for [c crumbs]
+      (if (:icon c)
+        [:li {:class (when (:active c)
+                       "is-active")}
+         [:a {:href "#"
+              :on-click #(session/assoc-in! (session-path id) (:value c))}
+          [:span {:class (cs "icon"
+                             (when (contains? (:icon c) :size)
+                               (condp = (:size (:icon c))
+                                 :small "is-small"
+                                 :medium "is-medium"
+                                 :large "is-large"
+                                 :normal ""
+                                 (println (str "Unknown icon size value: "
+                                               (:size (:icon c)))))))}
+           [:i {:class (cs "fas" (:name (:icon c)))
+                :aria-hidden "true"}]]
+          [:span (:name c)]]]
+        [:li {:class (when (= (session/get-in (session-path id)) (:value c))
+                       "is-active")} (:name c)])))])
