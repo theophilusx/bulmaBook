@@ -24,6 +24,7 @@
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
 (session/assoc-in! [:data :book-data] data/book-data)
+(session/put! :users data/user-data)
 (mount-app)
 
 ;; specify reload hook with ^;after-load metadata
