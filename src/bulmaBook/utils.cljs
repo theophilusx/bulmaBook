@@ -24,4 +24,4 @@
             init (string/split (name kw) #"\."))))
 
 (defn value->keyword [v]
-  (keyword (string/replace v #"\.|:|@" "-")))
+  (keyword (string/replace v #"\.|:|@|\ " "-")))

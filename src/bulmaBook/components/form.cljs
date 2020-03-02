@@ -1,5 +1,5 @@
 (ns bulmaBook.components.form
-  (:require [bulmaBook.utils :refer [cs session-path value-of]]
+  (:require [bulmaBook.utils :refer [cs session-path value-of value->keyword]]
             [bulmaBook.components.basic :as basic]
             [reagent.session :as session]
             [reagent.core :as r]))
@@ -115,6 +115,34 @@
                 :on-change (fn []
                              (session/update-in! path not))}]
        (str " " label)]]]))
+
+(defn radio
+  "Basic radio button component. Selecting one of the radio button choices will
+  store the value associated with the choice in the global session object in the
+  path specified by `id`. The `id` argument is a keyword which specifies the
+  path into the global session object where the value will be stored. The
+  keyword uses a dot `.` as a path separator e.g. `:a.b.c` will become
+  `[:a :b :c]`. The `labels` argument is a vector of maps where each map has at
+  least the key `title`. Supported map keys are
+  `title` - the text which will be used as the label for the radio button item
+  `checked` - if true, this item will be checked
+  `value` - if specified, represents the value that will be stored in the global
+            session object when this radio button is selected. If not specified,
+            the value defaults to the `title` converted to a keyword e.g.
+            'this item' will become `:this-item`."
+  [id labels & {:keys [control-class label-class]}]
+  (into
+   [:div {:class (cs "control" control-class)}]
+   (for [l labels]
+     [:label {:class (cs "radio" label-class)
+              :name (name id)
+              :value (or (:value l)
+                         (value->keyword (:title l)))
+              :checked (or (:checked l)
+                           false)
+              :on-click #(session/assoc-in! (session-path id)
+                                            (value->keyword (value-of %)))}
+      (:title l)])))
 
 (defn button
   "A basic button component. The `title` argument is the text that will be
