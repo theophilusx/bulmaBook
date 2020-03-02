@@ -308,3 +308,29 @@
      [:div {:class "label"} title])
    [select id options :select-class select-class :multiple multiple
     :rounded rounded :select-size select-size :icon icon]])
+
+(defn file [id & {:keys [file-class label-class input-class cta-class
+                         label action]}]
+  [:div {:class (cs "file" "has-name" file-class)}
+   [:label {:class (cs "file-label" label-class)}
+    [:input {:class (cs "file-input" input-class)
+             :id (name id)
+             :name (name id)
+             :type "file"
+             :on-change (fn [e]
+                          (let [fileList (-> e .-target .-files)]
+                            (when (.-length fileList)
+                              (let [f (first (array-seq fileList))]
+                                (session/assoc-in! (session-path id) (.-name f))
+                                (when (fn? action)
+                                  (action e))))))}]
+    [:span {:class (cs "file-cta" cta-class)}
+     [:span {:class (cs "file-icon")}
+      [:i {:class (cs "fa" "fa-upload")}]]
+     [:span {:class (cs "file-label")}
+      (or label
+          "Choose a file")]
+     [:span {:class (cs "file-name")}
+      (if (session/get-in (session-path id))
+        (str (session/get-in (session-path id)))
+        "No file chosen")]]]])
