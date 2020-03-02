@@ -2,6 +2,7 @@
   (:require [bulmaBook.components.sidebar :refer [sidebar]]
             [bulmaBook.components.basic :refer [render-map]]
             [bulmaBook.pages.books :refer [books-page new-book-page]]
+            [bulmaBook.pages.dashboard :refer [dashboard-page]]
             [bulmaBook.data :as data]
             [reagent.session :as session]))
 
@@ -15,9 +16,7 @@
        :books (if (= (session/get-in [:ui :books :page]) :new-book)
                 [new-book-page]
                 [books-page])
-       :dashboard [:div
-                   [:h2.title.is-2
-                    (str "Default Dashboard Page")]]
+       :dashboard [dashboard-page]
        :customers [:div
                    [:h2.title.is-2
                     (str "Default Customers Page")]]
