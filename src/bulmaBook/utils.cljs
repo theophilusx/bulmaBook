@@ -11,7 +11,7 @@
   (every? vector? v))
 
 (defn ensure-vector [v]
-  (if (not (vector? v))
+  (if-not (vector? v)
     [v]
     v))
 

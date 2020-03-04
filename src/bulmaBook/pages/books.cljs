@@ -61,14 +61,13 @@
 
 (defn filter-books [search-data]
   (println (str "searching for: " search-data))
-  (reset! book-list (into []
-                          (filter
-                           (fn [m]
-                             (or (string/includes? (str (:title m)) search-data)
-                                 (string/includes? (str (:cost m)) search-data)
-                                 (string/includes? (str (:pages m)) search-data)
-                                 (string/includes? (str (:isbn m)) search-data)))
-                           (session/get-in [:data :book-data])))))
+  (reset! book-list (filterv
+                     (fn [m]
+                       (or (string/includes? (str (:title m)) search-data)
+                           (string/includes? (str (:cost m)) search-data)
+                           (string/includes? (str (:pages m)) search-data)
+                           (string/includes? (str (:isbn m)) search-data)))
+                     (session/get-in [:data :book-data]))))
 
 (defn get-toolbar-data []
   {:left-items [(deftoolbar-item
@@ -123,10 +122,8 @@
   (reset! book-list (session/get-in [:data :book-data]))
   (fn []
     (when (session/get-in [:data :sort])
-      (reset! book-list (into
-                         []
-                         (sort-by (session/get-in [:data :sort])
-                                  (session/get-in [:data :book-data])))))
+      (reset! book-list (vec (sort-by (session/get-in [:data :sort])
+                                      (session/get-in [:data :book-data])))))
     [:div
      [breadcrumbs :ui.books.page
       [{:name "Books"

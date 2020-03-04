@@ -54,11 +54,11 @@
                          (when is-rounded "is-rounded"))
               :role "navigation"
               :aria-label "pagination"}
-        (when (not (= @current 1))
+        (when-not (= @current 1)
           [:a.pagination-previous
            {:on-click #(swap! current dec)}
            "Previous"])
-        (when (not (= @current (count (keys @pages))))
+        (when-not (= @current (count (keys @pages)))
           [:a.pagination-next
            {:on-click #(swap! current inc)}
            "Next"])

@@ -7,7 +7,7 @@
 (defn do-registration []
   (let [reg (session/get :register)
         email-key (value->keyword (:email reg))]
-    (if (not (contains? (session/get :users) email-key))
+    (if-not (contains? (session/get :users) email-key)
       (do
         (session/assoc-in! [:users email-key] reg)
         (session/remove! :register)

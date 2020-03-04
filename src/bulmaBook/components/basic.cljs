@@ -25,9 +25,7 @@
   [icon-data]
   (if (map? icon-data)
     [(icon-component icon-data)]
-    (into
-     []
-     (for [i icon-data]
+    (vec (for [i icon-data]
        (icon-component i)))))
 
 (defn icon-control-class [icon-data]
