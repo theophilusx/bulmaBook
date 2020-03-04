@@ -22,7 +22,7 @@
   `deftoolbar-item` which are placed to the right of other items
   `:class` (Optional) Additional classes to be added to the outer `nav` element"
   [data]
-  [:nav {:class (utils/cs "level" (:class data))}
+  [:nav.level {:class (:class data)}
    (into
     [:div.level-left]
     (for [i (:left-items data)]
@@ -34,4 +34,3 @@
       (for [i (:right-items data)]
         [(:type i) {:class (utils/cs "level-item" (:class i))}
          (:content i)])))])
-
