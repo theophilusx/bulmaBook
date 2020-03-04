@@ -1,6 +1,5 @@
 (ns bulmaBook.components.paginate
-  (:require [bulmaBook.utils :refer [cs]]
-            [reagent.core :as r]))
+  (:require [reagent.core :as r]))
 
 (defn get-page
   "Return the page associated with a page number."
@@ -11,10 +10,9 @@
   "Create a link item for specified page."
   [current page]
   [:li
-   [:a {:class (cs "pagination-link"
-                   (when (= @current page)
-                     "is-current"))
-        :on-click #(reset! current page)}
+   [:a.pagination-link {:class (when (= @current page)
+                                 "is-current")
+                        :on-click #(reset! current page)}
     (str page)]])
 
 (defn paginate
@@ -44,16 +42,15 @@
                              (partition-all page-size data))))
      (when (> @current (count (keys @pages)))
           (reset! current (count (keys @pages))))
-      [:div
-       [:nav {:class (cs "pagination"
-                         (condp = button-size
-                           :small "is-small"
-                           :medium "is-medium"
-                           :large "is-large"
-                           "")
-                         (when is-rounded "is-rounded"))
-              :role "navigation"
-              :aria-label "pagination"}
+      [:<>
+       [:nav.pagination {:class [(case button-size
+                                   :small "is-small"
+                                   :medium "is-medium"
+                                   :large "is-large"
+                                   nil)
+                                 (when is-rounded "is-rounded")]
+                         :role "navigation"
+                         :aria-label "pagination"}
         (when-not (= @current 1)
           [:a.pagination-previous
            {:on-click #(swap! current dec)}
