@@ -48,7 +48,7 @@
 (defn get-navabar-data []
   (let [session-name (session/get-in [:session :user :name])]
     (if session-name
-      {:session-id navbar-id
+      {:sid navbar-id
        :has-shadow true
        :default-link :home
        :has-burger true
@@ -73,8 +73,8 @@
                                  :contents "Report Bug" :icon {:name "fa-bug"})
                                (defnavbar-item :id :sign-out :contents "Sign Out"
                                  :icon {:name "fa-sign-out"})])]}
-      {:session-id navbar-id
-       :has-shadow true
+      {:sid navbar-id
+       :has-hadow true
        :default-link :login
        :has-burger true
        :brand (defnavbar-item
@@ -92,7 +92,7 @@
 
 
 
-(def books-sidebar {:session-id :ui.books.sidebar
+(def books-sidebar {:sid :ui.books.sidebar
                     :default-link :dashboard
                     :item (defsidebar-item
                             :type :menu

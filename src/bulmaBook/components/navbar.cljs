@@ -35,7 +35,7 @@
                    (fn []
                      (toggle-dropdown state)
                      (set-active state (:id a))
-                     (set-choice (:session-id @state) (:id a))))}
+                     (set-choice (:sid @state) (:id a))))}
    (when (:icon a)
      [icon-component (:icon a)])
    (:contents a)])
@@ -87,7 +87,7 @@
        :role "button"
        :aria-label "menu"
        :aria-expanded "false"
-       :data-target (:session-id @state)
+       :data-target (:sid @state)
        :on-click (fn []
                    (swap! state update :burger-active not))}
    [:span {:aria-hidden true}]
@@ -104,7 +104,7 @@
   [:div {:class (cs "navbar-menu"
                     (when (:burger-active @state)
                       "is-active"))
-         :id (:session-id @state)}
+         :id (:sid @state)}
    (into
     [:div.navbar-start]
     (for [s (:menus @state)]
@@ -150,7 +150,7 @@
 (defn navbar
   "Define an application navbar. The `data` argument is a map which can
   have the following keys -
-  `:session-id` - A keyword representing the session ID. e.g :topbar or :top.bar
+  `:sid` - A keyword representing the session ID. e.g :topbar or :top.bar
   `:has-shadow` - true if the navbar has a shadow effect. Default true
   `:is-dark` - if true, navbar is a dark colour. Default is false
   `:has-burger` - true if navabar should include a 'burger' menu. Defaault true
@@ -167,7 +167,7 @@
                             :active-item (:default-link nb-def)
                             :dropdown-active false}
                            nb-def))]
-    (set-choice (:session-id @state) (:default-link @state))
+    (set-choice (:sid @state) (:default-link @state))
     (fn [nb-def]
       (swap! state assoc :menus (:menus nb-def)
              :end-menu (:end-menu nb-def))

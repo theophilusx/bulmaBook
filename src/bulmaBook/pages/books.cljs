@@ -43,6 +43,22 @@
      [[form/button "Save" save-new-book :button-class "is-success"]
       [form/button "Clear" clear-new-book]]]]])
 
+;; (defn edit-book-page [bk]
+;;   [:div
+;;    [breadcrumbs :ui.books.page
+;;     [{:name "Books"
+;;       :value :books
+;;       :active false}
+;;      {:name "Edit Book"
+;;       :value :edit
+;;       :active true}]]
+;;    [:form.box
+;;     [form/horizontal-field "Title" [form/editable-field nil :title :text]]
+;;     [form/horizontal-field "Image" [form/editable-field nil :image :text]]
+;;     [form/horizontal-field "Cost" [form/editable-field nil :cost :text ]]
+;;     [form/horizontal-field "Pages" [form/editable-field nil :pages :text]]
+;;     [form/horizontal-field "ISBN" [form/editable-field nil :isbn :text]]]])
+
 (defn filter-books [search-data]
   (println (str "searching for: " search-data))
   (reset! book-list (into []

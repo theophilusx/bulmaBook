@@ -160,18 +160,18 @@
      title]]])
 
 (defn do-save [s]
-  (session/assoc-in! (session-path (:session-id @s)) (:value @s))
+  (session/assoc-in! (session-path (:sid @s)) (:value @s))
   (swap! s assoc :editing false))
 
 (defn do-reset [s]
-  (swap! s assoc :value (session/get-in (session-path (:session-id @s))))
+  (swap! s assoc :value (session/get-in (session-path (:sid @s))))
   (swap! s assoc :editing false))
 
 (defn editable-field
   "An editable field component. This component will display the value with a
   click handler event such that when the user clicks on the value, the field
   is replaced with an editable input field. The `label` argument will be used
-  as the field label. The `session-id` argument is a keyword path specifier
+  as the field label. The `sid` argument is a keyword path specifier
   which identifies the path into the global session object where the value will
   be edited. The keyword uses a period `.` as a path separator e.g. `:a.b.c`
   will become `[:a :b :c]`. Additional optional keyword arguments include
@@ -179,13 +179,12 @@
   `label-class` - additional classes to add to the `label` element
   `control-class` - additional classes to add to the `control` element
   `input-class` - additional class elements to add to the `input` element."
-  [label session-id type & {:keys [field-class label-class
+  [label sid type & {:keys [field-class label-class
                                    control-class input-class]}]
-  (let [state (r/atom {:value (session/get-in (session-path session-id))
-                       :session-id session-id
+  (let [state (r/atom {:value (session/get-in (session-path sid))
+                       :sid sid
                        :editing false})]
     (fn []
-      (println (str "editable-field state: " @state))
       (if (get @state :editing)
         [:div {:class (cs "field" "is-grouped" field-class)}
          (when label
@@ -194,8 +193,8 @@
           [:input {:type (name type)
                    :class (cs "input" "is-small" input-class)
                    :value (:value @state)
-                   :id (name (:session-id @state))
-                   :name (name (:session-id @state))
+                   :id (name (:sid @state))
+                   :name (name (:sid @state))
                    :on-change (fn [e]
                                 (swap! state assoc :value (value-of e)))}]]
          [:p {:class (cs "control")}
@@ -213,7 +212,7 @@
 
 (defn textarea
   "A textarea component. The `label` argument specifies the label to be
-  associated with the textarea. The `session-id` argument is a keyword that
+  associated with the textarea. The `sid` argument is a keyword that
   specifies the path into the global state atom where the textarea data will
   be saved. The keyword uses a period `.` as a path separator e.g. `:a.b.c` will
   become `[:a :b :c]`. Additional optional keyword arguments include
@@ -222,7 +221,7 @@
   `label-class` - additional classes to add to the `label` element
   `textarea-class` - additional classes to add to the `textarea` element
   `placeholder` - placeholder text to add tot he `textarea` element."
-  [label session-id & {:keys [field-class control-class label-class
+  [label sid & {:keys [field-class control-class label-class
                               textarea-class placeholder]}]
   [:div {:class (cs "field" field-class)}
    (when label
@@ -230,10 +229,10 @@
    [:p {:class (cs "control" control-class)}
     [:textarea {:class (cs "textarea" textarea-class)
                 :placeholder placeholder
-                :id (name session-id)
-                :name (name session-id)
+                :id (name sid)
+                :name (name sid)
                 :on-change #(session/assoc-in!
-                             (session-path session-id) (value-of %))}]]])
+                             (session-path sid) (value-of %))}]]])
 
 (defn option
   "A basic `option` component. The `title` argument used as the label for the

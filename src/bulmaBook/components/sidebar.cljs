@@ -3,35 +3,35 @@
             [bulmaBook.components.basic :refer [icon-component]]
             [reagent.session :as session]))
 
-(defn is-active? [session-id id]
-  (if (= (session/get-in (session-path session-id)) id)
+(defn is-active? [sid id]
+  (if (= (session/get-in (session-path sid)) id)
     true
     false))
 
-(defn set-active [session-id id]
-  (session/assoc-in! (session-path session-id) id))
+(defn set-active [sid id]
+  (session/assoc-in! (session-path sid) id))
 
-(defn -make-item [i session-id]
+(defn -make-item [i sid]
   [:li
    [:a {:class (cs (:class i)
-                   (when (is-active? session-id (:id i)) "is-active"))
+                   (when (is-active? sid (:id i)) "is-active"))
         :href  (:href i)
         :id    (:id i)
         :on-click (fn []
-                    (set-active session-id (:id i)))}
+                    (set-active sid (:id i)))}
     (when (:icon i)
       [icon-component (:icon i)])
     (:title i)]])
 
-(defn -make-menu [m session-id]
+(defn -make-menu [m sid]
   [:aside.menu
    [:h3.is-3.menu-label (:title m)]
    (into
     [:ul.menu-list]
     (for [i (:items m)]
       (if (= (:type i) :item)
-        (-make-item i session-id)
-        (-make-menu i session-id))))])
+        (-make-item i sid)
+        (-make-menu i sid))))])
 
 (defn defsidebar-item
   "Define an item for the sidebar. The item can either be a simple link item
@@ -69,7 +69,7 @@
   `:item` A `defsidebar-item` map defining the parent menu with sub-menus as a
           vector of `defsidebar-tiem` items in the `:items` key"
   [data]
-  (session/assoc-in! (session-path (:session-id data)) (:default-link data))
+  (session/assoc-in! (session-path (:sid data)) (:default-link data))
   (fn []
     [:nav {:class (cs "menu" (:class (:item data)))}
-     (-make-menu (:item data) (:session-id data))]))
+     (-make-menu (:item data) (:sid data))]))
