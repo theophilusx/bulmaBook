@@ -1,5 +1,5 @@
 (ns bulmaBook.components.sidebar
-  (:require [bulmaBook.utils :refer [cs session-path]]
+  (:require [bulmaBook.utils :refer [session-path]]
             [bulmaBook.components.basic :refer [icon-component]]
             [reagent.session :as session]))
 
@@ -11,10 +11,10 @@
 (defn set-active [sid id]
   (session/assoc-in! (session-path sid) id))
 
-(defn -make-item [i sid]
+(defn make-item [i sid]
   [:li
-   [:a {:class (cs (:class i)
-                   (when (is-active? sid (:id i)) "is-active"))
+   [:a {:class [(:class i)
+                (when (is-active? sid (:id i)) "is-active")]
         :href  (:href i)
         :id    (:id i)
         :on-click (fn []
@@ -23,15 +23,15 @@
       [icon-component (:icon i)])
     (:title i)]])
 
-(defn -make-menu [m sid]
+(defn make-menu [m sid]
   [:aside.menu
    [:h3.is-3.menu-label (:title m)]
    (into
     [:ul.menu-list]
     (for [i (:items m)]
       (if (= (:type i) :item)
-        (-make-item i sid)
-        (-make-menu i sid))))])
+        [make-item i sid]
+        [make-menu i sid])))])
 
 (defn defsidebar-item
   "Define an item for the sidebar. The item can either be a simple link item
@@ -70,6 +70,6 @@
           vector of `defsidebar-tiem` items in the `:items` key"
   [data]
   (session/assoc-in! (session-path (:sid data)) (:default-link data))
-  (fn []
-    [:nav {:class (cs "menu" (:class (:item data)))}
-     (-make-menu (:item data) (:sid data))]))
+  (fn [data]
+    [:nav.menu {:class (:class (:item data))}
+     [make-menu (:item data) (:sid data)]]))
