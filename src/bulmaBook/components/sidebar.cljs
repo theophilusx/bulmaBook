@@ -1,15 +1,15 @@
 (ns bulmaBook.components.sidebar
-  (:require [bulmaBook.utils :refer [session-path]]
+  (:require [bulmaBook.utils :refer [spath]]
             [bulmaBook.components.basic :refer [icon-component]]
             [reagent.session :as session]))
 
 (defn is-active? [sid id]
-  (if (= (session/get-in (session-path sid)) id)
+  (if (= (session/get-in (spath sid)) id)
     true
     false))
 
 (defn set-active [sid id]
-  (session/assoc-in! (session-path sid) id))
+  (session/assoc-in! (spath sid) id))
 
 (defn make-item [i sid]
   [:li
@@ -69,7 +69,7 @@
   `:item` A `defsidebar-item` map defining the parent menu with sub-menus as a
           vector of `defsidebar-tiem` items in the `:items` key"
   [data]
-  (session/assoc-in! (session-path (:sid data)) (:default-link data))
+  (session/assoc-in! (spath (:sid data)) (:default-link data))
   (fn [data]
     [:nav.menu {:class (:class (:item data))}
      [make-menu (:item data) (:sid data)]]))

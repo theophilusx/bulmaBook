@@ -1,6 +1,6 @@
 (ns bulmaBook.pages.bug
   (:require [reagent.session :as session]
-            [bulmaBook.utils :refer [session-path]]
+            [bulmaBook.utils :refer [spath]]
             [bulmaBook.components.form :as form]
             [bulmaBook.data :as data]))
 
@@ -12,7 +12,7 @@
                         :actual (session/get-in [:bug :actual])
                         :reproduce (session/get-in [:bug :reproduce])})
     (session/remove! :bug)
-    (session/assoc-in! (session-path data/navbar-id) :home)))
+    (session/assoc-in! (spath data/navbar-id) :home)))
 
 (defn bug-report []
   [:section

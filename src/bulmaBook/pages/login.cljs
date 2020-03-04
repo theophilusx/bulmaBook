@@ -1,7 +1,7 @@
 (ns bulmaBook.pages.login
   (:require [bulmaBook.components.form :as form]
             [bulmaBook.data :as data]
-            [bulmaBook.utils :refer [session-path value->keyword]]
+            [bulmaBook.utils :refer [spath value->keyword]]
             [reagent.session :as session]))
 
 
@@ -15,7 +15,7 @@
                                                     (:last-name user-profile))
                                              :email (:email user-profile)})
         (session/remove! :login)
-        (session/assoc-in! (session-path data/navbar-id) :home))
+        (session/assoc-in! (spath data/navbar-id) :home))
       (println "Bad user or login password"))))
 
 (defn login

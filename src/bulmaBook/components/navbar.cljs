@@ -1,7 +1,7 @@
 (ns bulmaBook.components.navbar
   (:require [reagent.core :as r]
             [reagent.session :as session]
-            [bulmaBook.utils :refer [session-path]]
+            [bulmaBook.utils :refer [spath]]
             [bulmaBook.components.basic :refer [icon-component]]))
 
 (defn active? [state id]
@@ -25,7 +25,7 @@
       (swap! state assoc :active-dropdown (first id)))))
 
 (defn set-choice [path & id]
-  (session/assoc-in! (session-path path) (first id)))
+  (session/assoc-in! (spath path) (first id)))
 
 (defn item-a [a state]
   [:a.navbar-item {:class [(:class a)

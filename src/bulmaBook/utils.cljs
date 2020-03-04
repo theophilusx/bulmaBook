@@ -15,7 +15,7 @@
     [v]
     v))
 
-(defn session-path [kw & {:keys [prefix]}]
+(defn spath [kw & {:keys [prefix]}]
   (let [init (if prefix
                [prefix]
                [])]

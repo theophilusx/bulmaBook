@@ -1,6 +1,6 @@
 (ns bulmaBook.pages.core
   (:require [bulmaBook.pages.home :refer [home-page]]
-            [bulmaBook.utils :refer [session-path]]
+            [bulmaBook.utils :refer [spath]]
             [bulmaBook.pages.login :refer [login]]
             [bulmaBook.pages.register :refer [register]]
             [bulmaBook.pages.profile :refer [profile]]
@@ -10,7 +10,7 @@
             [bulmaBook.data :as data]))
 
 (defn current-page []
-  (condp = (session/get-in (session-path data/navbar-id))
+  (condp = (session/get-in (spath data/navbar-id))
     :home [home-page]
     :profile [:div
               [profile]
@@ -29,5 +29,5 @@
                [render-map @session/state]]
     [:div
      [:h2.h2.title "Bad page name: " (session/get-in
-                                      (session-path data/navbar-id))]
+                                      (spath data/navbar-id))]
      [render-map @session/state]]))

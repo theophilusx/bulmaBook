@@ -1,5 +1,5 @@
 (ns bulmaBook.components.form
-  (:require [bulmaBook.utils :refer [cs session-path value-of value->keyword]]
+  (:require [bulmaBook.utils :refer [cs spath value-of value->keyword]]
             [bulmaBook.components.basic :as basic]
             [reagent.session :as session]
             [reagent.core :as r]))
@@ -46,7 +46,7 @@
            :name (name id)
            :placeholder placeholder
            :required required
-           :on-change #(session/assoc-in! (session-path id) (value-of %))}])
+           :on-change #(session/assoc-in! (spath id) (value-of %))}])
 
 (defn input
   "A basic `input` component. The `type` argument is a keyword representing the
@@ -105,7 +105,7 @@
   `label-class` - additional classes to add to the `label` element
   `control-class` - additional classes to add to the `control` element"
   [label id & {:keys [field-class label-class control-class]}]
-  (let [path (session-path id)]
+  (let [path (spath id)]
     [:div {:class (cs "field" field-class)}
      [:div {:class (cs "control" control-class)}
       [:label {:class (cs "checkbox" label-class)}
@@ -140,7 +140,7 @@
                          (value->keyword (:title l)))
               :checked (or (:checked l)
                            false)
-              :on-click #(session/assoc-in! (session-path id)
+              :on-click #(session/assoc-in! (spath id)
                                             (value->keyword (value-of %)))}
       (:title l)])))
 
@@ -160,11 +160,11 @@
      title]]])
 
 (defn do-save [s]
-  (session/assoc-in! (session-path (:sid @s)) (:value @s))
+  (session/assoc-in! (spath (:sid @s)) (:value @s))
   (swap! s assoc :editing false))
 
 (defn do-reset [s]
-  (swap! s assoc :value (session/get-in (session-path (:sid @s))))
+  (swap! s assoc :value (session/get-in (spath (:sid @s))))
   (swap! s assoc :editing false))
 
 (defn editable-field
@@ -181,7 +181,7 @@
   `input-class` - additional class elements to add to the `input` element."
   [label sid type & {:keys [field-class label-class
                                    control-class input-class]}]
-  (let [state (r/atom {:value (session/get-in (session-path sid))
+  (let [state (r/atom {:value (session/get-in (spath sid))
                        :sid sid
                        :editing false})]
     (fn []
@@ -232,7 +232,7 @@
                 :id (name sid)
                 :name (name sid)
                 :on-change #(session/assoc-in!
-                             (session-path sid) (value-of %))}]]])
+                             (spath sid) (value-of %))}]]])
 
 (defn option
   "A basic `option` component. The `title` argument used as the label for the
@@ -279,7 +279,7 @@
               :name (name id)
               :multiple (when multiple true false)
               :size multiple
-              :on-change #(session/assoc-in! (session-path id)
+              :on-change #(session/assoc-in! (spath id)
                                              (keyword (value-of %)))}]
     (for [o options]
       o))
@@ -338,7 +338,7 @@
                            (let [fileList (-> e .-target .-files)]
                              (when (.-length fileList)
                                (let [f (first (array-seq fileList))]
-                                 (session/assoc-in! (session-path id) (.-name f))
+                                 (session/assoc-in! (spath id) (.-name f))
                                  (when (fn? action)
                                    (action e))))))}]
      [:span {:class (cs "file-cta" cta-class)}
@@ -348,6 +348,6 @@
        (or label
            "Choose a file")]
       [:span {:class (cs "file-name")}
-       (if (session/get-in (session-path id))
-         (str (session/get-in (session-path id)))
+       (if (session/get-in (spath id))
+         (str (session/get-in (spath id)))
          "No file chosen")]]]]])

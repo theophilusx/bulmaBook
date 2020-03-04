@@ -1,5 +1,5 @@
 (ns bulmaBook.components.basic
-  (:require [bulmaBook.utils :refer [session-path]]
+  (:require [bulmaBook.utils :refer [spath]]
             [clojure.string :as string]
             [reagent.session :as session]))
 
@@ -131,7 +131,7 @@
         [:li {:class (when (:active c)
                        "is-active")}
          [:a {:href "#"
-              :on-click #(session/assoc-in! (session-path id) (:value c))}
+              :on-click #(session/assoc-in! (spath id) (:value c))}
           [:span.icon {:class (when (contains? (:icon c) :size)
                                 (case (:size (:icon c))
                                   :small "is-small"
@@ -144,5 +144,5 @@
         [:li {:class (when (:active c)
                        "is-active")}
          [:a {:href "#"
-              :on-click #(session/assoc-in! (session-path id) (:value c))}
+              :on-click #(session/assoc-in! (spath id) (:value c))}
           (:name c)]])))])
