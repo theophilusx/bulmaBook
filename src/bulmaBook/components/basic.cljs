@@ -3,45 +3,6 @@
             [clojure.string :as string]
             [reagent.session :as session]))
 
-(defn icon-component
-  "Generate an icon component. `icon-data` is a map containing the keys
-  `:position` - place icon to the `:left` or `:right`
-  `:span-class` - additional class attributes to add to `span` element
-  `:name` - name of the font awesome icon to add
-  `:icon-class` - additional class attributes to add to the `icon` element"
-  [icon-data]
-  [:span.icon {:class [(:span-class icon-data)
-                       (when (contains? icon-data :position)
-                         (case (:position icon-data)
-                           :left "is-left"
-                           :right "is-right"
-                           nil))]}
-   [:i.fa {:class [(:name icon-data)
-                   (:icon-class icon-data)]}]])
-
-(defn icon
-  "Generates a `vector` of `icon` components from icon data. The `icon-data`
-  can be either a `map` or a `vector` of icon data `maps`"
-  [icon-data]
-  (if (map? icon-data)
-    [[icon-component icon-data]]
-    (vec (for [i icon-data]
-           [icon-component i]))))
-
-(defn icon-control-class [icon-data]
-  (if (map? icon-data)
-    (when (contains? icon-data :position)
-      (case (:position icon-data)
-        :left "has-icons-left"
-        :right "has-icons-right"
-        ""))
-    (string/join (map (fn [i]
-                        (when (contains? i :position)
-                          (case (:position i)
-                            :left "has-icon-left"
-                            :right "has-icon-right"
-                            "")))
-                      icon-data) " ")))
 
 (defn media [body & {:keys [left right id class]}]
   [:article.media {:class [class]
