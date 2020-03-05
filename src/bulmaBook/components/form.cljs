@@ -1,5 +1,5 @@
 (ns bulmaBook.components.form
-  (:require [bulmaBook.utils :refer [cs spath value-of value->keyword]]
+  (:require [bulmaBook.utils :refer [spath value-of value->keyword]]
             [bulmaBook.components.basic :as basic]
             [reagent.session :as session]
             [reagent.core :as r]))
@@ -12,9 +12,9 @@
   `label-class` - additional classes to add to the label element"
   [body & {:keys [label field-class label-class]}]
   (into
-   [:div {:class (cs "field" field-class)}
+   [:div.field {:class field-class}
     (when label
-      [:label {:class (cs "label" label-class)} label])]
+      [:label.label {:class label-class} label])]
    (for [el body]
      el)))
 
@@ -28,25 +28,25 @@
   `body-class` - additional classes to add to the `field-body` element"
   [label body & {:keys [field-class label-class
                         body-class]}]
-  [:div {:class (cs "field" "is-horizontal" field-class)}
-   [:div {:class (cs "field-label" field-class)}
-    [:label {:class (cs "label" label-class)}
+  [:div.field.is-horizontal {:class field-class}
+   [:div.field-label
+    [:label.label {:class label-class}
      label]]
    (into
-    [:div {:class (cs "field-body" body-class
-                      (when (> (count body) 1)
-                        "has-grouped"))}]
+    [:div.field-body {:class [body-class
+                              (when (> (count body) 1)
+                                "has-grouped")]}]
     (for [el body]
       el))])
 
 (defn input-helper [type id class placeholder required]
-  [:input {:type (name type)
-           :class (cs "input" class)
-           :id (name id)
-           :name (name id)
-           :placeholder placeholder
-           :required required
-           :on-change #(session/assoc-in! (spath id) (value-of %))}])
+  [:input.input {:type (name type)
+                 :class class
+                 :id (name id)
+                 :name (name id)
+                 :placeholder placeholder
+                 :required required
+                 :on-change #(session/assoc-in! (spath id) (value-of %))}])
 
 (defn input
   "A basic `input` component. The `type` argument is a keyword representing the
@@ -65,14 +65,14 @@
                      icon]}]
   (if icon
     (into
-     [:div {:class (cs "control" control-class
-                     (when icon
-                       (basic/icon-control-class icon)))}
-      (input-helper type id input-class placeholder required)]
+     [:div.control {:class [control-class
+                            (when icon
+                              (basic/icon-control-class icon))]}
+      [input-helper type id input-class placeholder required]]
      (for [i (basic/icon icon)]
        i))
-    [:div {:class (cs "control" control-class)}
-     (input-helper type id input-class placeholder required)]))
+    [:div.control {:class control-class}
+     [input-helper type id input-class placeholder required]]))
 
 (defn input-field
   "A basic input field component. The `label` argument will be the label
@@ -91,9 +91,9 @@
            vector of icon data maps"
   [label type id & {:keys [field-class label-class control-class
                            input-class placeholder required icon]}]
-  (field [[input type id :control-class control-class :input-class input-class
+  [field [[input type id :control-class control-class :input-class input-class
            :placeholder placeholder :required required :icon icon]]
-         :label label :field-class field-class :label-class label-class))
+   :label label :field-class field-class :label-class label-class])
 
 (defn checkbox
   "A basic checkbox component. The `label` argument represents the text label
@@ -106,9 +106,9 @@
   `control-class` - additional classes to add to the `control` element"
   [label id & {:keys [field-class label-class control-class]}]
   (let [path (spath id)]
-    [:div {:class (cs "field" field-class)}
-     [:div {:class (cs "control" control-class)}
-      [:label {:class (cs "checkbox" label-class)}
+    [:div.field {:class field-class}
+     [:div.control {:class control-class}
+      [:label.checkbox {:class label-class}
        [:input {:type "checkbox"
                 :id (name id)
                 :name (name id)
@@ -132,16 +132,16 @@
             'this item' will become `:this-item`."
   [id labels & {:keys [control-class label-class]}]
   (into
-   [:div {:class (cs "control" control-class)}]
+   [:div.control {:class control-class}]
    (for [l labels]
-     [:label {:class (cs "radio" label-class)
-              :name (name id)
-              :value (or (:value l)
-                         (value->keyword (:title l)))
-              :checked (or (:checked l)
-                           false)
-              :on-click #(session/assoc-in! (spath id)
-                                            (value->keyword (value-of %)))}
+     [:label.radio {:class label-class
+                    :name (name id)
+                    :value (or (:value l)
+                               (value->keyword (:title l)))
+                    :checked (or (:checked l)
+                                 false)
+                    :on-click #(session/assoc-in! (spath id)
+                                                  (value->keyword (value-of %)))}
       (:title l)])))
 
 (defn button
@@ -152,11 +152,11 @@
   `control-class` - additional classes to add to the `control` element
   `button-class` - additional classes to add to the `button` element"
   [title action & {:keys [field-class control-class button-class]}]
-  [:div {:class (cs "field" field-class)}
-   [:div {:class (cs "control" control-class)}
-    [:button {:class (cs "button" button-class)
-              :type "button"
-              :on-click action}
+  [:div.field {:class field-class}
+   [:div.control {:class control-class}
+    [:button.button {:class button-class
+                     :type "button"
+                     :on-click action}
      title]]])
 
 (defn do-save [s]
@@ -184,31 +184,31 @@
   (let [state (r/atom {:value (session/get-in (spath sid))
                        :sid sid
                        :editing false})]
-    (fn []
+    (fn [label sid type & _]
       (if (get @state :editing)
-        [:div {:class (cs "field" "is-grouped" field-class)}
+        [:div.field.is-grouped {:class field-class}
          (when label
-           [:label {:class (cs "label" label-class)} label])
-         [:p {:class (cs "control" control-class)}
-          [:input {:type (name type)
-                   :class (cs "input" "is-small" input-class)
-                   :value (:value @state)
-                   :id (name (:sid @state))
-                   :name (name (:sid @state))
-                   :on-change (fn [e]
-                                (swap! state assoc :value (value-of e)))}]]
-         [:p {:class (cs "control")}
+           [:label.label {:class label-class} label])
+         [:p.control {:class control-class}
+          [:input.input.is-small {:type (name type)
+                                  :class input-class
+                                  :value (:value @state)
+                                  :id (name (:sid @state))
+                                  :name (name (:sid @state))
+                                  :on-change (fn [e]
+                                               (swap! state assoc :value
+                                                      (value-of e)))}]]
+         [:p.control
           [button "Save" #(do-save state) :button-class "is-primary is-small"]]
-         [:p {:class (cs "control")}
+         [:p.control
           [button "Reset" #(do-reset state) :button-class "is-small"]]]
-        [:div {:class (cs "field" field-class)}
+        [:div.field {:class field-class}
          (when label
-           [:label {:class (cs "label" label-class)} label])
-         [:p {:class (cs "control" control-class)}
+           [:label.label {:class label-class} label])
+         [:p.control {:class control-class}
           (str (:value @state) " ")
-          [:span {:class (cs "icon")
-                  :on-click #(swap! state assoc :editing true)}
-           [:i {:class (cs "fa" "fa-pencil")}]]]]))))
+          [:span.icon {:on-click #(swap! state assoc :editing true)}
+           [:i.fa.fa-pencil]]]]))))
 
 (defn textarea
   "A textarea component. The `label` argument specifies the label to be
@@ -223,16 +223,16 @@
   `placeholder` - placeholder text to add tot he `textarea` element."
   [label sid & {:keys [field-class control-class label-class
                               textarea-class placeholder]}]
-  [:div {:class (cs "field" field-class)}
+  [:div.field {:class field-class}
    (when label
-     [:label {:class (cs "label" label-class)} label])
-   [:p {:class (cs "control" control-class)}
-    [:textarea {:class (cs "textarea" textarea-class)
-                :placeholder placeholder
-                :id (name sid)
-                :name (name sid)
-                :on-change #(session/assoc-in!
-                             (spath sid) (value-of %))}]]])
+     [:label.label {:class label-class} label])
+   [:p.control {:class control-class}
+    [:textarea.textarea {:class textarea-class
+                         :placeholder placeholder
+                         :id (name sid)
+                         :name (name sid)
+                         :on-change #(session/assoc-in!
+                                      (spath sid) (value-of %))}]]])
 
 (defn option
   "A basic `option` component. The `title` argument used as the label for the
@@ -265,15 +265,15 @@
            component."
   [id options & {:keys [select-class multiple rounded select-size
                         icon]}]
-  [:div {:class (cs "select" select-class
-                    (when rounded "is-rounded")
-                    (when select-size
-                      (condp = select-size
-                        :small "is-small"
-                        :medium "is-medium"
-                        :large "is-large"
-                        (println (str "Unknown select size: " select-size))))
-                    (when multiple "is-multiple"))}
+  [:div.select {:class [select-class
+                        (when rounded "is-rounded")
+                        (when select-size
+                          (case select-size
+                            :small "is-small"
+                            :medium "is-medium"
+                            :large "is-large"
+                            nil))
+                        (when multiple "is-multiple")]}
    (into
     [:select {:id (name id)
               :name (name id)
@@ -302,52 +302,50 @@
            vector of icon data maps"
   [id options & {:keys [title field-class select-class multiple
                         rounded select-size icon]}]
-  [:div {:class (cs "field" field-class)}
+  [:div.field {:class field-class}
    (when title
-     [:div {:class "label"} title])
+     [:div.label title])
    [select id options :select-class select-class :multiple multiple
     :rounded rounded :select-size select-size :icon icon]])
 
 (defn file [id & {:keys [field-class file-class label-class input-class cta-class
                          label action is-right is-fullwidth is-boxed size
                          position]}]
-  [:div {:class (cs "field" field-class)}
-   [:div {:class (cs "file" "has-name" file-class
-                     (when is-right "is-right")
-                     (when is-fullwidth "is-fullwidth")
-                     (when is-boxed "is-boxed")
-                     (when size
-                       (condp = size
-                         :small "is-small"
-                         :medium "is-medium"
-                         :large "is-large"
-                         :normal ""
-                         (println (str "Unknown file size " size))))
-                     (when position
-                       (condp = position
-                         :center "is-centered"
-                         :right "is-right"
-                         :left ""
-                         (println (str "Unknown file position: " position)))))}
-    [:label {:class (cs "file-label" label-class)}
-     [:input {:class (cs "file-input" input-class)
-              :id (name id)
-              :name (name id)
-              :type "file"
-              :on-change (fn [e]
-                           (let [fileList (-> e .-target .-files)]
-                             (when (.-length fileList)
-                               (let [f (first (array-seq fileList))]
-                                 (session/assoc-in! (spath id) (.-name f))
-                                 (when (fn? action)
-                                   (action e))))))}]
-     [:span {:class (cs "file-cta" cta-class)}
-      [:span {:class (cs "file-icon")}
-       [:i {:class (cs "fa" "fa-upload")}]]
-      [:span {:class (cs "file-label")}
+  [:div.field {:class field-class}
+   [:div.file.has-name {:class [file-class
+                                (when is-right "is-right")
+                                (when is-fullwidth "is-fullwidth")
+                                (when is-boxed "is-boxed")
+                                (when size
+                                  (case size
+                                    :small "is-small"
+                                    :medium "is-medium"
+                                    :large "is-large"
+                                    nil))
+                                (when position
+                                  (case position
+                                    :center "is-centered"
+                                    :right "is-right"
+                                    nil))]}
+    [:label.file-label {:class label-class}
+     [:input.file-input {:class input-class
+                         :id (name id)
+                         :name (name id)
+                         :type "file"
+                         :on-change (fn [e]
+                                      (let [fileList (-> e .-target .-files)]
+                                        (when (.-length fileList)
+                                          (let [f (first (array-seq fileList))]
+                                            (session/assoc-in! (spath id) (.-name f))
+                                            (when (fn? action)
+                                              (action e))))))}]
+     [:span.file-ctx {:class cta-class}
+      [:span.file-icon
+       [:i.fa.fa-upload]]
+      [:span.file-label
        (or label
            "Choose a file")]
-      [:span {:class (cs "file-name")}
+      [:span.file-name
        (if (session/get-in (spath id))
          (str (session/get-in (spath id)))
          "No file chosen")]]]]])
