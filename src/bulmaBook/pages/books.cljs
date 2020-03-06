@@ -40,7 +40,7 @@
     [form/horizontal-field "Pages" [[form/input :text :data.new-book.pages]]]
     [form/horizontal-field "ISBN" [[form/input :text :data.new-book.isbn]]]
     [form/horizontal-field nil
-     [[form/button "Save" save-new-book :button-class "is-success"]
+     [[form/button "Save" save-new-book :classes {:button "is-success"}]
       [form/button "Clear" clear-new-book]]]]])
 
 ;; (defn edit-book-page [bk]
@@ -60,7 +60,6 @@
 ;;     [form/horizontal-field "ISBN" [form/editable-field nil :isbn :text]]]])
 
 (defn filter-books [search-data]
-  (println (str "searching for: " search-data))
   (reset! book-list (filterv
                      (fn [m]
                        (or (string/includes? (str (:title m)) search-data)
@@ -79,7 +78,7 @@
                   :type :div
                   :content [form/button "New" #(session/assoc-in!
                                                 [:ui :books :page] :new-book)
-                            :button-class "is-success"])
+                            :classes {:button "is-success"}])
                 (deftoolbar-item
                   :class "is-hidden-table-only"
                   :content [form/field
@@ -87,7 +86,7 @@
                               :placeholder "Book name, ISBN, author"]
                              [form/button "Search"
                               #(filter-books (session/get-in [:data :search]))]]
-                            :field-class "has-addons"])]
+                            :classes {:field "has-addons"}])]
    :right-items [(deftoolbar-item
                    :content "Order by")
                  (deftoolbar-item

@@ -1,7 +1,8 @@
 (ns bulmaBook.data
   (:require [bulmaBook.components.navbar :refer [defnavbar-item]]
             [bulmaBook.components.sidebar :refer [defsidebar-item]]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [bulmaBook.components.icons :as icons]))
 
 (def user-data {:fred-example-com {:email "fred@example.com"
                                    :password "secret"
@@ -68,11 +69,12 @@
                     :title session-name
                     :is-hoverable true
                     :contents [(defnavbar-item :id :profile :contents "Profile"
-                                 :icon {:name "fa-user-circle-o"})
+                                 :icon-data (icons/deficon "fa-user-circle-o"))
                                (defnavbar-item :id :report-bug
-                                 :contents "Report Bug" :icon {:name "fa-bug"})
+                                 :contents "Report Bug"
+                                 :icon-data (icons/deficon "fa-bug"))
                                (defnavbar-item :id :sign-out :contents "Sign Out"
-                                 :icon {:name "fa-sign-out"})])]}
+                                 :icon-data (icons/deficon "fa-sign-out"))])]}
       {:sid navbar-id
        :has-hadow true
        :default-link :login
@@ -99,17 +101,17 @@
                             :title "Menu"
                             :items [(defsidebar-item
                                       :title "Dashboard"
-                                      :icon {:name "fa-tachometer"}
+                                      :icon-data (icons/deficon "fa-tachometer")
                                       :id :dashboard)
                                     (defsidebar-item
                                       :title "Books"
-                                      :icon {:name "fa-book"}
+                                      :icon-data (icons/deficon "fa-book")
                                       :id :books)
                                     (defsidebar-item
                                       :title "Customers"
-                                      :icon {:name "fa-address-book"}
+                                      :icon-data (icons/deficon "fa-address-book")
                                       :id :customers)
                                     (defsidebar-item
                                       :title "Orders"
-                                      :icon {:name "fa-file-text-o"}
+                                      :icon-data (icons/deficon "fa-file-text-o")
                                       :id :orders)])})

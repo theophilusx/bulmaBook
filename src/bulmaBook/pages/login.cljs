@@ -2,7 +2,8 @@
   (:require [bulmaBook.components.form :as form]
             [bulmaBook.data :as data]
             [bulmaBook.utils :refer [spath value->keyword]]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [bulmaBook.components.icons :as icons]))
 
 
 (defn do-login []
@@ -28,14 +29,13 @@
       [:div.column.is-5-tablet.is-4-desktop.is-3-widescreen
        [:form.box
         [form/field [[:img {:src "images/logo-bis.png" :width "1627"}]]
-         :field-class "has-text-centered"]
+         :classes {:field "has-text-centered"}]
         [form/input-field "Email" :email :login.email
-         :icon {:name "fa-envelope" :position :left :icon-class "is-small"}
+         :icon-data (icons/deficon "fa-envelope" :position :left :size :small)
          :placeholder "e.g. alexjohnson@example.com"
          :required true]
         [form/input-field "Password" :password :login.password
-         :icon {:name "fa-lock" :position :left :icon-class "is-small"}
+         :icon-data (icons/deficon "fa-lock" :position :left :size :small)
          :placeholder "secret" :required true]
         [form/checkbox "Remember me" :login.remember]
-        [form/button "Login" do-login
-         :button-class "is-success"]]]]]]])
+        [form/button "Login" do-login :classes {:button "is-success"}]]]]]]])

@@ -9,5 +9,4 @@
       :value :dashboard
       :active true}]]
    [:h2 "Default dashboard page"]
-   [form/file :data.file :is-boxed true :position :center
-    :file-class "is-primary"]])
+   [form/file :data.file :is-boxed true :classes {:file "is-primary"}]])
