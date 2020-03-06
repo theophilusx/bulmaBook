@@ -3,24 +3,23 @@
             [clojure.string :as string]
             [reagent.session :as session]))
 
-
 (defn media [body & {:keys [left right id class]}]
-  [:article.media {:class [class]
+  [:article.media {:class class
                    :id id}
    (when left
      (into
-      [:aside.media-left {:class [(:class left)]
+      [:aside.media-left {:class (:class left)
                           :id (:id left)}]
       (for [c (:content left)]
         c)))
    (into
-    [:div.media-content {:class [(:class body)]
+    [:div.media-content {:class (:class body)
                          :id (:id body)}]
     (for [c (:content body)]
       c))
    (when right
      (into
-      [:aside.media-right {:class [(:class right)]
+      [:aside.media-right {:class (:class right)
                            :id (:id right)}]
       (for [c (:content right)]
         c)))])
@@ -63,8 +62,8 @@
                   [:td [:strong (str k)]]
                   [:td (str (get m k))]])))])
 
-(defn breadcrumbs [id crumbs & {:keys [nav-class position separator size]}]
-  [:nav.breadcrumb {:class [nav-class
+(defn breadcrumbs [id crumbs & {:keys [class position separator size]}]
+  [:nav.breadcrumb {:class [class
                             (when position
                               (case position
                                 :center "is-centered"

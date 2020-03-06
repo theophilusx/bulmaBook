@@ -1,6 +1,6 @@
 (ns bulmaBook.components.sidebar
   (:require [bulmaBook.utils :refer [spath]]
-            [bulmaBook.components.basic :refer [icon-component]]
+            [bulmaBook.components.icons :as icons]
             [reagent.session :as session]))
 
 (defn is-active? [sid id]
@@ -19,8 +19,8 @@
         :id    (:id i)
         :on-click (fn []
                     (set-active sid (:id i)))}
-    (when (:icon i)
-      [icon-component (:icon i)])
+    (when (:icon-data i)
+      [icons/icon-component (:icon-data i)])
     (:title i)]])
 
 (defn make-menu [m sid]
@@ -41,20 +41,20 @@
           a nested sub-menu item. Defaults to `:item`.
   `:title` The title for sub-menus.
   `:href` The href for the link. Defaults to `#`.
-  `::id` An id attribute for the item. If not provided, defaults to a unique
+  `:id` An id attribute for the item. If not provided, defaults to a unique
          value with the prefix `side-bar-`.
-  `:icon` An icon data `map` (see `bulmaBook.components.basic`)
+  `:icon-data` An icon data `map` (see `bulmaBook.components.icons`)
   `:class` Any additional class attributes to add to the element.
   `:items` For items of type `:menu`, this key is a vector of `defsidebar-item`
            maps representing the sub-menu items."
-  [& {:keys [type title href icon id items class]
+  [& {:keys [type title href icon-data id items class]
       :or {type :item
            href "#"
            id (keyword (gensym "side-bar-"))}}]
   {:type type
    :title title
    :href href
-   :icon icon
+   :icon-data icon-data
    :id id
    :items items
    :class class})

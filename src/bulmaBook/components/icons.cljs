@@ -6,6 +6,7 @@
   component. Arguments are
   `name` - name of the font awesome icon
   `position` - position of the icon (:left or :right)
+  `size` - size as keyword. Supported are `:small`, `:medium` and `:large`
   `icon-class` - additional classes to add tot he `i` element
   `span-class` - additional classes to add to the enclosing `span` element."
   [name & {:keys [position span-class icon-class]}]
@@ -24,7 +25,12 @@
                          :right "is-right"
                          nil)]}
    [:i.fa {:class [(:name icon-data)
-                   (:icon-class icon-data)]}]])
+                   (:icon-class icon-data)
+                   (case (:size icon-data)
+                     :small "is-small"
+                     :medium "is-medium"
+                     :large "is-large"
+                     nil)]}]])
 
 (defn icon
   "Generates a `vector` of `icon` components from icon data. The `icon-data`
