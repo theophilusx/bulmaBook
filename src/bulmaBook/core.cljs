@@ -3,8 +3,8 @@
             [bulmaBook.data :as data]
             [bulmaBook.pages.core :refer [current-page]]
             [bulmaBook.pages.navbar :refer [top-navbar]]
+            [bulmaBook.store :as store]
             [reagent.core :as reagent ]
-            [reagent.session :as session]
             ;; [clojure.pprint :refer [pprint]]
             ))
 
@@ -23,8 +23,8 @@
 
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
-(session/assoc-in! [:data :book-data] data/book-data)
-(session/put! :users data/user-data)
+(store/assoc-in! store/global-state [:data :book-data] data/book-data)
+(store/put! store/global-state :users data/user-data)
 (mount-app)
 
 ;; specify reload hook with ^;after-load metadata
@@ -33,5 +33,5 @@
   ;; optionally touch your app-state to force rerendering depending on
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
-  (session/update-in! [:__figwheel_counter] inc)
+  (store/update-in! store/global-state [:__figwheel_counter] inc)
 )

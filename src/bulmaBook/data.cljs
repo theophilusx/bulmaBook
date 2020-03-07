@@ -1,7 +1,7 @@
 (ns bulmaBook.data
   (:require [bulmaBook.components.navbar :refer [defnavbar-item]]
             [bulmaBook.components.sidebar :refer [defsidebar-item]]
-            [reagent.session :as session]
+            [bulmaBook.store :as store]
             [bulmaBook.components.icons :as icons]))
 
 (def user-data {:fred-example-com {:email "fred@example.com"
@@ -47,7 +47,7 @@
 (def navbar-id :ui.navbar)
 
 (defn get-navabar-data []
-  (let [session-name (session/get-in [:session :user :name])]
+  (let [session-name (store/get-in store/global-state [:session :user :name])]
     (if session-name
       {:sid navbar-id
        :has-shadow true
