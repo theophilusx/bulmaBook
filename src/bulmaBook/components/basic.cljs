@@ -1,7 +1,7 @@
 (ns bulmaBook.components.basic
   (:require [bulmaBook.utils :refer [spath]]
             [clojure.string :as string]
-            [reagent.session :as session]))
+            [bulmaBook.store :as store]))
 
 (defn media [body & {:keys [left right id class]}]
   [:article.media {:class class
@@ -91,7 +91,8 @@
         [:li {:class (when (:active c)
                        "is-active")}
          [:a {:href "#"
-              :on-click #(session/assoc-in! (spath id) (:value c))}
+              :on-click #(store/assoc-in! store/global-state (spath id)
+                                          (:value c))}
           [:span.icon {:class (when (contains? (:icon c) :size)
                                 (case (:size (:icon c))
                                   :small "is-small"
@@ -104,5 +105,6 @@
         [:li {:class (when (:active c)
                        "is-active")}
          [:a {:href "#"
-              :on-click #(session/assoc-in! (spath id) (:value c))}
+              :on-click #(store/assoc-in! store/global-state (spath id)
+                                          (:value c))}
           (:name c)]])))])
