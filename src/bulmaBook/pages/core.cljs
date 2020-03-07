@@ -6,28 +6,28 @@
             [bulmaBook.pages.profile :refer [profile]]
             [bulmaBook.pages.bug :refer [bug-report]]
             [bulmaBook.components.basic :refer [render-map]]
-            [reagent.session :as session]
+            [bulmaBook.store :as store]
             [bulmaBook.data :as data]))
 
 (defn current-page []
-  (condp = (session/get-in (spath data/navbar-id))
+  (case (store/get-in store/global-state (spath data/navbar-id))
     :home [home-page]
-    :profile [:div
+    :profile [:<>
               [profile]
-              [render-map @session/state]]
-    :report-bug [:div
+              [render-map @store/global-state]]
+    :report-bug [:<>
                  [bug-report]
-                 [render-map @session/state]]
-    :sign-out [:div
+                 [render-map @store/global-state]]
+    :sign-out [:<>
                [:h2.h2.title "Sign Out page goes here"]
-               [render-map @session/state]]
-    :login [:div
+               [render-map @store/global-state]]
+    :login [:<>
             [login]
-            [render-map @session/state]]
-    :register [:div
+            [render-map @store/global-state]]
+    :register [:<>
                [register]
-               [render-map @session/state]]
-    [:div
-     [:h2.h2.title "Bad page name: " (session/get-in
-                                      (spath data/navbar-id))]
-     [render-map @session/state]]))
+               [render-map @store/global-state]]
+    [:<>
+     [:h2.h2.title "Bad page name: " (store/get-in store/global-state
+                                      (spath data/navbar-id) "nil")]
+     [render-map @store/global-state]]))

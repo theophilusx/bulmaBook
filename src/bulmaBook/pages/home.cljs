@@ -4,16 +4,17 @@
             [bulmaBook.pages.books :refer [books-page new-book-page]]
             [bulmaBook.pages.dashboard :refer [dashboard-page]]
             [bulmaBook.data :as data]
-            [reagent.session :as session]))
+            [bulmaBook.store :as store]))
 
 (defn home-page []
-  [:div
+  [:<>
    [:div.columns
     [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
      [sidebar data/books-sidebar]]
     [:div.column
-     (condp = (session/get-in [:ui :books :sidebar])
-       :books (if (= (session/get-in [:ui :books :page]) :new-book)
+     (condp = (store/get-in store/global-state [:ui :books :sidebar])
+       :books (if (= (store/get-in store/global-state
+                                   [:ui :books :page]) :new-book)
                 [new-book-page]
                 [books-page])
        :dashboard [dashboard-page]
@@ -24,11 +25,10 @@
                 [:h2.title.is-2
                  (str "Default Orders Page")]]
        [:div
-        [:h2.title.is-2 (str "Unknown sub-page name: " (session/get-in [:books-sidebar :choice]))]]
-       )]]
+        [:h2.title.is-2 (str "Unknown sub-page name: "
+                             (store/get-in store/global-state
+                                           [:books-sidebar :choice]))]])]]
    [:div.columns
     [:div.column
      [:h4.title.is-4 "Global State"]
-     [:div (render-map @session/state)]]]
-   ]
-  )
+     [:div (render-map @store/global-state)]]]])

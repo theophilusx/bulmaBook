@@ -2,30 +2,36 @@
   (:require [bulmaBook.components.basic :refer [media breadcrumbs breadcrumbs]]
             [bulmaBook.components.paginate :refer [paginate]]
             [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
-            [bulmaBook.components.form :as form]
-            [reagent.session :as session]
+            [bulmaBook.components.inputs :as inputs]
+            [bulmaBook.store :as store]
             [reagent.core :as r]
             [clojure.string :as string]))
 
-(def book-list (r/atom (session/get-in [:data :book-data])))
-(def new-book-id :ui.books.new-book)
+(def book-list (r/atom (store/get-in store/global-state [:data :book-data])))
 
-(defn save-new-book []
-  (let [bk {:title (session/get-in! [:data :new-book :title])
-            :image (session/get-in! [:data :new-book :image])
-            :cost (session/get-in! [:data :new-book :cost])
-            :pages (session/get-in! [:data :new-book :pages])
-            :isbn (session/get-in! [:data :new-book :isbn])}]
-    (session/update-in! [:data :book-data] conj bk)
-    (reset! book-list (session/get-in [:data :book-data]))
-    (session/assoc-in! [:ui :books :page] :books)))
+(defn save-new-book [place]
+  (store/update-in! store/global-state [:data :book-data] conj @place)
+  (store/clear! place)
+  (store/assoc-in! store/global-state [:ui :books :page] :books))
 
-(defn clear-new-book []
-  (session/assoc-in! [:data :new-book] {})
-  (session/assoc-in! [:ui :books :page] :books))
+(defn clear-new-book [place]
+  (store/clear! place)
+  (store/assoc-in! store/global-state [:ui :books :page] :books))
+
+(defn new-book-form []
+  (let [doc (r/atom {})]
+    (fn []
+      [:form.box
+       [inputs/horizontal-field "Title" [[inputs/input :text :title :modal doc]]]
+       [inputs/horizontal-field "Image" [[inputs/input :text :image :modal doc]]]
+       [inputs/horizontal-field "Cost" [[inputs/input :text :cost :modal doc]]]
+       [inputs/horizontal-field "Pages" [[inputs/input :text :pages :modal doc]]]
+       [inputs/horizontal-field "ISBN" [[inputs/input :text :isbn :modal doc]]]
+       [inputs/button "Save" #(save-new-book doc)
+        :classes {:button "is-success"}]])))
 
 (defn new-book-page []
-  [:div
+  [:<>
    [breadcrumbs :ui.books.page
     [{:name "Books"
       :value :books
@@ -33,15 +39,7 @@
      {:name "New Book"
       :value :new-book
       :active true}]]
-   [:form.box
-    [form/horizontal-field "Title" [[form/input :text :data.new-book.title]]]
-    [form/horizontal-field "Image" [[form/input :text :data.new-book.image]]]
-    [form/horizontal-field "Cost" [[form/input :text :data.new-book.cost]]]
-    [form/horizontal-field "Pages" [[form/input :text :data.new-book.pages]]]
-    [form/horizontal-field "ISBN" [[form/input :text :data.new-book.isbn]]]
-    [form/horizontal-field nil
-     [[form/button "Save" save-new-book :classes {:button "is-success"}]
-      [form/button "Clear" clear-new-book]]]]])
+   [new-book-form]])
 
 ;; (defn edit-book-page [bk]
 ;;   [:div
@@ -59,42 +57,43 @@
 ;;     [form/horizontal-field "Pages" [form/editable-field nil :pages :text]]
 ;;     [form/horizontal-field "ISBN" [form/editable-field nil :isbn :text]]]])
 
-(defn filter-books [search-data]
-  (reset! book-list (filterv
-                     (fn [m]
-                       (or (string/includes? (str (:title m)) search-data)
-                           (string/includes? (str (:cost m)) search-data)
-                           (string/includes? (str (:pages m)) search-data)
-                           (string/includes? (str (:isbn m)) search-data)))
-                     (session/get-in [:data :book-data]))))
+(defn filter-books [search-term]
+  (println (str "search term: " search-term))
+  (store/reset! book-list (filterv
+                           (fn [m]
+                             (or (string/includes? (str (:title m)) search-term)
+                                 (string/includes? (str (:cost m)) search-term)
+                                 (string/includes? (str (:pages m)) search-term)
+                                 (string/includes? (str (:isbn m)) search-term)))
+                           (store/get-in store/global-state [:data :book-data]))))
 
 (defn get-toolbar-data []
   {:left-items [(deftoolbar-item
                   :content [:p.subtitle.is-5
                             [:strong
-                             (count (session/get-in [:data :book-data]))]
+                             (count (store/get-in store/global-state
+                                                  [:data :book-data]))]
                             " books"])
                 (deftoolbar-item
                   :type :div
-                  :content [form/button "New" #(session/assoc-in!
-                                                [:ui :books :page] :new-book)
-                            :classes {:button "is-success"}])
+                  :content
+                  [inputs/button "New" #(store/assoc-in!
+                                       store/global-state
+                                       [:ui :books :page] :new-book)
+                   :classes {:button "is-success"}])
                 (deftoolbar-item
                   :class "is-hidden-table-only"
-                  :content [form/field
-                            [[form/input :text :data.search
-                              :placeholder "Book name, ISBN, author"]
-                             [form/button "Search"
-                              #(filter-books (session/get-in [:data :search]))]]
-                            :classes {:field "has-addons"}])]
+                  :content [inputs/search filter-books
+                            :placeholder "Title, ISBN, etc"])]
    :right-items [(deftoolbar-item
                    :content "Order by")
                  (deftoolbar-item
-                   :content [form/select-field :data.sort
-                             [[form/option "Title" :title]
-                              [form/option "Price" :cost]
-                              [form/option "Page Count" :pages]
-                              [form/option "ISBN" :isbn]]])]})
+                   :content [inputs/select-field :data.sort
+                             [[inputs/option "Title" :title]
+                              [inputs/option "Price" :cost]
+                              [inputs/option "Page Count" :pages]
+                              [inputs/option "ISBN" :isbn]]
+                             :model store/global-state])]})
 
 (defn book-component [book]
   [:article.box
@@ -118,11 +117,13 @@
      [book-component b])))
 
 (defn books-page []
-  (reset! book-list (session/get-in [:data :book-data]))
+  (reset! book-list (store/get-in store/global-state [:data :book-data]))
   (fn []
-    (when (session/get-in [:data :sort])
-      (reset! book-list (vec (sort-by (session/get-in [:data :sort])
-                                      (session/get-in [:data :book-data])))))
+    (when (store/get-in store/global-state [:data :sort])
+      (reset! book-list (vec (sort-by (store/get-in store/global-state
+                                                    [:data :sort])
+                                      (store/get-in store/global-state
+                                                    [:data :book-data])))))
     [:div
      [breadcrumbs :ui.books.page
       [{:name "Books"

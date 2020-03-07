@@ -1,22 +1,31 @@
 (ns bulmaBook.pages.profile
-  (:require [bulmaBook.components.form :as form]
+  (:require [bulmaBook.components.inputs :as inputs]
             [bulmaBook.utils :refer [value->keyword]]
-            [reagent.session :as session]))
+            [bulmaBook.store :as store]
+            [reagent.core :as r]))
+
+(defn profile-edit-form []
+  (let [doc (r/atom {})
+        email-key (value->keyword (store/get-in
+                                   store/global-state [:session :user :email]))]
+    (fn []
+      [:form.box
+       [inputs/horizontal-field "Email"
+        [[inputs/field [[:div.content
+                       (store/get-in store/global-state
+                                     [:session :user :email])]]]]]
+       [inputs/horizontal-field "First Name"
+        [[inputs/editable-field nil
+          (keyword (str "users." (name email-key) ".first-name")) :text
+          :model doc]]]
+       [inputs/horizontal-field "Last Name"
+        [[inputs/editable-field nil
+          (keyword (str "users." (name email-key) ".first-name")) :text
+          :model doc]]]])))
 
 (defn profile []
-  (let [email-key (value->keyword (session/get-in [:session :user :email]))]
-    [:section
-     [:div.container
-      [:div.columns.is-centered
-       [:div.column.is-6-tablet.is-7-desktop.is-5-widescreen
-        [:form.box
-         [:h2.title.is-2 "User Profile"]
-         [form/horizontal-field "Email"
-          [[form/field [[:div.content
-                         (session/get-in [:session :user :email])]]]]]
-         [form/horizontal-field "First Name"
-          [[form/editable-field nil
-            (keyword (str "users." (name email-key) ".first-name")) :text]]]
-         [form/horizontal-field "Last Name"
-          [[form/editable-field nil
-            (keyword (str "users." (name email-key) ".first-name")) :text]]]]]]]]))
+  [:section
+   [:div.container
+    [:div.columns.is-centered
+     [:div.column.is-6-tablet.is-7-desktop.is-5-widescreen
+      [profile-edit-form]]]]])

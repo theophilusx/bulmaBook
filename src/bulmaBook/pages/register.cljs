@@ -1,38 +1,46 @@
 (ns bulmaBook.pages.register
-  (:require [bulmaBook.components.form :as form]
-            [reagent.session :as session]
+  (:require [bulmaBook.components.inputs :as inputs]
+            [bulmaBook.components.icons :as icons]
             [bulmaBook.data :as data]
-            [bulmaBook.utils :refer [spath value->keyword]]))
+            [bulmaBook.store :as store]
+            [bulmaBook.utils :refer [spath value->keyword]]
+            [reagent.core :as r]))
 
-(defn do-registration []
-  (let [reg (session/get :register)
-        email-key (value->keyword (:email reg))]
-    (if-not (contains? (session/get :users) email-key)
+(defn do-registration [place]
+  (let [email-key (value->keyword (:email @place))]
+    (if-not (contains? (store/get store/global-state :users) email-key)
       (do
-        (session/assoc-in! [:users email-key] reg)
-        (session/remove! :register)
-        (session/assoc-in! (spath data/navbar-id) :login))
+        (store/assoc-in! store/global-state [:users email-key] @place)
+        (store/clear! place)
+        (store/assoc-in! store/global-state (spath data/navbar-id) :login))
       (println "Registration failed: Email already exists"))))
+
+(defn register-form []
+  (let [doc (r/atom {})]
+    (fn []
+      [:form.box
+       [inputs/horizontal-field "Email"
+        [[inputs/input :email :email :classes {:control "has-icons-left"}
+          :icon-data (icons/deficon "fa-envelope" :position :left
+                       :icon-class "is-small")
+          :placeholder "e.g. alexjohnson@example.com" :required true
+          :model doc]]]
+       [inputs/horizontal-field "Password"
+        [[inputs/input :password :password
+          :icon-data (icons/deficon "fa-lock" :position :left
+                       :icon-class "is-small")
+          :placeholder "secret" :required true :model doc]]]
+       [inputs/horizontal-field "Name"
+        [[inputs/input :text :first-name :required true
+          :placeholder "First name" :model doc]
+         [inputs/input :text :last-name :required true
+          :placeholder "Last name" :model doc]]]
+       [inputs/button "Register" #(do-registration doc)
+        :classes {:button "is-success"}]])))
 
 (defn register []
   [:section
    [:div.container
     [:div.columns.is-centered
      [:div.column.is-6-tablet.is-7-desktop.is-5-widescreen
-      [:form.box
-       [:h2.title.is-2 "Register Account"]
-       [form/horizontal-field "Email"
-        [[form/input :email :register.email :control-class "has-icons-left"
-          :icon {:name "fa-envelope" :position :left :icon-class "is-small"}
-          :placeholder "e.g. alexjohnson@example.com" :required true]]]
-       [form/horizontal-field "Password"
-        [[form/input :password :register.password
-          :icon {:name "fa-lock" :position :left :icon-class "is-small"}
-          :placeholder "secret" :required true]]]
-       [form/horizontal-field "Name"
-        [[form/input :text :register.first-name :required true
-          :placeholder "First name"]
-         [form/input :text :register.last-name :required true
-          :placeholder "Last name"]]]
-       [form/button "Login" do-registration
-        :button-class "is-success"]]]]]] )
+      [register-form]]]]] )

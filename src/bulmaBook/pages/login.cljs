@@ -1,41 +1,50 @@
 (ns bulmaBook.pages.login
-  (:require [bulmaBook.components.form :as form]
+  (:require [bulmaBook.components.inputs :as inputs]
             [bulmaBook.data :as data]
             [bulmaBook.utils :refer [spath value->keyword]]
-            [reagent.session :as session]
-            [bulmaBook.components.icons :as icons]))
+            [bulmaBook.store :as store]
+            [bulmaBook.components.icons :as icons]
+            [reagent.core :as r]))
 
 
-(defn do-login []
-  (let [email-key (value->keyword (session/get-in [:login :email]))
-        user-profile (session/get-in [:users email-key])]
-    (if (= (session/get-in [:login :password]) (:password user-profile))
+(defn do-login [place]
+  (println (str "Place: " @place))
+  (let [email-key (value->keyword (store/get-in place [:email]))
+        user-profile (store/get-in store/global-state [:users email-key])]
+    (println (str "email key: " email-key))
+    (println (str "profile: " user-profile))
+    (if (= (store/get-in place [:password]) (:password user-profile))
       (do
-        (session/assoc-in! [:session :user] {:name (str
-                                                    (:first-name user-profile) " "
-                                                    (:last-name user-profile))
-                                             :email (:email user-profile)})
-        (session/remove! :login)
-        (session/assoc-in! (spath data/navbar-id) :home))
+        (store/assoc-in! store/global-state [:session :user]
+                         {:name (str
+                                 (:first-name user-profile) " "
+                                 (:last-name user-profile))
+                          :email (:email user-profile)})
+        (store/clear! place)
+        (store/assoc-in! store/global-state (spath data/navbar-id) :home))
       (println "Bad user or login password"))))
 
-(defn login
-  "Initial go at the login component. Lots more to do!"
-  []
+(defn login-form []
+  (let [doc (r/atom {})]
+    (fn []
+      [:form.box
+       [inputs/field [[:img {:src "images/logo-bis.png" :width "1627"}]]
+        :classes {:field "has-text-centered"}]
+       [inputs/input-field "Email" :email :email
+        :icon-data (icons/deficon "fa-envelope" :position :left :size :small)
+        :placeholder "e.g. alexjohnson@example.com"
+        :required true :model doc]
+       [inputs/input-field "Password" :password :password
+        :icon-data (icons/deficon "fa-lock" :position :left :size :small)
+        :placeholder "secret" :required true :model doc]
+       [inputs/checkbox "Remember me" :remember :model doc]
+       [inputs/button "Login" #(do-login doc)
+        :classes {:button "is-success"}]])))
+
+(defn login []
   [:section.hero.is-primary.is-fullheight
    [:div.hero-body
     [:div.container
      [:div.columns.is-centered
       [:div.column.is-5-tablet.is-4-desktop.is-3-widescreen
-       [:form.box
-        [form/field [[:img {:src "images/logo-bis.png" :width "1627"}]]
-         :classes {:field "has-text-centered"}]
-        [form/input-field "Email" :email :login.email
-         :icon-data (icons/deficon "fa-envelope" :position :left :size :small)
-         :placeholder "e.g. alexjohnson@example.com"
-         :required true]
-        [form/input-field "Password" :password :login.password
-         :icon-data (icons/deficon "fa-lock" :position :left :size :small)
-         :placeholder "secret" :required true]
-        [form/checkbox "Remember me" :login.remember]
-        [form/button "Login" do-login :classes {:button "is-success"}]]]]]]])
+       [login-form]]]]]])

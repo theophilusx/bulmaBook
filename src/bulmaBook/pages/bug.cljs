@@ -1,18 +1,30 @@
 (ns bulmaBook.pages.bug
-  (:require [reagent.session :as session]
+  (:require [bulmaBook.store :as store]
             [bulmaBook.utils :refer [spath]]
-            [bulmaBook.components.form :as form]
-            [bulmaBook.data :as data]))
+            [bulmaBook.components.inputs :as inputs]
+            [bulmaBook.data :as data]
+            [reagent.core :as r]))
 
-(defn do-report []
-  (let [idx (count (session/get-in [:data :bug-reports]))]
-    (session/assoc-in! [:data :bug-reports (keyword (str "bug-" idx))]
-                       {:subject (session/get-in [:bug :subject])
-                        :expected (session/get-in [:bug :expected])
-                        :actual (session/get-in [:bug :actual])
-                        :reproduce (session/get-in [:bug :reproduce])})
-    (session/remove! :bug)
-    (session/assoc-in! (spath data/navbar-id) :home)))
+(defn do-report [place]
+  (let [idx (count (store/get-in store/global-state [:data :bug-reports]))]
+    (store/assoc-in! store/global-state
+                     [:data :bug-reports (keyword (str "bug-" idx))] @place)
+    (store/clear! place)
+    (store/assoc-in! store/global-state (spath data/navbar-id) :home)))
+
+(defn bug-form []
+  (let [doc (r/atom {})]
+    (fn []
+      [:form.box
+       [inputs/horizontal-field "Subject"
+        [[inputs/input :text :subject :modal doc]]]
+       [inputs/horizontal-field "Expected Behaviour"
+        [[inputs/textarea nil :expected
+          :placeholder "What did you expect to happen?" :modal doc]]]
+       [inputs/horizontal-field "Actual Behaviour"
+        [[inputs/textarea nil :actual :placeholder "What did you observe?"
+          :modal doc]]]
+       [inputs/button "Submit" #(do-report doc) :classes {:button "is-success"}]])))
 
 (defn bug-report []
   [:section
@@ -26,10 +38,4 @@
         [:li "Platform and browser version"]
         [:li "Minimal set of steps to follow to reproduce the issue"]
         [:li "Any special or specific configuration used"]]]
-      [form/horizontal-field "Subject"
-       [[form/input :text :bug.subject]]]
-      [form/horizontal-field "Expected Behaviour"
-       [[form/textarea nil :bug.expected :placeholder "What did you expect to happen?"]]]
-      [form/horizontal-field "Actual Behaviour"
-       [[form/textarea nil :bug.actual :placeholder "What did you observe?"]]]
-      [form/button "Submit" do-report :button-class "is-primary"]]]]])
+      [bug-form]]]]])
