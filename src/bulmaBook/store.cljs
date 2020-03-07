@@ -13,6 +13,8 @@
 ;; with problems managing too many separate atoms. It is important that all
 ;; atoms are reagent.core/atoms.
 
+(defonce global-state (reagent/atom {}))
+
 (defn cursor
   "Returns a cursor from the state atom. `state` is the reagent atom while
   `ks` are the keys (path) into the atom."
@@ -26,7 +28,7 @@
     (if-not (nil? temp-a) temp-a default)))
 
 (defn put! [state k v]
-  (reagent/rswap! state assoc k v))
+  (clojure.core/swap! state assoc k v))
 
 (defn get-in
  "Gets the value at the path specified by the vector ks from the session,
@@ -39,7 +41,7 @@
   "Replace the current session's value with the result of executing f with
   the current value and args."
   [state f & args]
-  (apply reagent/rswap! state f args))
+  (apply clojure.core/swap! state f args))
 
 (defn clear!
   "Remove all data from the session and start over cleanly."
@@ -52,7 +54,7 @@
 (defn remove!
   "Remove a key from the session"
   [state k]
-  (reagent/rswap! state dissoc k))
+  (clojure.core/swap! state dissoc k))
 
 (defn assoc-in!
   "Associates a value in the session, where ks is a
@@ -60,7 +62,7 @@
    a new nested structure. If any levels do not exist,
    hash-maps will be created."
   [state ks v]
-  (reagent/rswap! state assoc-in  ks v))
+  (clojure.core/swap! state assoc-in  ks v))
 
 (defn get!
   "Destructive get from the session. This returns the current value of the key
@@ -84,7 +86,7 @@
    supplied args and return the new value. If key is not
    present it will be added."
   [state k f & args]
-  (reagent/rswap!
+  (clojure.core/swap!
     state
     #(apply (partial update % k f) args)))
 
@@ -95,6 +97,6 @@
    the new value. If any levels do not exist, hash-maps
    will be created."
   [state ks f & args]
-  (reagent/rswap!
+  (clojure.core/swap!
     state
     #(apply (partial update-in % ks f) args)))
