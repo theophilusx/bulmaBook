@@ -124,7 +124,9 @@
                                           :classes (:cancel-button classes)]]
                                   :classes {:field "has-addons"}]]
          :classes (:field-edit classes)]
-        [horizontal-field label [[field [(str (:value @doc))
+        [horizontal-field label [[field [(if (= type :password)
+                                           "********"
+                                           (str (:value @doc)))
                                          [:span.icon
                                           {:on-click #(store/update!
                                                        doc
