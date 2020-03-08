@@ -13,36 +13,42 @@
                                    :first-name "Barney"
                                    :last-name "Rubble"}})
 
-(def book-data [{:title "TensorFlow For Machine Intelligence"
-                 :image "images/tensorflow.jpg"
-                 :cost "$22.99"
-                 :pages 270
-                 :isbn "9781939902351"}
-                {:title "Docker in Production"
-                 :image "images/docker.jpg"
-                 :cost "$22.99"
-                 :pages 156
-                 :isbn "9781939902184"}
-                {:title "Developing a Gulp.js Edge"
-                 :image "images/gulp.jpg"
-                 :cost "$22.99"
-                 :pages 134
-                 :isbn "9781939902146"}
-                {:title "Learning Swift"
-                 :image "images/swift.jpg"
-                 :cost "$22.99"
-                 :pages 342
-                 :isbn "9781939902115"}
-                {:title "Choosing a JavaScript Framework"
-                 :image "images/js-framework.jpg"
-                 :cost "19.99"
-                 :pages 96
-                 :isbn "9781939902092"}
-                {:title "Deconstructing Google Cardboard Apps"
-                 :image "images/google-cardboard.jpg"
-                 :cost "$22.99"
-                 :pages 179
-                 :isbn "9781939902092245"}])
+(def book-data {:bk1 {:id :bk1
+                      :title "TensorFlow For Machine Intelligence"
+                      :image "images/tensorflow.jpg"
+                      :cost "$22.99"
+                      :pages 270
+                      :isbn "9781939902351"}
+                :bk2 {:id :bk2
+                      :title "Docker in Production"
+                      :image "images/docker.jpg"
+                      :cost "$22.99"
+                      :pages 156
+                      :isbn "9781939902184"}
+                :bk3 {:id :bk3
+                      :title "Developing a Gulp.js Edge"
+                      :image "images/gulp.jpg"
+                      :cost "$22.99"
+                      :pages 134
+                      :isbn "9781939902146"}
+                :bk4 {:id :bk4
+                      :title "Learning Swift"
+                      :image "images/swift.jpg"
+                      :cost "$22.99"
+                      :pages 342
+                      :isbn "9781939902115"}
+                :bk5 {:id :bk5
+                      :title "Choosing a JavaScript Framework"
+                      :image "images/js-framework.jpg"
+                      :cost "19.99"
+                      :pages 96
+                      :isbn "9781939902092"}
+                :bk6 {:id :bk6
+                      :title "Deconstructing Google Cardboard Apps"
+                      :image "images/google-cardboard.jpg"
+                      :cost "$22.99"
+                      :pages 179
+                      :isbn "9781939902092245"}})
 
 (def navbar-id :ui.navbar)
 
