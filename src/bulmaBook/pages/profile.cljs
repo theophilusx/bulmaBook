@@ -1,31 +1,34 @@
 (ns bulmaBook.pages.profile
   (:require [bulmaBook.components.inputs :as inputs]
+            [bulmaBook.components.basic :as basic]
             [bulmaBook.utils :refer [value->keyword]]
-            [bulmaBook.store :as store]
-            [reagent.core :as r]))
+            [bulmaBook.store :as store]))
 
 (defn profile-edit-form []
-  (let [doc (r/atom {})
-        email-key (value->keyword (store/get-in
-                                   store/global-state [:session :user :email]))]
-    (fn []
-      [:form.box
-       [inputs/horizontal-field "Email"
-        [[inputs/field [[:div.content
+  (let [email-key (value->keyword (store/get-in
+                                   store/global-state [:session :user :email]))
+        fname-sid (keyword (str "users." (name email-key) ".first-name"))
+        lname-sid (keyword (str "users." (name email-key) ".last-name"))
+        pwd-sid (keyword (str "users." (name email-key) ".password"))
+        classes {:save-button {:button "is-success"}}]
+    [:form.box
+     [inputs/horizontal-field "Email"
+      [[inputs/field [[:div.content
                        (store/get-in store/global-state
                                      [:session :user :email])]]]]]
-       [inputs/horizontal-field "First Name"
-        [[inputs/editable-field nil
-          (keyword (str "users." (name email-key) ".first-name")) :text
-          :model doc]]]
-       [inputs/horizontal-field "Last Name"
-        [[inputs/editable-field nil
-          (keyword (str "users." (name email-key) ".first-name")) :text
-          :model doc]]]])))
+     [inputs/editable-field :text store/global-state fname-sid
+      :label "First Name" :classes classes]
+     [inputs/editable-field :text store/global-state lname-sid
+      :label "Last Name" :classes classes]
+     [inputs/editable-field :password store/global-state pwd-sid
+      :label "Password" :classes classes]]))
 
 (defn profile []
-  [:section
-   [:div.container
-    [:div.columns.is-centered
-     [:div.column.is-6-tablet.is-7-desktop.is-5-widescreen
-      [profile-edit-form]]]]])
+  [:<>
+   [:div.columns
+    [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen]
+    [:div.column
+     [basic/breadcrumbs :ui.navbar [{:name "Profile"
+                                     :value :profile
+                                     :active true}]]
+     [profile-edit-form]]]])
