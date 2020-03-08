@@ -106,31 +106,31 @@
                      :on-click action}
      title]]])
 
-(defn editable-field [_ sid _ model & _]
-  (let [doc (r/atom {:value (store/get-in model (spath sid))
+(defn editable-field [_ src sid & _]
+  (let [doc (r/atom {:value (store/get-in src (spath sid))
                      :editing false})
-        chg-fn #(store/put! doc :value (value-of %))]
-    (fn [label sid type model & {:keys [classes]}]
-      (if (get @doc :editing)
-        [:div.field.is-grouped {:class (:field classes)}
-         (when label
-           [:label.label {:class (:label classes)} label])
-         [:p.control {:class (:control classes)}
-          input-helper type sid doc chg-fn :class (:input classes)]
-         [:p.control
-          [button "Save" #(store/assoc-in! model (spath sid) (:value @doc))
-           :classes {:button "is-primary is-small"}]]
-         [:p.control
-          [button "Reset" #(store/put! doc :value
-                                        (store/get-in model (spath sid)))
-           :classes {:button "is-small"}]]]
-        [:div.field {:class (:field classes)}
-         (when label
-           [:label.label {:class (:label classes)} label])
-         [:p.control {:class (:control classes)}
-          (str (:value @doc) " ")
-          [:span.icon {:on-click #(store/put! doc :editing true)}
-           [:i.fa.fa-pencil]]]]))))
+        save-fn (fn []
+                  (store/assoc-in! src (spath sid) (:value @doc))
+                  (store/update! doc :editing not))
+        cancel-fn (fn []
+                    (store/put! doc :value (store/get-in src (spath sid)))
+                    (store/update! doc :editing not))]
+    (fn [type _ _ & {:keys [label classes]}]
+      (if (:editing @doc)
+        [horizontal-field label [[field [[input type :value :model doc]
+                                         [button "Save" save-fn
+                                          :classes (:save-button classes)]
+                                         [button "Cancel" cancel-fn
+                                          :classes (:cancel-button classes)]]
+                                  :classes {:field "has-addons"}]]
+         :classes (:field-edit classes)]
+        [horizontal-field label [[field [(str (:value @doc))
+                                         [:span.icon
+                                          {:on-click #(store/update!
+                                                       doc
+                                                       :editing not)}
+                                          [:i.fa.fa-pencil]]]]]
+         :classes (:field-view classes)]))))
 
 (defn textarea [_ sid & {:keys [model change-fn]}]
   (let [doc (or model
