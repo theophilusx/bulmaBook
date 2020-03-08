@@ -28,7 +28,4 @@
         [:h2.title.is-2 (str "Unknown sub-page name: "
                              (store/get-in store/global-state
                                            [:books-sidebar :choice]))]])]]
-   [:div.columns
-    [:div.column
-     [:h4.title.is-4 "Global State"]
-     [:div (render-map @store/global-state)]]]])
+   ])

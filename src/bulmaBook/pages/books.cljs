@@ -58,7 +58,6 @@
 ;;     [form/horizontal-field "ISBN" [form/editable-field nil :isbn :text]]]])
 
 (defn filter-books [search-term]
-  (println (str "search term: " search-term))
   (store/reset! book-list (filterv
                            (fn [m]
                              (or (string/includes? (str (:title m)) search-term)

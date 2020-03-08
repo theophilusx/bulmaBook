@@ -8,11 +8,8 @@
 
 
 (defn do-login [place]
-  (println (str "Place: " @place))
   (let [email-key (value->keyword (store/get-in place [:email]))
         user-profile (store/get-in store/global-state [:users email-key])]
-    (println (str "email key: " email-key))
-    (println (str "profile: " user-profile))
     (if (= (store/get-in place [:password]) (:password user-profile))
       (do
         (store/assoc-in! store/global-state [:session :user]
