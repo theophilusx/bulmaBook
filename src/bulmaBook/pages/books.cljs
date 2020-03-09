@@ -1,5 +1,5 @@
 (ns bulmaBook.pages.books
-  (:require [bulmaBook.components.basic :refer [media breadcrumbs breadcrumbs]]
+  (:require [bulmaBook.components.basic :refer [media breadcrumbs]]
             [bulmaBook.components.paginate :refer [paginate]]
             [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
             [bulmaBook.components.inputs :as inputs]
@@ -222,11 +222,11 @@
      [book-component b])))
 
 (defn books-list-page []
-  (reset! book-list (books->vec))
+  (store/reset! book-list (books->vec))
   (fn []
     (when (get-sort-field)
       (reset! book-list (vec (sort-by (get-sort-field) (books->vec)))))
-    [:div
+    [:<>
      [breadcrumbs :ui.books.page
       [{:name "Books"
         :value :books

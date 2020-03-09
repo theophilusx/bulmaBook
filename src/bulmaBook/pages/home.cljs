@@ -2,6 +2,7 @@
   (:require [bulmaBook.components.sidebar :refer [sidebar]]
             [bulmaBook.pages.books :refer [books-page]]
             [bulmaBook.pages.dashboard :refer [dashboard-page]]
+            [bulmaBook.pages.customers :refer [customers-page]]
             [bulmaBook.data :as data]
             [bulmaBook.store :as store]))
 
@@ -14,9 +15,7 @@
      (condp = (store/get-in store/global-state [:ui :books :sidebar])
        :books [books-page]
        :dashboard [dashboard-page]
-       :customers [:div
-                   [:h2.title.is-2
-                    (str "Default Customers Page")]]
+       :customers [customers-page]
        :orders [:div
                 [:h2.title.is-2
                  (str "Default Orders Page")]]
