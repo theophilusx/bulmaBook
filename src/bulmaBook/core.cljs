@@ -25,6 +25,7 @@
 ;; this is particularly helpful for testing this ns without launching the app
 (store/assoc-in! store/global-state [:data :book-data] data/book-data)
 (store/put! store/global-state :users data/user-data)
+(store/assoc-in! store/global-state [:data :customer-data] data/customer-data)
 (mount-app)
 
 ;; specify reload hook with ^;after-load metadata

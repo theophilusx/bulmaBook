@@ -50,6 +50,37 @@
                       :pages 179
                       :isbn "9781939902092245"}})
 
+(def customer-data {:cs1 {:id :cs1
+                          :title "Mr"
+                          :first-name "John"
+                          :last-name "Miller"
+                          :email "johnmiller@example.com"
+                          :street1 "100 Donald Av."
+                          :street2 nil
+                          :city "Smallville"
+                          :pcode "4432"
+                          :country "United States"}
+                    :cs2 {:id :cs2
+                          :title "Ms"
+                          :first-name "Samantha"
+                          :last-name "Rogers"
+                          :email "samrogers@example.com"
+                          :street1 "44 Victoria St."
+                          :street2 nil
+                          :city "Oxford"
+                          :pcode "WO3"
+                          :country "United Kingdom"}
+                    :cs3 {:id :cs3
+                          :title "Dr"
+                          :first-name "Paul"
+                          :last-name "Jacques"
+                          :email "paulj@example.com"
+                          :street1 "The Big Book Store"
+                          :street2 "114 Broadway St."
+                          :city "Newtown"
+                          :pcode "2320"
+                          :country "Australia"}})
+
 (def navbar-id :ui.navbar)
 
 (defn get-navabar-data []
