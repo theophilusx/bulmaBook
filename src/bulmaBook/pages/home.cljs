@@ -1,6 +1,6 @@
 (ns bulmaBook.pages.home
   (:require [bulmaBook.components.sidebar :refer [sidebar]]
-            [bulmaBook.pages.books :refer [books-page new-book-page edit-book-page]]
+            [bulmaBook.pages.books :refer [books-page]]
             [bulmaBook.pages.dashboard :refer [dashboard-page]]
             [bulmaBook.data :as data]
             [bulmaBook.store :as store]))
@@ -12,10 +12,7 @@
      [sidebar data/books-sidebar]]
     [:div.column
      (condp = (store/get-in store/global-state [:ui :books :sidebar])
-       :books (case (store/get-in store/global-state [:ui :books :page])
-                :new-book [new-book-page]
-                :edit-book [edit-book-page]
-                [books-page])
+       :books [books-page]
        :dashboard [dashboard-page]
        :customers [:div
                    [:h2.title.is-2
