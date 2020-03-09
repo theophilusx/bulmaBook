@@ -1,5 +1,4 @@
-(ns bulmaBook.components.toolbar
-  (:require [bulmaBook.utils :as utils]))
+(ns bulmaBook.components.toolbar)
 
 (defn deftoolbar-item
   "Defines a toolbar item. A toolbar item definition is a map with the
@@ -26,11 +25,11 @@
    (into
     [:div.level-left]
     (for [i (:left-items data)]
-      [(:type i) {:class (utils/cs "level-item" (:class i))}
+      [(:type i) {:class ["level-item" (:class i)]}
        (:content i)]))
    (when (:right-items data)
      (into
       [:div.level-right]
       (for [i (:right-items data)]
-        [(:type i) {:class (utils/cs "level-item" (:class i))}
+        [(:type i) {:class ["level-item" (:class i)]}
          (:content i)])))])
