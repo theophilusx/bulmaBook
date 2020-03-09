@@ -25,3 +25,12 @@
 
 (defn value->keyword [v]
   (keyword (string/replace v #"\.|:|@|\ " "-")))
+
+(defn initcaps [s]
+  (string/join " " (map string/capitalize (string/split s #" "))))
+
+(defn keyword->str [kw & {:keys [initial-caps]}]
+  (let [s (string/replace (name kw) #"-" " ")]
+    (if initial-caps
+      (initcaps s)
+      s)))
