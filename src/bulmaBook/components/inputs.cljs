@@ -151,12 +151,12 @@
                              :name (name sid)
                              :on-change chg-fn}]]])))
 
-(defn option [title val & {:keys [option-class disabled selected label]}]
+(defn option [title & {:keys [value option-class disabled selected label]}]
   [:option {:class option-class
             :disabled disabled
             :selected selected
             :label label
-            :value val}
+            :value (or value title)}
    title])
 
 (defn select [id _ & {:keys [model change-fn]}]
