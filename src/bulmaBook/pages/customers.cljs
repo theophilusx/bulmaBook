@@ -4,7 +4,8 @@
             [reagent.core :as r]
             [bulmaBook.store :as store]
             [bulmaBook.utils :as utils]
-            [bulmaBook.components.basic :refer [breadcrumbs]]))
+            [bulmaBook.components.basic :refer [breadcrumbs]]
+            [bulmaBook.components.tables :as tables]))
 
 (def customer-list (r/atom {}))
 
@@ -26,6 +27,18 @@
 
 (defn get-listing-type []
   (store/get-in store/global-state [:ui :customers :listing]))
+
+(defn set-edit-customer [cid]
+  (store/assoc-in! store/global-state [:ui :customers :edit] cid))
+
+(defn get-edit-customer []
+  (store/get-in store/global-state [:ui :customers :edit]))
+
+(defn set-delete-customer [cid]
+  (store/assoc-in! store/global-state [:ui :customers :delete] cid))
+
+(defn get-delete-customer []
+  (store/get-in store/global-state [:ui :customers :delete]))
 
 (defn filter-customers []
   true)
@@ -98,6 +111,40 @@
         :active true}]]
      [:p "Customer add page goes here"]]))
 
+(defn do-edit [cid]
+  (set-edit-customer cid)
+  (set-subpage :edit-customer))
+
+(defn do-delete [cid]
+  (set-delete-customer cid)
+  (set-subpage :delete-customer))
+
+(defn customer-table []
+  (let [customers (mapv (fn [c]
+                          [(tables/defcell
+                             [:a {:href "#"
+                                  :on-click #(do-edit (:id c))}
+                              (str (:first-name c) " " (:last-name c))])
+                           (tables/defcell (str (:email c)))
+                           (tables/defcell (str (:country c)))
+                           (tables/defcell (str 0))
+                           (tables/defcell
+                             [inputs/field [[inputs/button "Edit"
+                                             #(do-edit (:id c))
+                                             :classes
+                                             {:button "is-success is-small"}]
+                                            [inputs/button "Delete"
+                                             #(do-delete (:id c))
+                                             :classes
+                                             {:button "is-warning is-small"}]]
+                              :classes {:field "has-addons"}])])
+                        (customers->vec))
+        header [(mapv (fn [h]
+                        (tables/defcell h :type :th))
+                      ["Name" "Email" "Country" "Orders ""Action"])]]
+    [tables/table customers :header header :footer header :borded true
+     :hover true :narrow true :fullwidth true :striped true]))
+
 (defn customer-list-page []
   (store/reset! customer-list (customers->vec))
   (fn []
@@ -107,7 +154,7 @@
         :value :customers
         :active true}]]
      [toolbar (get-toolbar-data)]
-     [:p "Customer listing page goes here"]]))
+     [customer-table]]))
 
 (defn customers-page []
   (case (get-subpage)
