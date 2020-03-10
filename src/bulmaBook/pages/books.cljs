@@ -15,17 +15,11 @@
 (defn set-subpage [page]
   (store/assoc-in! store/global-state [:ui :books :page] page))
 
-(defn set-edit-id [bid]
-  (store/assoc-in! store/global-state [:ui :books :edit] bid))
+(defn set-book-target [bid]
+  (store/assoc-in! store/global-state [:ui :books :target] bid))
 
-(defn get-edit-id []
-  (store/get-in store/global-state [:ui :books :edit]))
-
-(defn set-delete-id [bid]
-  (store/assoc-in! store/global-state [:ui :books :delete] bid))
-
-(defn get-delete-id []
-  (store/get-in store/global-state [:ui :books :delete]))
+(defn get-book-target []
+  (store/get-in store/global-state [:ui :books :target]))
 
 (defn get-sort-field []
   (store/get-in store/global-state [:ui :books :sort]))
@@ -37,8 +31,10 @@
   (let [books (book-data)]
     (mapv #(% books) (keys books))))
 
-(defn gen-new-key []
-  (keyword (str "bk" (inc (count (keys (book-data)))))))
+(defn gen-new-book-id []
+  (let [id (inc (store/get-in store/global-state [:data :book-counter]))]
+    (store/update-in! store/global-state [:data :book-counter] inc)
+    (keyword (str "bk" id))))
 
 (defn get-book [bid]
   (bid (book-data)))
@@ -61,10 +57,8 @@
 
 
 (defn save-new-book [book]
-  (let [new-id (gen-new-key)]
-    (println (str "New Book: " @book))
+  (let [new-id (gen-new-book-id)]
     (store/put! book :id new-id)
-    (println (str "New book w/ ID: " @book))
     (add-book @book)
     (store/clear! book)
     (set-subpage :books)))
@@ -99,23 +93,22 @@
    [new-book-form]])
 
 (defn do-edit-book [bid]
-  (set-edit-id bid)
+  (set-book-target bid)
   (set-subpage :edit-book))
 
 (defn save-edit-book [book]
   (add-book @book)
   (store/clear! book)
-  (set-edit-id nil)
+  (set-book-target nil)
   (set-subpage :books))
 
 (defn cancel-edit-book [book]
   (store/clear! book)
-  (set-edit-id nil)
+  (set-book-target nil)
   (set-subpage :books))
 
 (defn edit-book-form []
-  (let [doc (r/atom (get-book (store/get-in store/global-state
-                                            [:ui :books :edit])))]
+  (let [doc (r/atom (get-book (get-book-target)))]
     (fn []
       [:form.box
        [inputs/horizontal-field "Id" [[inputs/field [(str (:id @doc))]]]]
@@ -141,11 +134,11 @@
    [edit-book-form bid]])
 
 (defn do-delete-book [bid]
-  (set-delete-id bid)
+  (set-book-target bid)
   (set-subpage :delete-book))
 
 (defn delete-book-page []
-  (let [book (get-book (get-delete-id))]
+  (let [book (get-book (get-book-target))]
     [:<>
      [breadcrumbs :ui:books:page
       [{:name "Books"
@@ -163,13 +156,13 @@
        [:tr [:th "ISBN"] [:td (:isbn book)]]]]
      [inputs/field [[inputs/button "Delete Book"
                      (fn []
-                       (delete-book (get-delete-id))
-                       (set-delete-id nil)
+                       (delete-book (get-book-target))
+                       (set-book-target nil)
                        (set-subpage :books))
                      :classes {:button "is-success"}]
                     [inputs/button "Cancel"
                      (fn []
-                       (set-delete-id nil)
+                       (set-book-target nil)
                        (set-subpage :books))]]
       :classes {:field "has-addons"}]]))
 
