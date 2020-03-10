@@ -5,7 +5,8 @@
             [bulmaBook.store :as store]
             [bulmaBook.utils :as utils]
             [bulmaBook.components.basic :refer [breadcrumbs]]
-            [bulmaBook.components.tables :as tables]))
+            [bulmaBook.components.tables :as tables]
+            [bulmaBook.components.icons :as icons]))
 
 (def customer-list (r/atom {}))
 
@@ -28,17 +29,19 @@
 (defn get-listing-type []
   (store/get-in store/global-state [:ui :customers :listing]))
 
-(defn set-edit-customer [cid]
-  (store/assoc-in! store/global-state [:ui :customers :edit] cid))
+(defn set-target-id [cid]
+  (store/assoc-in! store/global-state [:ui :customers :target] cid))
 
-(defn get-edit-customer []
-  (store/get-in store/global-state [:ui :customers :edit]))
+(defn get-target-id []
+  (store/get-in store/global-state [:ui :customers :target]))
 
-(defn set-delete-customer [cid]
-  (store/assoc-in! store/global-state [:ui :customers :delete] cid))
+(defn do-edit [cid]
+  (set-target-id cid)
+  (set-subpage :edit-customer))
 
-(defn get-delete-customer []
-  (store/get-in store/global-state [:ui :customers :delete]))
+(defn do-delete [cid]
+  (set-target-id cid)
+  (set-subpage :delete-customer))
 
 (defn filter-customers []
   true)
@@ -73,8 +76,6 @@
                  (deftoolbar-item
                    :content [listing-component :without-orders])]})
 
-
-
 (defn delete-customer-page []
   (fn []
     [:<>
@@ -99,6 +100,57 @@
         :active true}]]
      [:p "Customer edit page goes here"]]))
 
+(defn save-new-customer [data]
+  (let [new-id (keyword (str "cs" (count (customers->vec))))]
+    (store/put! data :id new-id)
+    (store/assoc-in! store/global-state [:data :customer-data new-id] @data)
+    (store/clear! data)
+    (set-subpage :customers)))
+
+(defn cancel-new-customer [data]
+  (store/clear! data)
+  (set-subpage :customers))
+
+(defn new-customer-form []
+  (let [doc (r/atom {})]
+    (fn []
+      [:form.box
+       [:div.columns
+        [:div.column
+         [inputs/input-field "First Name" :text :first-name
+          :placeholder "Given name" :required true :model doc
+          :classes {:input "is-large"}]]
+        [:div.column
+         [inputs/input-field "Last Name" :text :last-name
+          :placeholder "Family name" :required true :model doc
+          :classes {:input "is-large"}]]]
+       [inputs/input-field "Email" :email :email :model doc :required true
+        :placeholder "Email address"
+        :idon-data (icons/deficon "fa-envelope" :position :left :size :small )]
+       [inputs/field [[inputs/input :text :address1 :model doc
+                       :placeholder "Address line 1" :required true]
+                      [inputs/input :text :address2 :model doc
+                       :placeholder "Address line 2 (optional)"]]
+        :label "Address"]
+       [:div.columns
+        [:div.column
+         [inputs/input-field "Postcode/Zipcode" :text :pcode :model doc
+          :placeholder "e.g. 2350" :required true]]
+        [:div.column
+         [inputs/input-field "City" :text :city :model doc :required true
+          :placeholder "e.g. Armidale"]]
+        [:div.column
+         [inputs/select-field :country
+          [[inputs/option "-- Choose a country --" :value ""]
+           [inputs/option "Australia"]
+           [inputs/option "United Kingdom"]
+           [inputs/option "United States"]]
+          :title "Country" :model doc]]]
+       [inputs/field [[inputs/button "Save" #(save-new-customer doc)
+                       :classes {:button "is-success"}]
+                      [inputs/button "Cancel" #(cancel-new-customer doc)]]
+        :classes {:field "has-addons"}]])))
+
 (defn new-customer-page []
   (fn []
     [:<>
@@ -109,17 +161,9 @@
        {:name "New Customer"
         :value :new-customer
         :active true}]]
-     [:p "Customer add page goes here"]]))
+     [new-customer-form]]))
 
-(defn do-edit [cid]
-  (set-edit-customer cid)
-  (set-subpage :edit-customer))
-
-(defn do-delete [cid]
-  (set-delete-customer cid)
-  (set-subpage :delete-customer))
-
-(defn customer-table []
+(defn customer-table [customer-data]
   (let [customers (mapv (fn [c]
                           [(tables/defcell
                              [:a {:href "#"
@@ -138,7 +182,7 @@
                                              :classes
                                              {:button "is-warning is-small"}]]
                               :classes {:field "has-addons"}])])
-                        (customers->vec))
+                        customer-data)
         header [(mapv (fn [h]
                         (tables/defcell h :type :th))
                       ["Name" "Email" "Country" "Orders ""Action"])]]
@@ -154,7 +198,7 @@
         :value :customers
         :active true}]]
      [toolbar (get-toolbar-data)]
-     [customer-table]]))
+     [customer-table @customer-list]]))
 
 (defn customers-page []
   (case (get-subpage)
