@@ -50,13 +50,15 @@
                       :pages 179
                       :isbn "9781939902092245"}})
 
+(def book-counter 6)
+
 (def customer-data {:cs1 {:id :cs1
                           :title "Mr"
                           :first-name "John"
                           :last-name "Miller"
                           :email "johnmiller@example.com"
-                          :street1 "100 Donald Av."
-                          :street2 nil
+                          :address1 "100 Donald Av."
+                          :address2 nil
                           :city "Smallville"
                           :pcode "4432"
                           :country "United States"}
@@ -65,8 +67,8 @@
                           :first-name "Samantha"
                           :last-name "Rogers"
                           :email "samrogers@example.com"
-                          :street1 "44 Victoria St."
-                          :street2 nil
+                          :address1 "44 Victoria St."
+                          :address2 nil
                           :city "Oxford"
                           :pcode "WO3"
                           :country "United Kingdom"}
@@ -75,11 +77,13 @@
                           :first-name "Paul"
                           :last-name "Jacques"
                           :email "paulj@example.com"
-                          :street1 "The Big Book Store"
-                          :street2 "114 Broadway St."
+                          :address1 "The Big Book Store"
+                          :address2 "114 Broadway St."
                           :city "Newtown"
                           :pcode "2320"
                           :country "Australia"}})
+
+(def customer-counter 3)
 
 (def navbar-id :ui.navbar)
 

@@ -24,8 +24,10 @@
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
 (store/assoc-in! store/global-state [:data :book-data] data/book-data)
+(store/assoc-in! store/global-state [:data :book-counter] data/book-counter)
 (store/put! store/global-state :users data/user-data)
 (store/assoc-in! store/global-state [:data :customer-data] data/customer-data)
+(store/assoc-in! store/global-state [:data :customer-counter] data/customer-counter)
 (mount-app)
 
 ;; specify reload hook with ^;after-load metadata
