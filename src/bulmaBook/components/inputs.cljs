@@ -241,7 +241,6 @@
 (defn search [_ & _]
   (let [doc (r/atom {})]
     (fn [action & {:keys [placeholder]}]
-      (println (str "Search doc: " @doc))
       [:<>
        [field [[input :text :search :placeholder placeholder :model doc]
                [button "Search" #(action (:search @doc))]]
