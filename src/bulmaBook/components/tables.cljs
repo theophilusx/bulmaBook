@@ -54,7 +54,6 @@
   (let [doc (r/atom {:selected-row nil})]
     (fn [body & {:keys [classes header footer select borded striped
                        narrow hover fullwidth]}]
-      (println (str "table doc " @doc))
       [:table.table {:class [(:table classes)
                              (when borded "is-borded")
                              (when striped "is-striped")
@@ -64,3 +63,7 @@
        (when header [thead header doc :class (:header classes)])
        (when footer [tfoot footer doc :class (:footer classes)])
        [tbody body doc :class (:body classes) :select select]])))
+
+(defn table-container [t]
+  [:div.table-container
+   t])
