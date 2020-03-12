@@ -6,7 +6,8 @@
             [bulmaBook.utils :as utils]
             [bulmaBook.components.basic :refer [breadcrumbs]]
             [bulmaBook.components.tables :as tables]
-            [bulmaBook.components.icons :as icons]))
+            [bulmaBook.components.icons :as icons]
+            [clojure.string :as string]))
 
 (def customer-list (r/atom {}))
 
@@ -45,8 +46,21 @@
 
 
 
-(defn filter-customers []
-  true)
+(defn filter-customers [term]
+  (store/reset! customer-list
+                (filterv
+                 (fn [cus]
+                   (or (string/includes? (str (:title cus)) term)
+                       (string/includes? (str (:first-name cus)) term)
+                       (string/includes? (str (:last-name cus)) term)
+                       (string/includes? (str (:first-name cus) " "
+                                              (:last-name cus)) term)
+                       (string/includes? (str (:address1 cus)) term)
+                       (string/includes? (str (:address2 cus)) term)
+                       (string/includes? (str (:pcode cus)) term)
+                       (string/includes? (str (:city cus)) term)
+                       (string/includes? (str (:country cus)) term)))
+                 (customers->vec))))
 
 (defn listing-component [type]
   (if (= type (get-listing-type))
@@ -127,8 +141,7 @@
       [:div.column.is-1
        [:p [:strong "Email"]]]
       [:div.column
-       [:p (:email customer)]]
-      ]
+       [:p (:email customer)]]]
      [:div.columns
       [:div.column.is-1
        [:p [:strong "Address"]]]
