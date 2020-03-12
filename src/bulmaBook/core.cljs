@@ -28,6 +28,8 @@
 (store/put! store/global-state :users data/user-data)
 (store/assoc-in! store/global-state [:data :customer-data] data/customer-data)
 (store/assoc-in! store/global-state [:data :customer-counter] data/customer-counter)
+(store/assoc-in! store/global-state [:data :order-data] data/order-data)
+(store/assoc-in! store/global-state [:data :order-counter] data/order-counter)
 (mount-app)
 
 ;; specify reload hook with ^;after-load metadata
