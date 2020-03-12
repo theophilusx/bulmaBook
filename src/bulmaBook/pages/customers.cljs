@@ -7,24 +7,15 @@
             [bulmaBook.components.basic :refer [breadcrumbs]]
             [bulmaBook.components.tables :as tables]
             [bulmaBook.components.icons :as icons]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [bulmaBook.models :as models]))
 
 (def customer-list (r/atom {}))
-
-(defn customer-data []
-  (store/get-in store/global-state [:data :customer-data]))
-
-(defn customers->vec []
-  (let [customers (customer-data)]
-    (mapv #(% customers) (keys customers))))
 
 (defn get-new-customer-id []
   (let [id (inc (store/get-in store/global-state [:data :customer-counter]))]
     (store/update-in! store/global-state [:data :customer-counter] inc)
     (keyword (str "cs" id))))
-
-(defn get-customer [cid]
-  (cid (customer-data)))
 
 (defn set-subpage [page]
   (store/assoc-in! store/global-state [:ui :customers :page] page))
@@ -44,8 +35,6 @@
 (defn get-customer-target []
   (store/get-in store/global-state [:ui :customers :target]))
 
-
-
 (defn filter-customers [term]
   (store/reset! customer-list
                 (filterv
@@ -60,7 +49,7 @@
                        (string/includes? (str (:pcode cus)) term)
                        (string/includes? (str (:city cus)) term)
                        (string/includes? (str (:country cus)) term)))
-                 (customers->vec))))
+                 (models/customers->vec))))
 
 (defn listing-component [type]
   (if (= type (get-listing-type))
@@ -68,7 +57,6 @@
     [:a {:href "#"
          :on-click #(set-listing-type type)}
      (utils/keyword->str type :initial-caps true)]))
-
 
 (defn get-toolbar-data []
   {:left-items [(deftoolbar-item
@@ -91,8 +79,6 @@
                    :content [listing-component :with-orders])
                  (deftoolbar-item
                    :content [listing-component :without-orders])]})
-
-
 
 (defn customer-form-fields [doc]
   [:<>
@@ -133,7 +119,7 @@
       :title "Country" :model doc]]]])
 
 (defn customer-display []
-  (let [customer (get-customer (get-customer-target))]
+  (let [customer (models/get-customer (get-customer-target))]
     [:<>
      [:h4.title (str (:title customer) " " (:first-name customer) " "
                      (:last-name customer))]
@@ -157,8 +143,7 @@
   (set-subpage :delete-customer))
 
 (defn delete-customer []
-  (store/update-in! store/global-state [:data :customer-data] dissoc
-                    (get-customer-target))
+  (models/delete-customer (get-customer-target))
   (set-customer-target nil)
   (set-subpage :customers))
 
@@ -188,8 +173,7 @@
   (set-subpage :edit-customer))
 
 (defn save-edit-customer [customer]
-  (store/assoc-in! store/global-state [:data :customer-data (:id @customer)]
-                   @customer)
+  (models/add-customer @customer)
   (store/clear! customer)
   (set-customer-target nil)
   (set-subpage :customers))
@@ -199,7 +183,7 @@
   (set-subpage :customers))
 
 (defn edit-customer-form []
-  (let [doc (r/atom (get-customer (get-customer-target)))]
+  (let [doc (r/atom (models/get-customer (get-customer-target)))]
     (fn []
       [:form.box
        [customer-form-fields doc]
@@ -223,7 +207,7 @@
 (defn save-new-customer [data]
   (let [new-id (get-new-customer-id)]
     (store/put! data :id new-id)
-    (store/assoc-in! store/global-state [:data :customer-data new-id] @data)
+    (models/add-customer @data)
     (store/clear! data)
     (set-subpage :customers)))
 
@@ -280,7 +264,7 @@
      :hover true :narrow true :fullwidth true :striped true]))
 
 (defn customer-list-page []
-  (store/reset! customer-list (customers->vec))
+  (store/reset! customer-list (models/customers->vec))
   (fn []
     [:<>
      [breadcrumbs :us.customers.page

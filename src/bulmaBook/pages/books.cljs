@@ -4,6 +4,7 @@
             [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
             [bulmaBook.components.inputs :as inputs]
             [bulmaBook.store :as store]
+            [bulmaBook.models :as models]
             [reagent.core :as r]
             [clojure.string :as string]))
 
@@ -24,26 +25,12 @@
 (defn get-sort-field []
   (store/get-in store/global-state [:ui :books :sort]))
 
-(defn book-data []
-  (store/get-in store/global-state [:data :book-data]))
-
-(defn books->vec []
-  (let [books (book-data)]
-    (mapv #(% books) (keys books))))
 
 (defn gen-new-book-id []
   (let [id (inc (store/get-in store/global-state [:data :book-counter]))]
     (store/update-in! store/global-state [:data :book-counter] inc)
     (keyword (str "bk" id))))
 
-(defn get-book [bid]
-  (bid (book-data)))
-
-(defn add-book [book]
-  (store/assoc-in! store/global-state [:data :book-data (:id book)] book))
-
-(defn delete-book [bid]
-  (store/update-in! store/global-state [:data :book-data] dissoc bid))
 
 
 (defn filter-books [search-term]
@@ -53,7 +40,7 @@
                                  (string/includes? (str (:cost bk)) search-term)
                                  (string/includes? (str (:pages bk)) search-term)
                                  (string/includes? (str (:isbn bk)) search-term)))
-                           (books->vec))))
+                           (models/books->vec))))
 
 (defn book-fields [doc]
   [:<>
@@ -66,7 +53,7 @@
 (defn save-new-book [book]
   (let [new-id (gen-new-book-id)]
     (store/put! book :id new-id)
-    (add-book @book)
+    (models/add-book @book)
     (store/clear! book)
     (set-subpage :books)))
 
@@ -100,7 +87,7 @@
   (set-subpage :edit-book))
 
 (defn save-edit-book [book]
-  (add-book @book)
+  (models/add-book @book)
   (store/clear! book)
   (set-book-target nil)
   (set-subpage :books))
@@ -111,7 +98,7 @@
   (set-subpage :books))
 
 (defn edit-book-form []
-  (let [doc (r/atom (get-book (get-book-target)))]
+  (let [doc (r/atom (models/get-book (get-book-target)))]
     (fn []
       [:form.box
        [book-fields doc]
@@ -136,7 +123,7 @@
   (set-subpage :delete-book))
 
 (defn delete-book-page []
-  (let [book (get-book (get-book-target))]
+  (let [book (models/get-book (get-book-target))]
     [:<>
      [breadcrumbs :ui:books:page
       [{:name "Books"
@@ -154,7 +141,7 @@
        [:tr [:th "ISBN"] [:td (:isbn book)]]]]
      [inputs/field [[inputs/button "Delete Book"
                      (fn []
-                       (delete-book (get-book-target))
+                       (models/delete-book (get-book-target))
                        (set-book-target nil)
                        (set-subpage :books))
                      :classes {:button "is-success"}]
@@ -213,10 +200,10 @@
      [book-component b])))
 
 (defn books-list-page []
-  (store/reset! book-list (books->vec))
+  (store/reset! book-list (models/books->vec))
   (fn []
     (when (get-sort-field)
-      (reset! book-list (vec (sort-by (get-sort-field) (books->vec)))))
+      (reset! book-list (vec (sort-by (get-sort-field) (models/books->vec)))))
     [:<>
      [breadcrumbs :ui.books.page
       [{:name "Books"
