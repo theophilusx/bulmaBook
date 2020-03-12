@@ -17,6 +17,14 @@
   (let [customers (customer-data)]
     (mapv #(% customers) (keys customers))))
 
+(defn get-new-customer-id []
+  (let [id (inc (store/get-in store/global-state [:data :customer-counter]))]
+    (store/update-in! store/global-state [:data :customer-counter] inc)
+    (keyword (str "cs" id))))
+
+(defn get-customer [cid]
+  (cid (customer-data)))
+
 (defn set-subpage [page]
   (store/assoc-in! store/global-state [:ui :customers :page] page))
 
@@ -29,19 +37,13 @@
 (defn get-listing-type []
   (store/get-in store/global-state [:ui :customers :listing]))
 
-(defn set-target-id [cid]
+(defn set-customer-target [cid]
   (store/assoc-in! store/global-state [:ui :customers :target] cid))
 
-(defn get-target-id []
+(defn get-customer-target []
   (store/get-in store/global-state [:ui :customers :target]))
 
-(defn do-edit [cid]
-  (set-target-id cid)
-  (set-subpage :edit-customer))
 
-(defn do-delete [cid]
-  (set-target-id cid)
-  (set-subpage :delete-customer))
 
 (defn filter-customers []
   true)
@@ -76,6 +78,50 @@
                  (deftoolbar-item
                    :content [listing-component :without-orders])]})
 
+
+
+(defn customer-form-fields [doc]
+  [:<>
+   [:div.columns
+    [:div.column.is-one-quarter
+     [inputs/input-field "Title" :text :title
+      :placeholder "e.g. Ms, Mr, Dr" :model doc
+      :classes {:input "is-large"}]]
+    [:div.column
+     [inputs/input-field "First Name" :text :first-name
+      :placeholder "Given name" :required true :model doc
+      :classes {:input "is-large"}]]
+    [:div.column
+     [inputs/input-field "Last Name" :text :last-name
+      :placeholder "Family name" :required true :model doc
+      :classes {:input "is-large"}]]]
+   [inputs/input-field "Email" :email :email :model doc :required true
+    :placeholder "Email address"
+    :idon-data (icons/deficon "fa-envelope" :position :left :size :small )]
+   [inputs/field [[inputs/input :text :address1 :model doc
+                   :placeholder "Address line 1" :required true]
+                  [inputs/input :text :address2 :model doc
+                   :placeholder "Address line 2 (optional)"]]
+    :label "Address"]
+   [:div.columns
+    [:div.column
+     [inputs/input-field "Postcode/Zipcode" :text :pcode :model doc
+      :placeholder "e.g. 2350" :required true]]
+    [:div.column
+     [inputs/input-field "City" :text :city :model doc :required true
+      :placeholder "e.g. Armidale"]]
+    [:div.column
+     [inputs/select-field :country
+      [[inputs/option "-- Choose a country --" :value ""]
+       [inputs/option "Australia"]
+       [inputs/option "United Kingdom"]
+       [inputs/option "United States"]]
+      :title "Country" :model doc]]]])
+
+(defn do-delete [cid]
+  (set-customer-target cid)
+  (set-subpage :delete-customer))
+
 (defn delete-customer-page []
   (fn []
     [:<>
@@ -88,6 +134,31 @@
         :active true}]]
      [:p "Customer delete page goes here"]]))
 
+(defn do-edit [cid]
+  (set-customer-target cid)
+  (set-subpage :edit-customer))
+
+(defn save-edit-customer [customer]
+  (store/assoc-in! store/global-state [:data :customer-data (:id @customer)]
+                   @customer)
+  (store/clear! customer)
+  (set-customer-target nil)
+  (set-subpage :customers))
+
+(defn cancel-edit-customer []
+  (set-customer-target nil)
+  (set-subpage :customers))
+
+(defn edit-customer-form []
+  (let [doc (r/atom (get-customer (get-customer-target)))]
+    (fn []
+      [:form.box
+       [customer-form-fields doc]
+       [inputs/field [[inputs/button "Save" #(save-edit-customer doc)
+                       :classes {:button "is-success"}]
+                      [inputs/button "Cancel" #(cancel-edit-customer)]]
+        :classes {:field "has-addons"}]])))
+
 (defn edit-customer-page []
   (fn []
     [:<>
@@ -98,10 +169,10 @@
        {:name "Edit Customer"
         :value :edit-customer
         :active true}]]
-     [:p "Customer edit page goes here"]]))
+     [edit-customer-form]]))
 
 (defn save-new-customer [data]
-  (let [new-id (keyword (str "cs" (count (customers->vec))))]
+  (let [new-id (get-new-customer-id)]
     (store/put! data :id new-id)
     (store/assoc-in! store/global-state [:data :customer-data new-id] @data)
     (store/clear! data)
@@ -115,37 +186,7 @@
   (let [doc (r/atom {})]
     (fn []
       [:form.box
-       [:div.columns
-        [:div.column
-         [inputs/input-field "First Name" :text :first-name
-          :placeholder "Given name" :required true :model doc
-          :classes {:input "is-large"}]]
-        [:div.column
-         [inputs/input-field "Last Name" :text :last-name
-          :placeholder "Family name" :required true :model doc
-          :classes {:input "is-large"}]]]
-       [inputs/input-field "Email" :email :email :model doc :required true
-        :placeholder "Email address"
-        :idon-data (icons/deficon "fa-envelope" :position :left :size :small )]
-       [inputs/field [[inputs/input :text :address1 :model doc
-                       :placeholder "Address line 1" :required true]
-                      [inputs/input :text :address2 :model doc
-                       :placeholder "Address line 2 (optional)"]]
-        :label "Address"]
-       [:div.columns
-        [:div.column
-         [inputs/input-field "Postcode/Zipcode" :text :pcode :model doc
-          :placeholder "e.g. 2350" :required true]]
-        [:div.column
-         [inputs/input-field "City" :text :city :model doc :required true
-          :placeholder "e.g. Armidale"]]
-        [:div.column
-         [inputs/select-field :country
-          [[inputs/option "-- Choose a country --" :value ""]
-           [inputs/option "Australia"]
-           [inputs/option "United Kingdom"]
-           [inputs/option "United States"]]
-          :title "Country" :model doc]]]
+       [customer-form-fields doc]
        [inputs/field [[inputs/button "Save" #(save-new-customer doc)
                        :classes {:button "is-success"}]
                       [inputs/button "Cancel" #(cancel-new-customer doc)]]
