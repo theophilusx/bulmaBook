@@ -55,6 +55,13 @@
                                  (string/includes? (str (:isbn bk)) search-term)))
                            (books->vec))))
 
+(defn book-fields [doc]
+  [:<>
+   [inputs/horizontal-field "Title" [[inputs/input :text :title :model doc]]]
+   [inputs/horizontal-field "Image" [[inputs/input :text :image :model doc]]]
+   [inputs/horizontal-field "Cost" [[inputs/input :text :cost :model doc]]]
+   [inputs/horizontal-field "Pages" [[inputs/input :text :pages :model doc]]]
+   [inputs/horizontal-field "ISBN" [[inputs/input :text :isbn :model doc]]]])
 
 (defn save-new-book [book]
   (let [new-id (gen-new-book-id)]
@@ -71,11 +78,7 @@
   (let [doc (r/atom {})]
     (fn []
       [:form.box
-       [inputs/horizontal-field "Title" [[inputs/input :text :title :model doc]]]
-       [inputs/horizontal-field "Image" [[inputs/input :text :image :model doc]]]
-       [inputs/horizontal-field "Cost" [[inputs/input :text :cost :model doc]]]
-       [inputs/horizontal-field "Pages" [[inputs/input :text :pages :model doc]]]
-       [inputs/horizontal-field "ISBN" [[inputs/input :text :isbn :model doc]]]
+       [book-fields doc]
        [inputs/field [[inputs/button "Save" #(save-new-book doc)
                        :classes {:button "is-success"}]
                       [inputs/button "Cancel" #(clear-new-book doc)]]
@@ -111,12 +114,7 @@
   (let [doc (r/atom (get-book (get-book-target)))]
     (fn []
       [:form.box
-       [inputs/horizontal-field "Id" [[inputs/field [(str (:id @doc))]]]]
-       [inputs/horizontal-field "Title" [[inputs/input :text :title :model doc]]]
-       [inputs/horizontal-field "Image" [[inputs/input :text :image :model doc]]]
-       [inputs/horizontal-field "Cost" [[inputs/input :text :cost :model doc]]]
-       [inputs/horizontal-field "Pages" [[inputs/input :text :pages :model doc]]]
-       [inputs/horizontal-field "ISBN" [[inputs/input :text :isbn :model doc]]]
+       [book-fields doc]
        [inputs/field [[inputs/button "Save Changes" #(save-edit-book doc)
                        :classes {:button "is-success"}]
                       [inputs/button "Cancel" #(cancel-edit-book doc)]]
