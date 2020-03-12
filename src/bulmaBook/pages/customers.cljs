@@ -118,9 +118,40 @@
        [inputs/option "United States"]]
       :title "Country" :model doc]]]])
 
+(defn customer-display []
+  (let [customer (get-customer (get-customer-target))]
+    [:<>
+     [:h4.title (str (:title customer) " " (:first-name customer) " "
+                     (:last-name customer))]
+     [:div.columns
+      [:div.column.is-1
+       [:p [:strong "Email"]]]
+      [:div.column
+       [:p (:email customer)]]
+      ]
+     [:div.columns
+      [:div.column.is-1
+       [:p [:strong "Address"]]]
+      [:div.column
+       [:p (:address1 customer)]
+       (when (:address2 customer)
+         [:p (:address2 customer)])
+       [:p (str (:city customer) " " (:pcode customer))]
+       [:p (:country customer)]]]]))
+
 (defn do-delete [cid]
   (set-customer-target cid)
   (set-subpage :delete-customer))
+
+(defn delete-customer []
+  (store/update-in! store/global-state [:data :customer-data] dissoc
+                    (get-customer-target))
+  (set-customer-target nil)
+  (set-subpage :customers))
+
+(defn cancel-delete-customer []
+  (set-customer-target nil)
+  (set-subpage :customers))
 
 (defn delete-customer-page []
   (fn []
@@ -132,7 +163,12 @@
        {:name "Delete Customer"
         :value :delete-customer
         :active true}]]
-     [:p "Customer delete page goes here"]]))
+     [:div.box
+      [customer-display]
+      [inputs/field [[inputs/button "Delete" #(delete-customer)
+                      :classes {:button "is-warning"}]
+                     [inputs/button "Cancel" #(cancel-delete-customer)]]
+       :classes {:field "has-addons"}]]]))
 
 (defn do-edit [cid]
   (set-customer-target cid)
