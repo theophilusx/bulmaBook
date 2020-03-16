@@ -16,37 +16,37 @@
 (def book-data {:bk1 {:id :bk1
                       :title "TensorFlow For Machine Intelligence"
                       :image "images/tensorflow.jpg"
-                      :cost "$22.99"
+                      :cost 22.99
                       :pages 270
                       :isbn "9781939902351"}
                 :bk2 {:id :bk2
                       :title "Docker in Production"
                       :image "images/docker.jpg"
-                      :cost "$22.99"
+                      :cost 22.99
                       :pages 156
                       :isbn "9781939902184"}
                 :bk3 {:id :bk3
                       :title "Developing a Gulp.js Edge"
                       :image "images/gulp.jpg"
-                      :cost "$22.99"
+                      :cost 22.99
                       :pages 134
                       :isbn "9781939902146"}
                 :bk4 {:id :bk4
                       :title "Learning Swift"
                       :image "images/swift.jpg"
-                      :cost "$22.99"
+                      :cost 22.99
                       :pages 342
                       :isbn "9781939902115"}
                 :bk5 {:id :bk5
                       :title "Choosing a JavaScript Framework"
                       :image "images/js-framework.jpg"
-                      :cost "19.99"
+                      :cost 19.99
                       :pages 96
                       :isbn "9781939902092"}
                 :bk6 {:id :bk6
                       :title "Deconstructing Google Cardboard Apps"
                       :image "images/google-cardboard.jpg"
-                      :cost "$22.99"
+                      :cost 22.99
                       :pages 179
                       :isbn "9781939902092245"}})
 
@@ -88,23 +88,23 @@
 (def order-data {:OR1000 {:id :OR1000
                           :date "03 JAN 2020 11:35"
                           :cid :cs1
-                          :books [{:id :bk1 :cost "$22.99"}]
-                          :state :in-progress}
+                          :books [{:id :bk1 :cost 22.99}]
+                          :status :in-progress}
                  :OR1001 {:id :OR1001
                           :date "09 JAN 2020 12:20"
                           :cid :cs3
-                          :books [{:id :bk2 :cost "$22.99"}
-                                  {:id :bk3 :cost "$22.99"}]
+                          :books [{:id :bk2 :cost 22.99}
+                                  {:id :bk3 :cost 22.99}]
                           :status :complete}
                  :OR1002 {:id :OR1002
                           :date "20 JAN 2020 16:20"
                           :cid :cs3
-                          :books [{:id :bk4 :cost "$22.99"}]
+                          :books [{:id :bk4 :cost 22.99}]
                           :status :failed}
                  :OR1003 {:id :OR1003
                           :date "02 FEB 2020 09:30"
                           :cid :cs1
-                          :books [{:id :bk6 :cost "$22.99"}]
+                          :books [{:id :bk6 :cost 22.99}]
                           :status :complete}})
 
 (def order-counter 1003)
