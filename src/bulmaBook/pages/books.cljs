@@ -5,33 +5,14 @@
             [bulmaBook.components.inputs :as inputs]
             [bulmaBook.store :as store]
             [bulmaBook.models :as models]
+            [bulmaBook.pages.ui :as ui]
             [reagent.core :as r]
             [clojure.string :as string]))
 
 (def book-list (r/atom {}))
 
-(defn get-subpage []
-  (store/get-in store/global-state [:ui :books :page]))
-
-(defn set-subpage [page]
-  (store/assoc-in! store/global-state [:ui :books :page] page))
-
-(defn set-book-target [bid]
-  (store/assoc-in! store/global-state [:ui :books :target] bid))
-
-(defn get-book-target []
-  (store/get-in store/global-state [:ui :books :target]))
-
 (defn get-sort-field []
   (store/get-in store/global-state [:ui :books :sort]))
-
-
-(defn gen-new-book-id []
-  (let [id (inc (store/get-in store/global-state [:data :book-counter]))]
-    (store/update-in! store/global-state [:data :book-counter] inc)
-    (keyword (str "bk" id))))
-
-
 
 (defn filter-books [search-term]
   (store/reset! book-list (filterv
@@ -51,15 +32,15 @@
    [inputs/horizontal-field "ISBN" [[inputs/input :text :isbn :model doc]]]])
 
 (defn save-new-book [book]
-  (let [new-id (gen-new-book-id)]
+  (let [new-id (models/get-new-id :books)]
     (store/put! book :id new-id)
     (models/add-book @book)
     (store/clear! book)
-    (set-subpage :books)))
+    (ui/set-subpage :books :books)))
 
 (defn clear-new-book [book]
   (store/clear! book)
-  (set-subpage :books))
+  (ui/set-subpage :books :books))
 
 (defn new-book-form []
   (let [doc (r/atom {})]
@@ -83,22 +64,22 @@
    [new-book-form]])
 
 (defn do-edit-book [bid]
-  (set-book-target bid)
-  (set-subpage :edit-book))
+  (ui/set-target :books bid)
+  (ui/set-subpage :books :edit-book))
 
 (defn save-edit-book [book]
   (models/add-book @book)
   (store/clear! book)
-  (set-book-target nil)
-  (set-subpage :books))
+  (ui/set-target :books nil)
+  (ui/set-subpage :books :books))
 
 (defn cancel-edit-book [book]
   (store/clear! book)
-  (set-book-target nil)
-  (set-subpage :books))
+  (ui/set-target :books nil)
+  (ui/set-subpage :books :books))
 
 (defn edit-book-form []
-  (let [doc (r/atom (models/get-book (get-book-target)))]
+  (let [doc (r/atom (models/get-book (ui/get-target :books)))]
     (fn []
       [:form.box
        [book-fields doc]
@@ -119,11 +100,11 @@
    [edit-book-form bid]])
 
 (defn do-delete-book [bid]
-  (set-book-target bid)
-  (set-subpage :delete-book))
+  (ui/set-target :books bid)
+  (ui/set-subpage :books :delete-book))
 
 (defn delete-book-page []
-  (let [book (models/get-book (get-book-target))]
+  (let [book (models/get-book (ui/get-target :books))]
     [:<>
      [breadcrumbs :ui:books:page
       [{:name "Books"
@@ -141,14 +122,14 @@
        [:tr [:th "ISBN"] [:td (:isbn book)]]]]
      [inputs/field [[inputs/button "Delete Book"
                      (fn []
-                       (models/delete-book (get-book-target))
-                       (set-book-target nil)
-                       (set-subpage :books))
+                       (models/delete-book (ui/get-target :books))
+                       (ui/set-target :books nil)
+                       (ui/set-subpage :books :books))
                      :classes {:button "is-success"}]
                     [inputs/button "Cancel"
                      (fn []
-                       (set-book-target nil)
-                       (set-subpage :books))]]
+                       (ui/set-target :books nil)
+                       (ui/set-subpage :books :books))]]
       :classes {:field "has-addons"}]]))
 
 (defn get-toolbar-data []
@@ -160,7 +141,7 @@
                 (deftoolbar-item
                   :type :div
                   :content
-                  [inputs/button "New" #(set-subpage :new-book)
+                  [inputs/button "New" #(ui/set-subpage :books :new-book)
                    :classes {:button "is-success"}])
                 (deftoolbar-item
                   :class "is-hidden-table-only"
@@ -213,13 +194,13 @@
      [paginate @book-list book-grid-component :page-size 2]]))
 
 (defn books-page []
-  (case (get-subpage)
+  (case (ui/get-subpage :books)
     :books [books-list-page]
     :new-book [new-book-page]
     :edit-book [edit-book-page]
     :delete-book [delete-book-page]
     [:<>
      [:h2.title "Page Not Found!"]
-     [:p "Bad page identifier " (str (get-subpage))]]))
+     [:p "Bad page identifier " (str (ui/get-subpage :books))]]))
 
-(set-subpage :books)
+(ui/set-subpage :books :books)

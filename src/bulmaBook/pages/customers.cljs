@@ -8,32 +8,10 @@
             [bulmaBook.components.tables :as tables]
             [bulmaBook.components.icons :as icons]
             [clojure.string :as string]
-            [bulmaBook.models :as models]))
+            [bulmaBook.models :as models]
+            [bulmaBook.pages.ui :as ui]))
 
 (def customer-list (r/atom {}))
-
-(defn get-new-customer-id []
-  (let [id (inc (store/get-in store/global-state [:data :customer-counter]))]
-    (store/update-in! store/global-state [:data :customer-counter] inc)
-    (keyword (str "cs" id))))
-
-(defn set-subpage [page]
-  (store/assoc-in! store/global-state [:ui :customers :page] page))
-
-(defn get-subpage []
-  (store/get-in store/global-state [:ui :customers :page]))
-
-(defn set-listing-type [type]
-  (store/assoc-in! store/global-state [:ui :customers :listing] type))
-
-(defn get-listing-type []
-  (store/get-in store/global-state [:ui :customers :listing]))
-
-(defn set-customer-target [cid]
-  (store/assoc-in! store/global-state [:ui :customers :target] cid))
-
-(defn get-customer-target []
-  (store/get-in store/global-state [:ui :customers :target]))
 
 (defn filter-customers [term]
   (store/reset! customer-list
@@ -52,10 +30,10 @@
                  (models/customers->vec))))
 
 (defn listing-component [type]
-  (if (= type (get-listing-type))
+  (if (= type (ui/get-listing-type :customers))
     [:strong (utils/keyword->str type :initial-caps true)]
     [:a {:href "#"
-         :on-click #(set-listing-type type)}
+         :on-click #(ui/set-listing-type :customers type)}
      (utils/keyword->str type :initial-caps true)]))
 
 (defn get-toolbar-data []
@@ -67,7 +45,7 @@
                 (deftoolbar-item
                   :type :div
                   :content
-                  [inputs/button "New" #(set-subpage :new-customer)
+                  [inputs/button "New" #(ui/set-subpage :customers :new-customer)
                    :classes {:button "is-success"}])
                 (deftoolbar-item
                   :class "is-hidden-table-only"
@@ -119,7 +97,7 @@
       :title "Country" :model doc]]]])
 
 (defn customer-display []
-  (let [customer (models/get-customer (get-customer-target))]
+  (let [customer (models/get-customer (ui/get-target :customers))]
     [:<>
      [:h4.title (str (:title customer) " " (:first-name customer) " "
                      (:last-name customer))]
@@ -139,17 +117,17 @@
        [:p (:country customer)]]]]))
 
 (defn do-delete [cid]
-  (set-customer-target cid)
-  (set-subpage :delete-customer))
+  (ui/set-target :customers cid)
+  (ui/set-subpage :customers :delete-customer))
 
 (defn delete-customer []
-  (models/delete-customer (get-customer-target))
-  (set-customer-target nil)
-  (set-subpage :customers))
+  (models/delete-customer (ui/get-target :customers))
+  (ui/set-target :customers nil)
+  (ui/set-subpage :customers :customers))
 
 (defn cancel-delete-customer []
-  (set-customer-target nil)
-  (set-subpage :customers))
+  (ui/set-target :customers nil)
+  (ui/set-subpage :customers :customers))
 
 (defn delete-customer-page []
   (fn []
@@ -169,21 +147,21 @@
        :classes {:field "has-addons"}]]]))
 
 (defn do-edit [cid]
-  (set-customer-target cid)
-  (set-subpage :edit-customer))
+  (ui/set-target :customers cid)
+  (ui/set-subpage :customers :edit-customer))
 
 (defn save-edit-customer [customer]
   (models/add-customer @customer)
   (store/clear! customer)
-  (set-customer-target nil)
-  (set-subpage :customers))
+  (ui/set-target :customers nil)
+  (ui/set-subpage :customers :customers))
 
 (defn cancel-edit-customer []
-  (set-customer-target nil)
-  (set-subpage :customers))
+  (ui/set-target :customers nil)
+  (ui/set-subpage :customers :customers))
 
 (defn edit-customer-form []
-  (let [doc (r/atom (models/get-customer (get-customer-target)))]
+  (let [doc (r/atom (models/get-customer (ui/get-target :customers)))]
     (fn []
       [:form.box
        [customer-form-fields doc]
@@ -205,15 +183,15 @@
      [edit-customer-form]]))
 
 (defn save-new-customer [data]
-  (let [new-id (get-new-customer-id)]
+  (let [new-id (models/get-new-id :customer)]
     (store/put! data :id new-id)
     (models/add-customer @data)
     (store/clear! data)
-    (set-subpage :customers)))
+    (ui/set-subpage :customers :customers)))
 
 (defn cancel-new-customer [data]
   (store/clear! data)
-  (set-subpage :customers))
+  (ui/set-subpage :customers :customers))
 
 (defn new-customer-form []
   (let [doc (r/atom {})]
@@ -245,7 +223,8 @@
                               (str (:first-name c) " " (:last-name c))])
                            (tables/defcell (str (:email c)))
                            (tables/defcell (str (:country c)))
-                           (tables/defcell (str 0))
+                           (tables/defcell
+                             (str (count (models/get-customer-orders (:id c)))))
                            (tables/defcell
                              [inputs/field [[inputs/button "Edit"
                                              #(do-edit (:id c))
@@ -267,22 +246,19 @@
   (store/reset! customer-list (models/customers->vec))
   (fn []
     [:<>
-     [breadcrumbs :us.customers.page
-      [{:name "Customers"
-        :value :customers
-        :active true}]]
+     [:h1.title "Customers"]
      [toolbar (get-toolbar-data)]
      [customer-table @customer-list]]))
 
 (defn customers-page []
-  (case (get-subpage)
+  (case (ui/get-subpage :customers)
     :customers [customer-list-page]
     :new-customer [new-customer-page]
     :edit-customer [edit-customer-page]
     :delete-customer [delete-customer-page]
     [:<>
      [:h2.title "Page Not Found"]
-     [:p "Bad page identifier " (str (get-subpage))]]))
+     [:p "Bad page identifier " (str (ui/get-subpage :customers))]]))
 
-(set-subpage :customers)
-(set-listing-type :all)
+(ui/set-subpage :customers :customers)
+(ui/set-listing-type :customers :all)

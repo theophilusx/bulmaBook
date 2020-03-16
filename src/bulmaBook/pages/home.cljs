@@ -3,6 +3,7 @@
             [bulmaBook.pages.books :refer [books-page]]
             [bulmaBook.pages.dashboard :refer [dashboard-page]]
             [bulmaBook.pages.customers :refer [customers-page]]
+            [bulmaBook.pages.orders :refer [orders-page]]
             [bulmaBook.data :as data]
             [bulmaBook.store :as store]))
 
@@ -16,11 +17,8 @@
        :books [books-page]
        :dashboard [dashboard-page]
        :customers [customers-page]
-       :orders [:div
-                [:h2.title.is-2
-                 (str "Default Orders Page")]]
+       :orders [orders-page]
        [:div
         [:h2.title.is-2 (str "Unknown sub-page name: "
                              (store/get-in store/global-state
-                                           [:books-sidebar :choice]))]])]]
-   ])
+                                           [:books-sidebar :choice]))]])]]])
