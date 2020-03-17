@@ -7,7 +7,8 @@
             [bulmaBook.components.tables :as tables]
             [bulmaBook.pages.ui :as ui]
             [bulmaBook.utils :as utils]
-            [bulmaBook.store :as store]))
+            [bulmaBook.store :as store]
+            [clojure.string :as string]))
 
 (def orders-list (r/atom (models/orders->vec)))
 
@@ -19,7 +20,17 @@
      (utils/keyword->str type :initial-caps true)]))
 
 (defn filter-orders [term]
-  true)
+  (store/reset! orders-list
+                (filterv
+                 (fn [o]
+                   (or (string/includes? (str (:id o)) term)
+                       (string/includes? (str (:cid o)) term)
+                       (string/includes? (str (:customer o)) term)
+                       (string/includes? (str (:date o)) term)
+                       (string/includes? (str (:status o)) term)
+                       (string/includes? (str (:book-count o)) term)
+                       (string/includes? (str (:total o)) term)))
+                 (models/orders->vec))))
 
 (defn get-toolbar-data []
   {:left-items [(deftoolbar-item
