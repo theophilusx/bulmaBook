@@ -50,6 +50,73 @@
                    :content [listing-component :complete])
                  (deftoolbar-item
                    :content [listing-component :failed])]})
+
+(defn order-button [type doc]
+  [:button.button {:on-click #(store/put! doc :status type)
+                   :class ["is-small"
+                           (case type
+                             :in-progress "is-warning"
+                             :complete "is-success"
+                             :failed "is-danger")
+                           (when-not (= type (:status @doc))
+                             "is-outlined")]}
+   (utils/keyword->str type :initial-caps true)])
+
+(defn order-buttons [doc]
+  (into
+   [:div.buttons]
+   (for [b [:in-progress :complete :failed]]
+     [order-button b doc])))
+
+(defn books-table [doc]
+  (let [body (mapv (fn [b]
+                     (let [book (models/get-book (:id b))]
+                       [(tables/defcell [:img {:src (:image book) :width "40"}])
+                        (tables/defcell [:strong (:title book)])
+                        (tables/defcell (str "$" (:cost book))
+                          :class "has-text-right")
+                        (tables/defcell "1" :class "has-text-right")
+                        (tables/defcell (str "$" (:cost book))
+                          :class "has-text-right")]))
+                   (:books @doc))
+        head [[(tables/defcell "Cover" :type :th :class "is-narrow")
+               (tables/defcell "Title" :type :th)
+               (tables/defcell "Price" :type :th
+                 :class "has-text-right is-narrow")
+               (tables/defcell "Quantity" :type :th
+                 :class "has-text-right is-narrow")
+               (tables/defcell "Total" :type :th
+                 :class "has-text-right is-narrow")]]
+        foot [[(tables/defcell (str "$" (reduce (fn [acc bk]
+                                                  (+ acc
+                                                     (*
+                                                      (:cost bk) (:quantity bk))))
+                                                0 (:books @doc))) :type :th
+                 :colspan "5" :class "has-text-right")]]]
+    [tables/table body :header head :footer foot
+     :borded true :fullwidth true]))
+
+(defn order-edit-form []
+  (let [doc (r/atom (models/get-order (ui/get-target :orders)))
+        customer (models/get-customer (:cid @doc))]
+    (fn []
+      [:div.columns.is-desktop
+       [:div.column.is-4-desktop.is-3-widescreen
+        [:p.heading [:strong "Date"]]
+        [:p.content (:date @doc)]
+        [:p.heading [:strong "Status"]]
+        [order-buttons doc]
+        [:p.heading [:strong "Customer"]]
+        [:p.contenr
+         [:strong (str (:first-name customer) " " (:last-name customer))]
+         [:br] [:code (:email customer)]
+         [:br] (str (:address1 customer) " " (:address2 customer))
+         [:br] (str (:city customer) " " (:pcode customer))
+         [:br] (:country customer)]]
+       [:div.column
+        [:p.heading [:strong "Books"]]
+        [books-table doc]]])))
+
 (defn order-edit-page []
   [:<>
    [breadcrumbs :ui.orders.page
@@ -59,7 +126,7 @@
      {:name "Edit Order"
       :value :edit-order
       :active true}]]
-   [:p "Edit order page"]])
+   [order-edit-form]])
 
 (defn do-edit-order [oid]
   (ui/set-target :orders oid)
