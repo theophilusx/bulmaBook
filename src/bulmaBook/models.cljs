@@ -61,10 +61,12 @@
                :customer (str (:first-name customer) " "
                               (:last-name customer))
                :date (:date order)
-               :book-count (count (:books order))
+               :book-count (reduce (fn [acc bk]
+                                     (+ acc (:quantity bk)))
+                                   0 (:books order))
                :status (:status order)
                :total (reduce (fn [acc bk]
-                                (+ acc (:cost bk)))
+                                (+ acc (* (:quantity bk) (:cost bk))))
                               0 (:books order))}))
           (keys orders))))
 
