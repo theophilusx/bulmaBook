@@ -88,23 +88,33 @@
 (def order-data {:OR1000 {:id :OR1000
                           :date "03 JAN 2020 11:35"
                           :cid :cs1
-                          :books [{:id :bk1 :cost 22.99}]
+                          :books [{:id :bk1
+                                   :cost 22.99
+                                   :quantity 1}]
                           :status :in-progress}
                  :OR1001 {:id :OR1001
                           :date "09 JAN 2020 12:20"
                           :cid :cs3
-                          :books [{:id :bk2 :cost 22.99}
-                                  {:id :bk3 :cost 22.99}]
+                          :books [{:id :bk2
+                                   :cost 22.99
+                                   :quantity 1}
+                                  {:id :bk3
+                                   :cost 22.99
+                                   :quantity 1}]
                           :status :complete}
                  :OR1002 {:id :OR1002
                           :date "20 JAN 2020 16:20"
                           :cid :cs3
-                          :books [{:id :bk4 :cost 22.99}]
+                          :books [{:id :bk4
+                                   :cost 22.99
+                                   :quantity 1}]
                           :status :failed}
                  :OR1003 {:id :OR1003
                           :date "02 FEB 2020 09:30"
                           :cid :cs1
-                          :books [{:id :bk6 :cost 22.99}]
+                          :books [{:id :bk6
+                                   :cost 22.99
+                                   :quantity 1}]
                           :status :complete}})
 
 (def order-counter 1003)
