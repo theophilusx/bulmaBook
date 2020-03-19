@@ -10,11 +10,13 @@
 ;;  :body {:tbody ""
 ;;         :tr ""}}
 
-(defn defcell [val & {:keys [type class]
+(defn defcell [val & {:keys [type class colspan rowspan]
                       :or {type :td}}]
   {:type type
    :value val
-   :class class})
+   :class class
+   :colspan colspan
+   :rowspan rowspan})
 
 (defn tr [cells doc & {:keys [class select row-id]}]
   (letfn [(set-select-row [id]
@@ -27,9 +29,14 @@
        (if select
          [(:type c) {:class [(:class c)
                              (when (is-selected? row-id) "is-selected")]
+                     :colspan (:colspan c)
+                     :rowspan (:rowspan c)
                      :on-click #(set-select-row row-id)}
           (:value c)]
-         [(:type c) {:class [(:class c)]} (:value c)])))))
+         [(:type c) {:class [(:class c)]
+                     :colspan (:colspan c)
+                     :rowspan (:rowspan c)}
+          (:value c)])))))
 
 (defn thead [rows doc & {:keys [classes]}]
   (into
@@ -51,7 +58,7 @@
                 rows)))
 
 (defn table [_ & _]
-  (let [doc (r/atom {:selected-row nil})]
+  (let [doc (r/atom {:selected-row nil})] 
     (fn [body & {:keys [classes header footer select borded striped
                        narrow hover fullwidth]}]
       [:table.table {:class [(:table classes)
