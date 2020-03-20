@@ -69,16 +69,24 @@
      [order-button b doc])))
 
 (defn books-table [doc]
-  (let [body (mapv (fn [b]
-                     (let [book (models/get-book (:id b))]
+  (let [body (mapv (fn [bid]
+                     (let [book (models/get-book bid)]
                        [(tables/defcell [:img {:src (:image book) :width "40"}])
-                        (tables/defcell [:strong (:title book)])
-                        (tables/defcell (str "$" (:cost book))
+                        (tables/defcell
+                          [:a {:href "#"
+                               :on-click (fn []
+                                           (ui/set-target :books (:id book))
+                                           (ui/set-subpage :books :edit-book)
+                                           (ui/set-sidebar :books))}
+                           [:strong (:title book)]])
+                        (tables/defcell (str "$" (:cost (bid (:books @doc))))
                           :class "has-text-right")
-                        (tables/defcell "1" :class "has-text-right")
-                        (tables/defcell (str "$" (:cost book))
+                        (tables/defcell (:quantity (bid (:books @doc))) :class "has-text-right")
+                        (tables/defcell
+                          (str "$" (* (:cost (bid (:books @doc)))
+                                                    (:quantity (bid (:books @doc)))))
                           :class "has-text-right")]))
-                   (:books @doc))
+                   (keys (:books @doc)))
         head [[(tables/defcell "Cover" :type :th :class "is-narrow")
                (tables/defcell "Title" :type :th)
                (tables/defcell "Price" :type :th
@@ -134,7 +142,8 @@
 
 (defn do-edit-customer [cid]
   (ui/set-target :customers cid)
-  (ui/set-subpage :orders :edit-customer))
+  (ui/set-subpage :customers :edit-customer)
+  (ui/set-sidebar :customers))
 
 (defn order-table [order-data]
   (let [orders (mapv (fn [o]
