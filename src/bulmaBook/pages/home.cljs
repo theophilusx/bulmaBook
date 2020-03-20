@@ -5,7 +5,8 @@
             [bulmaBook.pages.customers :refer [customers-page]]
             [bulmaBook.pages.orders :refer [orders-page]]
             [bulmaBook.data :as data]
-            [bulmaBook.store :as store]))
+            [bulmaBook.store :as store]
+            [bulmaBook.pages.ui :as ui]))
 
 (defn home-page []
   [:<>
@@ -13,7 +14,7 @@
     [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen
      [sidebar data/books-sidebar]]
     [:div.column
-     (condp = (store/get-in store/global-state [:ui :books :sidebar])
+     (condp = (ui/get-sidebar)
        :books [books-page]
        :dashboard [dashboard-page]
        :customers [customers-page]
