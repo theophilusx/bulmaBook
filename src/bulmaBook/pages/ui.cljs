@@ -19,3 +19,8 @@
 (defn get-listing-type [group]
   (store/get-in store/global-state [:ui group :listing]))
 
+(defn set-sidebar [item]
+  (store/assoc-in! store/global-state [:ui :sidebar] item))
+
+(defn get-sidebar []
+  (store/get-in store/global-state [:ui :sidebar]))
