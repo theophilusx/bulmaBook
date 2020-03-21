@@ -24,7 +24,9 @@
     (for [el body]
       el))])
 
-(defn input-helper [type id doc chg-fn & {:keys [class placeholder required]}]
+(defn input-helper
+  [type id doc chg-fn & {:keys [class placeholder required
+                                disabled min max maxlength size]}]
   [:input.input {:type (name type)
                  :class class
                  :id (name id)
@@ -32,7 +34,12 @@
                  :placeholder placeholder
                  :required required
                  :value (store/get-in doc (spath id))
-                 :on-change chg-fn}])
+                 :on-change chg-fn
+                 :disabled disabled
+                 :min (when min (str min))
+                 :max (when max (str max))
+                 :maxlength (when maxlength (str maxlength))
+                 :size (when size (str size))}])
 
 (defn input [_ sid & {:keys [model change-fn]}]
   (let [doc (or model
@@ -41,24 +48,29 @@
                  change-fn
                  (fn [e]
                    (store/assoc-in! doc (spath sid) (value-of e))))]
-    (fn [type sid & {:keys [classes placeholder required icon-data]}]
+    (fn [type sid & {:keys [classes placeholder required icon-data disabled
+                           min max maxlength size]}]
       (if icon-data
         (into
          [:div.control {:class [(:control classes)
                                 (icons/icon-control-class icon-data)]}
           [input-helper type sid doc chg-fn :class (:input classes)
-           :placeholder placeholder :required required]]
+           :placeholder placeholder :required required :disabled disabled
+           :min min :max max :maxlength maxlength :size size]]
          (for [i (icons/icon icon-data)]
            i))
         [:div.control {:class (:control classes)}
          [input-helper type sid doc chg-fn :class (:input classes)
-          :placeholder placeholder :required required]]))))
+          :placeholder placeholder :required required :disabled disabled
+          :min min :max max :maxlength maxlength :size size]]))))
 
 (defn input-field [label type id & {:keys [classes placeholder required icon-data
-                                           model change-fn]}]
+                                           model change-fn disabled min max
+                                           maxlength size]}]
   [field [[input type id :classes classes :placeholder placeholder
            :required required :icon-data icon-data :model model
-           :change-fn change-fn]]
+           :change-fn change-fn :disabled disabled :min min :max max
+           :maxlength maxlength :size size]]
    :label label :classes classes])
 
 (defn checkbox [_ sid & {:keys [model change-fn]}]
@@ -245,3 +257,38 @@
        [field [[input :text :search :placeholder placeholder :model doc]
                [button "Search" #(action (:search @doc))]]
         :classes {:field "has-addons"}]])))
+
+(defn range-field [sid _ _ & {:keys [model change-fn value]}]
+  (let [doc (or model
+                (r/atom {}))
+        chg-fn (if (fn? change-fn)
+                 change-fn
+                 (fn [e]
+                   (store/assoc-in! doc (spath sid) (value-of e))))]
+    (store/assoc-in! doc (spath sid) value)
+    (fn [sid min max & {:keys [label classes required disabled size step
+                              ]}]
+      [:div.field {:class (:field classes)}
+       (when label
+         [:label.label {:class (:label classes)} label])
+       [:div.field.has-addons
+        [:span {:style {:paddingRight "5px"}}(str min " ")]
+        [:input {:type "range"
+                 :class (:input classes)
+                 :required required
+                 :min (str min)
+                 :max (str max)
+                 :step (if step
+                         (str step)
+                         "1")
+                 :size (when size (str size))
+                 :id (name sid)
+                 :name (name sid)
+                 :value (str (store/get-in doc (spath sid)))
+                 :on-change chg-fn
+                 :maxlength "200"
+                 :disabled disabled}]
+        [:span {:style {:paddingRight "5px"
+                        :paddingLeft "5px"}}(str " " max " ")]
+        [:span {:style {:paddingLeft "5px"}}(str " " (store/get-in doc (spath sid)))]]])))
+
