@@ -33,7 +33,7 @@
                  :name (name id)
                  :placeholder placeholder
                  :required required
-                 :value (store/get-in doc (spath id))
+                 :value (str (store/get-in doc (spath id)))
                  :on-change chg-fn
                  :disabled disabled
                  :min (when min (str min))
