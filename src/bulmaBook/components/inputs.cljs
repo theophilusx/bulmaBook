@@ -311,8 +311,8 @@
                        :on-change chg-fn
                        :required required
                        :disabled disabled
-                       :maxlength maxlength
-                       :size size
+                       :maxlength (str maxlength)
+                       :size (str size)
                        :value (str (store/get-in doc (spath sid)))
                        :class (:input classes)}]]
        :label label :classes classes])))
