@@ -12,7 +12,8 @@
        [inputs/input-field "Colour sample" :color :color-sample :size 4 :model doc]
        [inputs/input-field "Date sample" :date :date-sample :size 12 :model doc]
        [inputs/input-field "Month sample" :month :month-sample :size "10" :model doc]
-       [inputs/input-field "Number sample" :number :number-sample :size 2 :maxlength "2" :max "99" :model doc] 
+       [inputs/number-field  :number-sample :size 2 :maxlength 4 :max 99 :min 0
+        :model doc :label "Number sample" :value 10]
        [inputs/range-field :range-field-sample 0 100 :step 10 :value 60
         :model doc :label "Sample range field"]
        [:hr]

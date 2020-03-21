@@ -266,29 +266,53 @@
                  (fn [e]
                    (store/assoc-in! doc (spath sid) (value-of e))))]
     (store/assoc-in! doc (spath sid) value)
-    (fn [sid min max & {:keys [label classes required disabled size step
-                              ]}]
-      [:div.field {:class (:field classes)}
-       (when label
-         [:label.label {:class (:label classes)} label])
-       [:div.field.has-addons
-        [:span {:style {:paddingRight "5px"}}(str min " ")]
-        [:input {:type "range"
-                 :class (:input classes)
-                 :required required
-                 :min (str min)
-                 :max (str max)
-                 :step (if step
-                         (str step)
-                         "1")
-                 :size (when size (str size))
-                 :id (name sid)
-                 :name (name sid)
-                 :value (str (store/get-in doc (spath sid)))
-                 :on-change chg-fn
-                 :maxlength "200"
-                 :disabled disabled}]
-        [:span {:style {:paddingRight "5px"
-                        :paddingLeft "5px"}}(str " " max " ")]
-        [:span {:style {:paddingLeft "5px"}}(str " " (store/get-in doc (spath sid)))]]])))
+    (fn [sid min max & {:keys [label classes required disabled step]}]
+      [field [[:div.field.has-addons
+               [:span {:style {:paddingRight "5px"}}(str min " ")]
+               [:input {:type "range"
+                        :class (:input classes)
+                        :required required
+                        :min (str min)
+                        :max (str max)
+                        :step (if step
+                                (str step)
+                                "1")
+                        :id (name sid)
+                        :name (name sid)
+                        :value (str (store/get-in doc (spath sid)))
+                        :on-change chg-fn
+                        :disabled disabled}]
+               [:span {:style {:paddingRight "5px"
+                               :paddingLeft "5px"}}
+                (str " " max " ")]
+               [:span {:style {:paddingLeft "5px"}}
+                (str " " (store/get-in doc (spath sid)))]]]
+       :label label :classes classes])))
 
+(defn number-field [sid & {:keys [model change-fn value]}]
+  (let [doc (or model
+                (r/atom {}))
+        chg-fn (if (fn? change-fn)
+                 change-fn
+                 (fn [e]
+                   (store/assoc-in! doc (spath sid) (value-of e))))]
+    (when value
+      (store/assoc-in! doc (spath sid) value))
+    (fn [sid & {:keys [min max step label maxlength size required disabled
+                      classes]}]
+      [field [[:input {:type "number"
+                       :id (name sid)
+                       :name (name sid)
+                       :min (when min (str min))
+                       :max (when max (str max))
+                       :step (if step
+                               (str step)
+                               "1")
+                       :on-change chg-fn
+                       :required required
+                       :disabled disabled
+                       :maxlength maxlength
+                       :size size
+                       :value (str (store/get-in doc (spath sid)))
+                       :class (:input classes)}]]
+       :label label :classes classes])))
