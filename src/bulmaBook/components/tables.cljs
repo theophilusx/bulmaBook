@@ -29,8 +29,8 @@
        (if select
          [(:type c) {:class [(:class c)
                              (when (is-selected? row-id) "is-selected")]
-                     :colspan (:colspan c)
-                     :rowspan (:rowspan c)
+                     :colSpan (:colspan c)
+                     :rowSpan (:rowspan c)
                      :on-click #(set-select-row row-id)}
           (:value c)]
          [(:type c) {:class [(:class c)]
