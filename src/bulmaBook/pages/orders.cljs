@@ -1,7 +1,7 @@
 (ns bulmaBook.pages.orders
   (:require [reagent.core :as r]
             [bulmaBook.models :as models]
-            [bulmaBook.components.basic :refer [breadcrumbs]]
+            [bulmaBook.components.basic :refer [breadcrumbs render-map]]
             [bulmaBook.components.toolbar :refer [toolbar deftoolbar-item]]
             [bulmaBook.components.inputs :as inputs]
             [bulmaBook.components.tables :as tables]
@@ -68,25 +68,75 @@
    (for [b [:in-progress :complete :failed]]
      [order-button b doc])))
 
-(defn books-table [doc]
-  (let [body (mapv (fn [bid]
+(defn do-add-book [order new]
+  (let [bid (keyword (:new-book-id @new))
+        quantity (:new-book-quantity @new)]
+    (println (str "order: " @order))
+    (println (str "Book id: " bid))
+    (println (str "Quantity: " quantity))
+    (when (:new-book-id @new)
+      (if (contains? (:books @order) bid)
+        (do 
+          (store/update-in! order [:books bid :quantity] inc)
+          (store/update-in! new [:books bid :quantity] inc))
+        (let [book (models/get-book bid)]
+          (store/assoc-in! order [:books bid]
+                           {:id bid
+                            :quantity quantity
+                            :cost (:cost book)})
+          (store/assoc-in! new [:books bid]
+                           {:id bid
+                            :quantity quantity
+                            :cost (:cost book)}))))))
+
+
+(defn add-book-cell [order new]
+  (let [options (mapv (fn [bid]
+                        (let [book (models/get-book bid)]
+                          [inputs/option (:title book) :value (:id book)]))
+                      (keys (models/book-data)))]
+    (tables/defcell [inputs/field
+                     [[inputs/select :new-book-id options :model new
+                       :select-size :small]
+                      [inputs/number-input :new-book-quantity :min 1 :max 10
+                       :model new :value 1 :classes {:input "input is-small"}
+                       :size 2 :maxlength 2]
+                      [inputs/button "Add book" #(do-add-book order new)
+                       :classes {:button "is-small is-success"}]]
+                     :classes {:field "is-grouped is-grouped-right"}]
+      :colspan "5")))
+
+(defn books-table-component [order]
+  (let [books (r/atom {:books (:books @order)
+                       :new-book-id nil
+                       :new-book-quantity nil})]
+    (fn [order]
+      (let [body (mapv (fn [bid]
                      (let [book (models/get-book bid)]
-                       [(tables/defcell [:img {:src (:image book) :width "40"}])
+                       [(tables/defcell [:img {:src (:image book)
+                                               :width "40"}])
                         (tables/defcell
                           [:a {:href "#"
-                               :on-click (fn []
-                                           (ui/set-target :books (:id book))
-                                           (ui/set-subpage :books :edit-book)
-                                           (ui/set-sidebar :books))}
+                               :on-click
+                               (fn []
+                                 (ui/set-target :books (:id book))
+                                 (ui/set-subpage :books :edit-book)
+                                 (ui/set-sidebar :books))}
                            [:strong (:title book)]])
-                        (tables/defcell (str "$" (:cost (bid (:books @doc))))
-                          :class "has-text-right")
-                        (tables/defcell (:quantity (bid (:books @doc))) :class "has-text-right")
                         (tables/defcell
-                          (str "$" (* (:cost (bid (:books @doc)))
-                                                    (:quantity (bid (:books @doc)))))
+                          (str "$" (:cost (bid (:books @books))))
+                          :class "has-text-right")
+                        (tables/defcell
+                          [inputs/number-field
+                           (keyword (str "books." (name bid) ".quantity"))
+                           :min 1 :max 10 :size 2
+                           :value (:quantity (bid (:books @books)))
+                           :model books] :class "has-text-right")
+                        (tables/defcell
+                          (str "$" (* (:cost (bid (:books @books)))
+                                      (:quantity (bid (:books @books)))))
                           :class "has-text-right")]))
-                   (keys (:books @doc)))
+                       (keys (:books @books)))
         head [[(tables/defcell "Cover" :type :th :class "is-narrow")
                (tables/defcell "Title" :type :th)
                (tables/defcell "Price" :type :th
@@ -95,35 +145,45 @@
                  :class "has-text-right is-narrow")
                (tables/defcell "Total" :type :th
                  :class "has-text-right is-narrow")]]
-        foot [[(tables/defcell (str "$" (reduce (fn [acc bk]
-                                                  (+ acc
-                                                     (*
-                                                      (:cost bk) (:quantity bk))))
-                                                0 (:books @doc))) :type :th
+        foot [[(tables/defcell
+                 (str "$" (reduce (fn [acc bk]
+                                    (+ acc
+                                       (* (:cost (bk (:books @books)))
+                                          (:quantity (bk (:books @books))))))
+                                  0 (keys (:books @books)))) :type :th
                  :colspan "5" :class "has-text-right")]]]
-    [tables/table body :header head :footer foot
-     :borded true :fullwidth true]))
+        [:<>
+         [tables/table (conj body [(add-book-cell order books)])
+          :header head :footer foot
+          :borded true :fullwidth true]
+         [:hr]
+         [render-map @books]]))))
+
+
 
 (defn order-edit-form []
   (let [doc (r/atom (models/get-order (ui/get-target :orders)))
         customer (models/get-customer (:cid @doc))]
     (fn []
-      [:div.columns.is-desktop
-       [:div.column.is-4-desktop.is-3-widescreen
-        [:p.heading [:strong "Date"]]
-        [:p.content (:date @doc)]
-        [:p.heading [:strong "Status"]]
-        [order-buttons doc]
-        [:p.heading [:strong "Customer"]]
-        [:p.contenr
-         [:strong (str (:first-name customer) " " (:last-name customer))]
-         [:br] [:code (:email customer)]
-         [:br] (str (:address1 customer) " " (:address2 customer))
-         [:br] (str (:city customer) " " (:pcode customer))
-         [:br] (:country customer)]]
-       [:div.column
-        [:p.heading [:strong "Books"]]
-        [books-table doc]]])))
+      [:<>
+       [:div.columns.is-desktop
+        [:div.column.is-4-desktop.is-3-widescreen
+         [:p.heading [:strong "Date"]]
+         [:p.content (:date @doc)]
+         [:p.heading [:strong "Status"]]
+         [order-buttons doc]
+         [:p.heading [:strong "Customer"]]
+         [:p.contenr
+          [:strong (str (:first-name customer) " " (:last-name customer))]
+          [:br] [:code (:email customer)]
+          [:br] (str (:address1 customer) " " (:address2 customer))
+          [:br] (str (:city customer) " " (:pcode customer))
+          [:br] (:country customer)]]
+        [:div.column
+         [:p.heading [:strong "Books"]]
+         [books-table-component doc]]]
+       [:hr]
+       [render-map @doc]])))
 
 (defn order-edit-page []
   [:<>
