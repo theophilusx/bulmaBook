@@ -76,3 +76,6 @@
 
 (defn get-customer-orders [cid]
   (filterv #(= cid (:cid %)) (orders->vec)))
+
+(defn add-order [order]
+  (store/assoc-in! store/global-state [:data :order-data (:id order)] order))
