@@ -157,6 +157,7 @@
                               (inputs/defoption "ISBN" :value :isbn)]
                              :model store/global-state])]})
 
+
 (defn book-component [book]
   [:article.box
    [media {:content [[:p.title.is-5.is-spaced.is-marginless
