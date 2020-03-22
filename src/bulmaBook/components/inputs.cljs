@@ -171,13 +171,13 @@
             :value (or value title)}
    title])
 
-(defn select [id _ & {:keys [model change-fn]}]
+(defn select [sid _ & {:keys [model change-fn]}]
   (let [doc (or model
                 (r/atom {}))
         chg-fn (if (fn? change-fn)
                  change-fn
-                 #(store/assoc-in! doc (spath id) (value-of %)))]
-    (fn [id options & {:keys [select-class multiple rounded select-size
+                 #(store/assoc-in! doc (spath sid) (value-of %)))]
+    (fn [sid options & {:keys [select-class multiple rounded select-size
                              icon-data]}]
       [:div.select {:class [select-class
                             (when rounded "is-rounded")
@@ -188,21 +188,23 @@
                               nil)
                             (when multiple "is-multiple")]}
        (into
-        [:select {:id (name id)
-                  :name (name id)
+        [:select {:id (name sid)
+                  :name (name sid)
                   :multiple (when multiple true false)
-                  :size multiple
+                  :size (when multiple
+                          (str multiple))
                   :on-change chg-fn}]
         (for [o options]
           o))
        [icons/icon-component icon-data]])))
 
-(defn select-field [id options & {:keys [title classes multiple rounded select-size icon-data
-                        model change-fn]}]
+(defn select-field [sid options & {:keys [title classes multiple rounded
+                                          select-size icon-data model
+                                          change-fn]}]
   [:div.field {:class (:field classes)}
    (when title
      [:div.label title])
-   [select id options :classes classes :multiple multiple
+   [select sid options :classes classes :multiple multiple
     :rounded rounded :select-size select-size :icon-data icon-data
     :model model :change-fn change-fn]])
 
@@ -289,7 +291,7 @@
                 (str " " (store/get-in doc (spath sid)))]]]
        :label label :classes classes])))
 
-(defn number-field [sid & {:keys [model change-fn value]}]
+(defn number-input [sid & {:keys [model change-fn value]}]
   (let [doc (or model
                 (r/atom {}))
         chg-fn (if (fn? change-fn)
@@ -298,21 +300,27 @@
                    (store/assoc-in! doc (spath sid) (value-of e))))]
     (when value
       (store/assoc-in! doc (spath sid) value))
-    (fn [sid & {:keys [min max step label maxlength size required disabled
-                      classes]}]
-      [field [[:input {:type "number"
-                       :id (name sid)
-                       :name (name sid)
-                       :min (when min (str min))
-                       :max (when max (str max))
-                       :step (if step
-                               (str step)
-                               "1")
-                       :on-change chg-fn
-                       :required required
-                       :disabled disabled
-                       :maxlength (str maxlength)
-                       :size (str size)
-                       :value (str (store/get-in doc (spath sid)))
-                       :class (:input classes)}]]
-       :label label :classes classes])))
+    (fn [sid & {:keys [min max step required disabled maxlength size classes]}]
+      [:div.control {:class (:control classes)}
+       [:input {:type "number"
+                :id (name sid)
+                :name (name sid)
+                :min (when min (str min))
+                :max (when max (str max))
+                :step (if step
+                        (str step)
+                        "1")
+                :on-change chg-fn
+                :required required
+                :disabled disabled
+                :maxlength (str maxlength)
+                :size (str size)
+                :value (str (store/get-in doc (spath sid)))
+                :class (:input classes)}]])))
+
+(defn number-field [sid & {:keys [model change-fn value min max step maxlength
+                                  size required disabled classes label]}]
+  [field [[number-input sid :model model :change-fn change-fn :min min
+           :max max :step step :maxlength maxlength :size size
+           :required required :disabled disabled :classes classes :value value]]
+   :label label :classes classes])
