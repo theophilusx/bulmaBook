@@ -17,6 +17,8 @@
        [inputs/range-field :range-field-sample 0 100 :step 10 :value 60
         :model doc :label "Sample range field"]
        [:hr]
+       [:input {:type "number" :size "2" :maxlength "2" :min "10" :max "99" :value "20"}]
+       [:hr]
        [render-map @doc]])))
 
 (defn dashboard-page []
