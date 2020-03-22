@@ -1,7 +1,7 @@
 (ns bulmaBook.pages.orders
   (:require [reagent.core :as r]
             [bulmaBook.models :as models]
-            [bulmaBook.components.basic :refer [breadcrumbs render-map]]
+            [bulmaBook.components.basic :refer [breadcrumbs]]
             [bulmaBook.components.toolbar :refer [toolbar deftoolbar-item]]
             [bulmaBook.components.inputs :as inputs]
             [bulmaBook.components.tables :as tables]
@@ -131,7 +131,7 @@
                            (keyword (str "books." (name bid) ".quantity"))
                            :min 1 :max 10 :size 2
                            :value (:quantity (bid (:books @books)))
-                           :model books] :class "has-text-right")
+                           :model order] :class "has-text-right")
                         (tables/defcell
                           (str "$" (* (:cost (bid (:books @books)))
                                       (:quantity (bid (:books @books)))))
@@ -155,11 +155,17 @@
         [:<>
          [tables/table (conj body [(add-book-cell order books)])
           :header head :footer foot
-          :borded true :fullwidth true]
-         [:hr]
-         [render-map @books]]))))
+          :borded true :fullwidth true]]))))
 
+(defn do-update-order [doc]
+  (models/add-order @doc)
+  (ui/set-target :orders nil)
+  (ui/set-subpage :orders :orders))
 
+(defn cancel-update-order [order]
+  (store/clear! order)
+  (ui/set-target :orders nil)
+  (ui/set-subpage :orders :orders))
 
 (defn order-edit-form []
   (let [doc (r/atom (models/get-order (ui/get-target :orders)))
@@ -182,8 +188,10 @@
         [:div.column
          [:p.heading [:strong "Books"]]
          [books-table-component doc]]]
-       [:hr]
-       [render-map @doc]])))
+       [inputs/field [[inputs/button "Update Order" #(do-update-order doc)
+                       :classes {:button "is-success"}]
+                      [inputs/button "Cancel" #(cancel-update-order doc)]]
+        :classes {:field "has-addons"}]])))
 
 (defn order-edit-page []
   [:<>
