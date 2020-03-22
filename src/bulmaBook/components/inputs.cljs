@@ -178,7 +178,7 @@
                  change-fn
                  #(store/assoc-in! doc (spath sid) (value-of %)))
         opts (if (not-any? #(:selected (second %)) options)
-               (conj options (option "-- select --" :value "" :selected true))
+               (conj options (defoption "-- select --" :value "" :selected true))
                options)]
     (fn [sid _ & {:keys [select-class multiple rounded select-size
                              icon-data]}]
@@ -300,7 +300,7 @@
         chg-fn (if (fn? change-fn)
                  change-fn
                  (fn [e]
-                   (store/assoc-in! doc (spath sid) (value-of e))))]
+                   (store/assoc-in! doc (spath sid) (js/parseInt (value-of e)))))]
     (when value
       (store/assoc-in! doc (spath sid) value))
     (fn [sid & {:keys [min max step required disabled maxlength size classes]}]
