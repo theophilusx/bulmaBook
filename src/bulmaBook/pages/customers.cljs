@@ -90,10 +90,10 @@
       :placeholder "e.g. Armidale"]]
     [:div.column
      [inputs/select-field :country
-      [[inputs/option "-- Choose a country --" :value ""]
-       [inputs/option "Australia"]
-       [inputs/option "United Kingdom"]
-       [inputs/option "United States"]]
+      [(inputs/defoption "-- Choose a country --" :value "" :selected true)
+       (inputs/defoption "Australia")
+       (inputs/defoption "United Kiingdom")
+       (inputs/defoption "United States")]
       :title "Country" :model doc]]]])
 
 (defn customer-display []

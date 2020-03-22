@@ -163,7 +163,7 @@
                              :name (name sid)
                              :on-change chg-fn}]]])))
 
-(defn option [title & {:keys [value option-class disabled selected label]}]
+(defn defoption [title & {:keys [value option-class disabled selected label]}]
   [:option {:class option-class
             :disabled disabled
             :selected selected
@@ -171,13 +171,16 @@
             :value (or value title)}
    title])
 
-(defn select [sid _ & {:keys [model change-fn]}]
+(defn select [sid options & {:keys [model change-fn]}]
   (let [doc (or model
                 (r/atom {}))
         chg-fn (if (fn? change-fn)
                  change-fn
-                 #(store/assoc-in! doc (spath sid) (value-of %)))]
-    (fn [sid options & {:keys [select-class multiple rounded select-size
+                 #(store/assoc-in! doc (spath sid) (value-of %)))
+        opts (if (not-any? #(:selected (second %)) options)
+               (conj options (option "-- select --" :value "" :selected true))
+               options)]
+    (fn [sid _ & {:keys [select-class multiple rounded select-size
                              icon-data]}]
       [:div.select {:class [select-class
                             (when rounded "is-rounded")
@@ -194,7 +197,7 @@
                   :size (when multiple
                           (str multiple))
                   :on-change chg-fn}]
-        (for [o options]
+        (for [o opts]
           o))
        [icons/icon-component icon-data]])))
 

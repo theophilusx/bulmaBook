@@ -151,10 +151,10 @@
                    :content "Order by")
                  (deftoolbar-item
                    :content [inputs/select-field :ui.books.sort
-                             [[inputs/option "Title" :value :title]
-                              [inputs/option "Price" :value :cost]
-                              [inputs/option "Page Count" :value :pages]
-                              [inputs/option "ISBN" :value :isbn]]
+                             [(inputs/defoption "Title" :value :title)
+                              (inputs/defoption "Price" :value :cost)
+                              (inputs/defoption "Page Count" :value :pages)
+                              (inputs/defoption "ISBN" :value :isbn)]
                              :model store/global-state])]})
 
 (defn book-component [book]
