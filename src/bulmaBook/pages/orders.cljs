@@ -93,7 +93,7 @@
 (defn add-book-cell [order new]
   (let [options (mapv (fn [bid]
                         (let [book (models/get-book bid)]
-                          (inputs/defoption (:title book) :value (:id book))))
+                          (inputs/defoption (:title book) :value (name (:id book)))))
                       (keys (models/book-data)))]
     (tables/defcell [inputs/field
                      [[inputs/select :new-book-id options :model new
