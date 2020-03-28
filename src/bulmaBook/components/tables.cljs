@@ -29,13 +29,13 @@
        (if select
          [(:type c) {:class [(:class c)
                              (when (is-selected? row-id) "is-selected")]
-                     :colSpan (:colspan c)
-                     :rowSpan (:rowspan c)
+                     :colSpan (str (:colspan c))
+                     :rowSpan (str (:rowspan c))
                      :on-click #(set-select-row row-id)}
           (:value c)]
          [(:type c) {:class [(:class c)]
-                     :colspan (:colspan c)
-                     :rowspan (:rowspan c)}
+                     :colSpan (str (:colspan c))
+                     :rowSpan (str (:rowspan c))}
           (:value c)])))))
 
 (defn thead [rows doc & {:keys [classes]}]
