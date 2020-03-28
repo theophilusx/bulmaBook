@@ -185,7 +185,6 @@
                              (spath sid)) (:value (second (first options))))
     (fn [sid options & {:keys [select-class multiple rounded select-size
                         icon-data selected]}]
-      (println (str "First value: " (:value (second (first options)))))
       [:div.select {:class [select-class
                             (when rounded "is-rounded")
                             (case select-size
