@@ -151,11 +151,11 @@
                    :content "Order by")
                  (deftoolbar-item
                    :content [inputs/select-field :ui.books.sort
-                             [(inputs/defoption "Title" :value :title)
-                              (inputs/defoption "Price" :value :cost)
-                              (inputs/defoption "Page Count" :value :pages)
-                              (inputs/defoption "ISBN" :value :isbn)]
-                             :model store/global-state])]})
+                             [(inputs/defoption "Title" :value "title")
+                              (inputs/defoption "Price" :value "cost")
+                              (inputs/defoption "Page Count" :value "pages")
+                              (inputs/defoption "ISBN" :value "isbn")]
+                             :model store/global-state :selected "title"])]})
 
 
 (defn book-component [book]
@@ -185,7 +185,7 @@
   (store/reset! book-list (models/books->vec))
   (fn []
     (when (get-sort-field)
-      (reset! book-list (vec (sort-by (get-sort-field) (models/books->vec)))))
+      (reset! book-list (vec (sort-by (keyword (get-sort-field)) (models/books->vec)))))
     [:<>
      [breadcrumbs :ui.books.page
       [{:name "Books"
