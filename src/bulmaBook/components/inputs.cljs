@@ -25,8 +25,8 @@
       el))])
 
 (defn input-helper
-  [type id doc chg-fn & {:keys [class placeholder required
-                                disabled min max maxlength size]}]
+  [type id doc chg-fn & {:keys [class placeholder required disabled
+                                min max maxlength minlength readonly size]}]
   [:input.input {:type (name type)
                  :class class
                  :id (name id)
@@ -38,7 +38,9 @@
                  :disabled disabled
                  :min (when min (str min))
                  :max (when max (str max))
-                 :maxlength (when maxlength (str maxlength))
+                 :maxLength (when maxlength (str maxlength))
+                 :minLength (when minlength (str minlength))
+                 :readOnly readonly
                  :size (when size (str size))}])
 
 (defn input [_ sid & {:keys [model change-fn]}]
@@ -49,28 +51,31 @@
                  (fn [e]
                    (store/assoc-in! doc (spath sid) (value-of e))))]
     (fn [type sid & {:keys [classes placeholder required icon-data disabled
-                           min max maxlength size]}]
+                           min max maxlength minlength readonly size]}]
       (if icon-data
         (into
          [:div.control {:class [(:control classes)
                                 (icons/icon-control-class icon-data)]}
           [input-helper type sid doc chg-fn :class (:input classes)
            :placeholder placeholder :required required :disabled disabled
-           :min min :max max :maxlength maxlength :size size]]
+           :min min :max max :maxlength maxlength :minlength minlength
+           :readonly readonly :size size]]
          (for [i (icons/icon icon-data)]
            i))
         [:div.control {:class (:control classes)}
          [input-helper type sid doc chg-fn :class (:input classes)
           :placeholder placeholder :required required :disabled disabled
-          :min min :max max :maxlength maxlength :size size]]))))
+          :min min :max max :maxlength maxlength :minlength minlength
+          :readonly readonly :size size]]))))
 
 (defn input-field [label type id & {:keys [classes placeholder required icon-data
                                            model change-fn disabled min max
-                                           maxlength size]}]
+                                           maxlength minlength readonly size]}]
   [field [[input type id :classes classes :placeholder placeholder
            :required required :icon-data icon-data :model model
            :change-fn change-fn :disabled disabled :min min :max max
-           :maxlength maxlength :size size]]
+           :maxlength maxlength :minlength minlength :readonly readonly
+           :size size]]
    :label label :classes classes])
 
 (defn checkbox [_ sid & {:keys [model change-fn]}]
@@ -163,25 +168,24 @@
                              :name (name sid)
                              :on-change chg-fn}]]])))
 
-(defn defoption [title & {:keys [value option-class disabled selected label]}]
+(defn defoption [title & {:keys [value option-class disabled label]}]
   [:option {:class option-class
             :disabled disabled
-            :selected selected
             :label label
-            :value (or value title)}
+            :value (str (or value title))}
    title])
 
-(defn select [sid options & {:keys [model change-fn]}]
+(defn select [sid options & {:keys [model change-fn selected]}]
   (let [doc (or model
                 (r/atom {}))
         chg-fn (if (fn? change-fn)
                  change-fn
-                 #(store/assoc-in! doc (spath sid) (value-of %)))
-        opts (if (not-any? #(:selected (second %)) options)
-               (conj options (defoption "-- select --" :value "" :selected true))
-               options)]
-    (fn [sid _ & {:keys [select-class multiple rounded select-size
-                             icon-data]}]
+                 #(store/assoc-in! doc (spath sid) (value-of %)))]
+    (store/assoc-in! doc (or selected
+                             (spath sid)) (:value (second (first options))))
+    (fn [sid options & {:keys [select-class multiple rounded select-size
+                        icon-data selected]}]
+      (println (str "First value: " (:value (second (first options)))))
       [:div.select {:class [select-class
                             (when rounded "is-rounded")
                             (case select-size
@@ -196,20 +200,23 @@
                   :multiple (when multiple true false)
                   :size (when multiple
                           (str multiple))
+                  :defaultValue (if selected
+                                  selected
+                                  (:value (second (first options))))
                   :on-change chg-fn}]
-        (for [o opts]
+        (for [o options]
           o))
        [icons/icon-component icon-data]])))
 
 (defn select-field [sid options & {:keys [title classes multiple rounded
                                           select-size icon-data model
-                                          change-fn]}]
+                                          change-fn selected]}]
   [:div.field {:class (:field classes)}
    (when title
      [:div.label title])
    [select sid options :classes classes :multiple multiple
     :rounded rounded :select-size select-size :icon-data icon-data
-    :model model :change-fn change-fn]])
+    :selected selected :model model :change-fn change-fn]])
 
 (defn file [sid & {:keys [action model change-fn]}]
   (let [doc (or model
@@ -303,7 +310,8 @@
                    (store/assoc-in! doc (spath sid) (js/parseInt (value-of e)))))]
     (when value
       (store/assoc-in! doc (spath sid) value))
-    (fn [sid & {:keys [min max step required disabled maxlength size classes]}]
+    (fn [sid & {:keys [min max step required disabled maxlength minlength
+                      readonly size classes]}]
       [:div.control {:class (:control classes)}
        [:input {:type "number"
                 :id (name sid)
@@ -316,14 +324,19 @@
                 :on-change chg-fn
                 :required required
                 :disabled disabled
-                :maxlength (str maxlength)
-                :size (str size)
-                :value (str (store/get-in doc (spath sid)))
+                :maxLength (when maxlength (str maxlength))
+                :minLength (when minlength (str minlength))
+                :readOnly readonly
+                :size (when size (str size))
+                :value (when (store/get-in doc (spath sid))
+                         (str (store/get-in doc (spath sid))))
                 :class (:input classes)}]])))
 
 (defn number-field [sid & {:keys [model change-fn value min max step maxlength
-                                  size required disabled classes label]}]
+                                  minlength readonly size required disabled
+                                  classes label]}]
   [field [[number-input sid :model model :change-fn change-fn :min min
-           :max max :step step :maxlength maxlength :size size
-           :required required :disabled disabled :classes classes :value value]]
+           :max max :step step :maxlength maxlength :minlength minlength
+           :readonly readonly :size size :required required :disabled disabled
+           :classes classes :value value]]
    :label label :classes classes])
