@@ -71,9 +71,6 @@
 (defn do-add-book [order new]
   (let [bid (keyword (:new-book-id @new))
         quantity (:new-book-quantity @new)]
-    (println (str "order: " @order))
-    (println (str "Book id: " bid))
-    (println (str "Quantity: " quantity))
     (when (:new-book-id @new)
       (if (contains? (:books @order) bid)
         (do 
