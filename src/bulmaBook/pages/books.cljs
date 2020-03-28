@@ -187,10 +187,7 @@
     (when (get-sort-field)
       (reset! book-list (vec (sort-by (keyword (get-sort-field)) (models/books->vec)))))
     [:<>
-     [breadcrumbs :ui.books.page
-      [{:name "Books"
-        :value :books
-        :active true}]]
+     [:h1.title "Books"]
      [toolbar (get-toolbar-data)]
      [paginate @book-list book-grid-component :page-size 2]]))
 
