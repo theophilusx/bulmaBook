@@ -181,8 +181,8 @@
         chg-fn (if (fn? change-fn)
                  change-fn
                  #(store/assoc-in! doc (spath sid) (value-of %)))]
-    (store/assoc-in! doc (or selected
-                             (spath sid)) (:value (second (first options))))
+    (store/assoc-in! doc (spath sid) (or selected
+                                         (:value (second (first options)))))
     (fn [sid options & {:keys [select-class multiple rounded select-size
                         icon-data selected]}]
       [:div.select {:class [select-class
