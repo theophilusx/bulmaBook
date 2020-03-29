@@ -108,3 +108,17 @@
               :on-click #(store/assoc-in! store/global-state (spath id)
                                           (:value c))}
           (:name c)]])))])
+
+(defn notification [body & {:keys [class delete]}]
+  [:div.notification {:class [class]}
+   (when delete
+     [:button.delete {:on-click (fn [e]
+                                  (let [note (.-parentNode (.-target e))
+                                        parent (.-parentNode note)]
+                                    (println (str "Note: " note))
+                                    (.dir js/console note)
+                                    (println (str "Parent: " parent))
+                                    (.dir js/console parent)
+                                    (.removeChild parent note) 
+                                    ))}])
+   body])
