@@ -50,23 +50,19 @@
                  change-fn
                  (fn [e]
                    (store/assoc-in! doc (spath sid) (value-of e))))]
-    (fn [type sid & {:keys [classes placeholder required icon-data disabled
-                           min max maxlength minlength readonly size]}]
+    (fn [type sid & {:keys [classes icon-data]
+                    :as args}]
       (if icon-data
         (into
          [:div.control {:class [(:control classes)
                                 (icons/icon-control-class icon-data)]}
-          [input-helper type sid doc chg-fn :class (:input classes)
-           :placeholder placeholder :required required :disabled disabled
-           :min min :max max :maxlength maxlength :minlength minlength
-           :readonly readonly :size size]]
+          (apply input-helper type sid doc chg-fn :class (:input classes)
+                 (into [] cat args))]
          (for [i (icons/icon icon-data)]
            i))
         [:div.control {:class (:control classes)}
-         [input-helper type sid doc chg-fn :class (:input classes)
-          :placeholder placeholder :required required :disabled disabled
-          :min min :max max :maxlength maxlength :minlength minlength
-          :readonly readonly :size size]]))))
+         (apply input-helper type sid doc chg-fn :class (:input classes)
+                (into [] cat args))]))))
 
 (defn input-field [label type id & {:keys [classes placeholder required icon-data
                                            model change-fn disabled min max
