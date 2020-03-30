@@ -1,5 +1,10 @@
 (ns bulmaBook.utils
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [goog.string :as gstring]
+            [goog.string.format]
+            [goog.i18n.NumberFormat.Format])
+  (:import (goog.i18n NumberFormat)
+           (goog.i18n.NumberFormat Format)))
 
 (defn cs [& names]
   (string/join " " (filter identity names)))
@@ -34,3 +39,9 @@
     (if initial-caps
       (initcaps s)
       s)))
+
+(defn str-format [fmt & args]
+  (apply gstring/format fmt args)) 
+
+(defn number-thousands [num-str]
+  (.format (NumberFormat. Format/DECIMAL) num-str))
