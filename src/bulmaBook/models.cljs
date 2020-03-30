@@ -16,7 +16,7 @@
              (keyword (str "OR" id)))))
 
 (defn book-data []
-  (store/get-in store/global-state [:data :book-data]))
+  (store/get-in state [:data :book-data]))
 
 (defn books->vec []
   (let [books (book-data)]
@@ -26,13 +26,13 @@
   (bid (book-data)))
 
 (defn add-book [book]
-  (store/assoc-in! store/global-state [:data :book-data (:id book)] book))
+  (store/assoc-in! state [:data :book-data (:id book)] book))
 
 (defn delete-book [bid]
-  (store/update-in! store/global-state [:data :book-data] dissoc bid))
+  (store/update-in! state [:data :book-data] dissoc bid))
 
 (defn customer-data []
-  (store/get-in store/global-state [:data :customer-data]))
+  (store/get-in state [:data :customer-data]))
 
 
 (defn customers->vec []
@@ -43,13 +43,13 @@
   (cid (customer-data)))
 
 (defn delete-customer [cid]
-  (store/update-in! store/global-state [:data :customer-data] dissoc cid))
+  (store/update-in! state [:data :customer-data] dissoc cid))
 
 (defn add-customer [cus]
-  (store/assoc-in! store/global-state [:data :customer-data (:id cus)] cus))
+  (store/assoc-in! state [:data :customer-data (:id cus)] cus))
 
 (defn order-data []
-  (store/get-in store/global-state [:data :order-data]))
+  (store/get-in state [:data :order-data]))
 
 (defn orders->vec []
   (let [orders (order-data)]
@@ -78,4 +78,13 @@
   (filterv #(= cid (:cid %)) (orders->vec)))
 
 (defn add-order [order]
-  (store/assoc-in! store/global-state [:data :order-data (:id order)] order))
+  (store/assoc-in! state [:data :order-data (:id order)] order))
+
+(defn dashboard-period []
+  (keyword (store/get-in state [:ui :dashboard :period])))
+
+(defn dashboard-period-data [period]
+  (store/get-in state [:data :dashboard-data period]))
+
+(defn session-user []
+  (store/get-in state [:session :user :name]))
