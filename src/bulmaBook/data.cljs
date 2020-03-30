@@ -119,6 +119,32 @@
 
 (def order-counter 1003)
 
+(def dashboard-data {:yesterday {:orders 10
+                                 :revenue 950
+                                 :visitors 350
+                                 :pages 910}
+                     :today {:orders 5
+                             :revenue 144
+                             :visitors 120
+                             :pages 830}
+                     :week {:orders 30
+                            :revenue 750
+                            :visitors 600
+                            :pages 1000}
+                     :month {:orders 120
+                             :revenue 435
+                             :visitors 3200
+                             :pages 1120}
+                     :year {:orders 2300
+                            :revenue 5450
+                            :visitors 39125
+                            :pages 5000}
+                     :all {:orders 67995
+                           :revenue 47330
+                           :visitors 120605
+                           :pages 5100}})
+
+
 (def navbar-id :ui.navbar)
 
 (defn get-navabar-data []
