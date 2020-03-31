@@ -3,6 +3,13 @@
             [clojure.string :as string]
             [bulmaBook.store :as store]))
 
+(defn a [title & {:keys [href on-click class]
+                  :or [href "#"]}]
+  [:a {:href href
+       :on-click (when on-click #(on-click %))
+       :class [class]}
+   title])
+
 (defn media [body & {:keys [left right id class]}]
   [:article.media {:class class
                    :id id}
