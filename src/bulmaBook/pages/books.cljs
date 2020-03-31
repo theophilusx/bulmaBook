@@ -1,8 +1,9 @@
 (ns bulmaBook.pages.books
-  (:require [bulmaBook.components.basic :refer [media breadcrumbs]]
+  (:require [bulmaBook.components.basic :refer [breadcrumbs]]
             [bulmaBook.components.paginate :refer [paginate]]
             [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
             [bulmaBook.components.inputs :as inputs]
+            [bulmaBook.components.media :as media]
             [bulmaBook.store :as store]
             [bulmaBook.models :as models]
             [bulmaBook.pages.ui :as ui]
@@ -160,20 +161,21 @@
 
 (defn book-component [book]
   [:article.box
-   [media {:content [[:p.title.is-5.is-spaced.is-marginless
-                      [:a {:href "#"} (:title book)]]
-                     [:p.subtitle.is-marginless (:price book)]
-                     [:div.content.is-small
-                      (str (:pages book) " pages")
-                      [:br]
-                      (str "ISBN: " (:isbn book))
-                      [:br]
-                      [:a {:href "#"
-                           :on-click #(do-edit-book (:id book))} "Edit"]
-                      [:span "·"]
-                      [:a {:href "#"
-                           :on-click #(do-delete-book (:id book))} "Delete"]]]}
-    :left {:content [[:img {:src (:image book) :width "80"}]]}]])
+   [media/media [:<>
+                 [:p.title.is-5.is-spaced.is-marginless
+                  [:a {:href "#"} (:title book)]]
+                 [:p.subtitle.is-marginless (:price book)]
+                 [:div.content.is-small
+                  (str (:pages book) " pages")
+                  [:br]
+                  (str "ISBN: " (:isbn book))
+                  [:br]
+                  [:a {:href "#"
+                       :on-click #(do-edit-book (:id book))} "Edit"]
+                  [:span "·"]
+                  [:a {:href "#"
+                       :on-click #(do-delete-book (:id book))} "Delete"]]]
+    :left [media/media-left [:img {:src (:image book) :width "80"}]]]])
 
 (defn book-grid-component [books]
   (into
