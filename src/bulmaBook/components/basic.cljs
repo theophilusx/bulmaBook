@@ -10,27 +10,6 @@
        :class [class]}
    title])
 
-(defn media [body & {:keys [left right id class]}]
-  [:article.media {:class class
-                   :id id}
-   (when left
-     (into
-      [:aside.media-left {:class (:class left)
-                          :id (:id left)}]
-      (for [c (:content left)]
-        c)))
-   (into
-    [:div.media-content {:class (:class body)
-                         :id (:id body)}]
-    (for [c (:content body)]
-      c))
-   (when right
-     (into
-      [:aside.media-right {:class (:class right)
-                           :id (:id right)}]
-      (for [c (:content right)]
-        c)))])
-
 (declare render-map)
 (declare render-set)
 
