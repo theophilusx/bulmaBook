@@ -31,6 +31,7 @@
 (store/assoc-in! store/global-state [:data :order-data] data/order-data)
 (store/assoc-in! store/global-state [:data :order-counter] data/order-counter)
 (store/assoc-in! store/global-state [:data :dashboard-data] data/dashboard-data)
+(store/assoc-in! store/global-state [:data :book-sales] data/book-sales)
 (mount-app)
 
 ;; specify reload hook with ^;after-load metadata

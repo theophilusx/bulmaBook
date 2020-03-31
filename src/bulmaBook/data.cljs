@@ -52,6 +52,13 @@
 
 (def book-counter 6)
 
+(def book-sales {:bk1 160
+                 :bk2 154
+                 :bk3 123
+                 :bk4 110
+                 :bk5 158
+                 :bk6 162})
+
 (def customer-data {:cs1 {:id :cs1
                           :title "Mr"
                           :first-name "John"

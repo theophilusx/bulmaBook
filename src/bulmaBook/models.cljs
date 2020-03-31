@@ -90,5 +90,11 @@
 (defn dashboard-period-data [period]
   (store/get-in state [:data :dashboard-data period]))
 
+(defn popular-books []
+  (mapv
+   first
+   (take 3 (reverse
+            (sort-by second (seq (store/get-in state [:data :book-sales])))))))
+
 (defn session-user []
   (store/get-in state [:session :user :name]))
