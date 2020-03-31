@@ -74,6 +74,10 @@
 (defn get-order [oid]
   (oid (order-data)))
 
+(defn recent-orders []
+  (let [order-ids (into #{} (take 3 (reverse (sort (keys (order-data))))))]
+    (filter #(contains? order-ids (:id %)) (orders->vec)))) 
+
 (defn get-customer-orders [cid]
   (filterv #(= cid (:cid %)) (orders->vec)))
 
