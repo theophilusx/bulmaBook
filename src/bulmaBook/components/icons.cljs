@@ -9,9 +9,10 @@
   `size` - size as keyword. Supported are `:small`, `:medium` and `:large`
   `icon-class` - additional classes to add tot he `i` element
   `span-class` - additional classes to add to the enclosing `span` element."
-  [name & {:keys [position span-class icon-class]}]
+  [name & {:keys [position span-class icon-class size]}]
   {:name name
    :position position
+   :size size
    :icon-class icon-class
    :span-class span-class})
 
