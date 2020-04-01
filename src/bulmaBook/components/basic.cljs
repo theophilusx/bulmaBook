@@ -10,6 +10,11 @@
        :class [class]}
    title])
 
+(defn img [src & {:keys [width class]}]
+  [:img {:src src
+         :class [class]
+         :width width}])
+
 (declare render-map)
 (declare render-set)
 
