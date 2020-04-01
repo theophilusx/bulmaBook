@@ -96,5 +96,8 @@
    (take 3 (reverse
             (sort-by second (seq (store/get-in state [:data :book-sales])))))))
 
+(defn number-sold [bid]
+  (store/get-in state [:data :book-sales bid]))
+
 (defn session-user []
   (store/get-in state [:session :user :name]))
