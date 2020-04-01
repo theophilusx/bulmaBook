@@ -2,8 +2,58 @@
   (:require [bulmaBook.components.inputs :as inputs]
             [bulmaBook.store :as store]
             [bulmaBook.components.basic :as basic]
+            [bulmaBook.components.cards :as cards]
+            [bulmaBook.components.media :as media]
             [bulmaBook.models :as models]
             [bulmaBook.utils :as utils]))
+
+(defn order-item-component [order]
+  [:div.level
+   [:div.level-left
+    [:div
+     [:p.title.is-5.is-marginless
+      [basic/a (:id order)]]
+     [:small (:date order) " "
+      [basic/a (:customer order)]]]]
+   [:div.level-right
+    [:div.has-text-right
+     [:p.title.is-5.is-marginless
+      (str "$" (:total order))]
+     [:span.tag {:class [(case (:status order)
+                           :in-progress "is-warning"
+                           :complete "is-success"
+                           :failed "is-danger"
+                           nil)]}
+      (:status order)]]]])
+
+(defn latest-orders-component []
+  (let [orders (models/recent-orders)]
+    [cards/card [:<>
+                 [:h2.title.is-4 "Latest orders"]
+                 (for [o orders]
+                   ^{:key (:id o)} [order-item-component o])
+                 [basic/a "View all orders"
+                  :class "button is-link is-outlined"]]]))
+
+(defn popular-book-item [rank bid]
+  (let [book (models/get-book bid)]
+    [media/media [:p.title.is-5.is-spaced.is-marginless
+                  [basic/a (:title book)]]
+     :left [:<>
+            [media/media-left [:p.number rank]]
+            [media/media-left [basic/img (:image book) :width 40]]]
+     :right [media/media-right (str (models/number-sold bid) " sold")]]))
+
+(defn popular-books-component []
+  (let [book-ranking (map-indexed (fn [idx val]
+                                    [(inc idx) val])
+                                  (models/popular-books))]
+    [cards/card [:<>
+                 [:h2.title.is-4 "Most popular books"]
+                 (for [[rank bid] book-ranking]
+                   [popular-book-item rank bid])
+                 [basic/a "View all books"
+                  :class "button is-link is-outlined"]]]))
 
 (defn dashboard-page []
   (let [stats (models/dashboard-period-data (models/dashboard-period))]
@@ -48,4 +98,8 @@
                             [:p.title.is-1
                              (utils/number-thousands (str (:pages stats)))]
                             [:p.subtitle.is-4 "Pages"]]
-        :class "is-success has-text"]]]]))
+        :class "is-success has-text"]]
+      [:div.column.is-12-tablet.is-6-desktop.is-4-fullhd
+       [latest-orders-component]]
+      [:div.column.is-12-tablet.is-6-desktop.is-4-fullhd
+       [popular-books-component]]]]))
