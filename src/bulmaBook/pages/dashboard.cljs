@@ -46,10 +46,19 @@
                   :class "button is-link is-outlined"
                   :on-click do-list-orders]]]))
 
+(defn do-edit-book [bid]
+  (ui/set-target :books bid)
+  (ui/set-subpage :books :edit-book)
+  (ui/set-sidebar :books))
+
+(defn do-list-books []
+  (ui/set-subpage :books :books)
+  (ui/set-sidebar :books))
+
 (defn popular-book-item [rank bid]
   (let [book (models/get-book bid)]
     [media/media [:p.title.is-5.is-spaced.is-marginless
-                  [basic/a (:title book)]]
+                  [basic/a (:title book) :on-click #(do-edit-book bid)]]
      :left [:<>
             [media/media-left [:p.number rank]]
             [media/media-left [basic/img (:image book) :width 40]]]
@@ -64,13 +73,13 @@
                  (for [[rank bid] book-ranking]
                    ^{:key bid} [popular-book-item rank bid])
                  [basic/a "View all books"
-                  :class "button is-link is-outlined"]]]))
+                  :class "button is-link is-outlined" :on-click do-list-books]]]))
 
 (defn loyal-customer-item [rank cid]
   (let [customer (models/get-customer cid)]
     [media/media [:<>
                   [:p.title.is-5.is-spaced.is-marginless
-                   [basic/a (str (:first-name customer)
+                   [basic/a (str (:first-name customer) " "
                                  (:last-name customer))]]
                   [:p.subtitle.is-6 (:country customer)]]
      :left [media/media-left [:p.number rank] :class "is-marginless"]
