@@ -5,24 +5,18 @@
             [reagent.core :as r]))
 
 (defn field [body & {:keys [label classes]}]
-  (into
-   [:div.field {:class (:field classes)}
-    (when label
-      [:label.label {:class (:label classes)} label])]
-   (for [el body]
-     el)))
+  [:div.field {:class [(:field classes)]}
+   (when label
+     [:label.label {:class [(:label classes)]}])
+   body])
 
 (defn horizontal-field [label body & {:keys [classes]}]
   [:div.field.is-horizontal {:class (:field classes)}
    [:div.field-label
     [:label.label {:class (:label classes)}
      label]]
-   (into
-    [:div.field-body {:class [(:body classes)
-                              (when (> (count body) 1)
-                                "has-grouped")]}]
-    (for [el body]
-      el))])
+   [:div.field-body {:class [(:body classes)]}
+    body]])
 
 (defn input-helper
   [type id doc chg-fn & {:keys [class placeholder required disabled
@@ -67,11 +61,11 @@
 (defn input-field [label type id & {:keys [classes placeholder required icon-data
                                            model change-fn disabled min max
                                            maxlength minlength readonly size]}]
-  [field [[input type id :classes classes :placeholder placeholder
-           :required required :icon-data icon-data :model model
-           :change-fn change-fn :disabled disabled :min min :max max
-           :maxlength maxlength :minlength minlength :readonly readonly
-           :size size]]
+  [field [input type id :classes classes :placeholder placeholder
+          :required required :icon-data icon-data :model model
+          :change-fn change-fn :disabled disabled :min min :max max
+          :maxlength maxlength :minlength minlength :readonly readonly
+          :size size]
    :label label :classes classes])
 
 (defn checkbox [_ sid & {:keys [model change-fn]}]
@@ -130,21 +124,23 @@
                     (store/update! doc :editing not))]
     (fn [type _ _ & {:keys [label classes]}]
       (if (:editing @doc)
-        [horizontal-field label [[field [[input type :value :model doc]
-                                         [button "Save" save-fn
-                                          :classes (:save-button classes)]
-                                         [button "Cancel" cancel-fn
-                                          :classes (:cancel-button classes)]]
-                                  :classes {:field "has-addons"}]]
+        [horizontal-field label [field [:<>
+                                        [input type :value :model doc]
+                                        [button "Save" save-fn
+                                         :classes (:save-button classes)]
+                                        [button "Cancel" cancel-fn
+                                         :classes (:cancel-button classes)]]
+                                 :classes {:field "has-addons"}]
          :classes (:field-edit classes)]
-        [horizontal-field label [[field [(if (= type :password)
-                                           "********"
-                                           (str (:value @doc)))
-                                         [:span.icon
-                                          {:on-click #(store/update!
-                                                       doc
-                                                       :editing not)}
-                                          [:i.fa.fa-pencil]]]]]
+        [horizontal-field label [field [:<>
+                                        (if (= type :password)
+                                          "********"
+                                          (str (:value @doc)))
+                                        [:span.icon
+                                         {:on-click #(store/update!
+                                                      doc
+                                                      :editing not)}
+                                         [:i.fa.fa-pencil]]]]
          :classes (:field-view classes)]))))
 
 (defn textarea [_ sid & {:keys [model change-fn]}]
@@ -261,7 +257,8 @@
   (let [doc (r/atom {})]
     (fn [action & {:keys [placeholder]}]
       [:<>
-       [field [[input :text :search :placeholder placeholder :model doc]
+       [field [:<>
+               [input :text :search :placeholder placeholder :model doc]
                [button "Search" #(action (:search @doc))]]
         :classes {:field "has-addons"}]])))
 
@@ -274,26 +271,26 @@
                    (store/assoc-in! doc (spath sid) (value-of e))))]
     (store/assoc-in! doc (spath sid) value)
     (fn [sid min max & {:keys [label classes required disabled step]}]
-      [field [[:div.field.has-addons
-               [:span {:style {:paddingRight "5px"}}(str min " ")]
-               [:input {:type "range"
-                        :class (:input classes)
-                        :required required
-                        :min (str min)
-                        :max (str max)
-                        :step (if step
-                                (str step)
-                                "1")
-                        :id (name sid)
-                        :name (name sid)
-                        :value (str (store/get-in doc (spath sid)))
-                        :on-change chg-fn
-                        :disabled disabled}]
-               [:span {:style {:paddingRight "5px"
-                               :paddingLeft "5px"}}
-                (str " " max " ")]
-               [:span {:style {:paddingLeft "5px"}}
-                (str " " (store/get-in doc (spath sid)))]]]
+      [field [:div.field.has-addons
+              [:span {:style {:paddingRight "5px"}}(str min " ")]
+              [:input {:type "range"
+                       :class (:input classes)
+                       :required required
+                       :min (str min)
+                       :max (str max)
+                       :step (if step
+                               (str step)
+                               "1")
+                       :id (name sid)
+                       :name (name sid)
+                       :value (str (store/get-in doc (spath sid)))
+                       :on-change chg-fn
+                       :disabled disabled}]
+              [:span {:style {:paddingRight "5px"
+                              :paddingLeft "5px"}}
+               (str " " max " ")]
+              [:span {:style {:paddingLeft "5px"}}
+               (str " " (store/get-in doc (spath sid)))]]
        :label label :classes classes])))
 
 (defn number-input [sid & {:keys [model change-fn value]}]
@@ -330,8 +327,8 @@
 (defn number-field [sid & {:keys [model change-fn value min max step maxlength
                                   minlength readonly size required disabled
                                   classes label]}]
-  [field [[number-input sid :model model :change-fn change-fn :min min
-           :max max :step step :maxlength maxlength :minlength minlength
-           :readonly readonly :size size :required required :disabled disabled
-           :classes classes :value value]]
+  [field [number-input sid :model model :change-fn change-fn :min min
+          :max max :step step :maxlength maxlength :minlength minlength
+          :readonly readonly :size size :required required :disabled disabled
+          :classes classes :value value]
    :label label :classes classes])
