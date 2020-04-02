@@ -6,7 +6,7 @@
 (defn a [title & {:keys [href on-click class]
                   :or [href "#"]}]
   [:a {:href href
-       :on-click (when on-click #(on-click %))
+       :on-click on-click
        :class [class]}
    title])
 
