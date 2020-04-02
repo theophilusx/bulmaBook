@@ -5,14 +5,24 @@
             [bulmaBook.components.cards :as cards]
             [bulmaBook.components.media :as media]
             [bulmaBook.models :as models]
-            [bulmaBook.utils :as utils]))
+            [bulmaBook.utils :as utils]
+            [bulmaBook.pages.ui :as ui]))
+
+(defn do-edit-order [oid]
+  (ui/set-target :orders oid)
+  (ui/set-subpage :orders :edit-order)
+  (ui/set-sidebar :orders))
+
+(defn do-list-orders []
+  (ui/set-subpage :orders :orders)
+  (ui/set-sidebar :orders))
 
 (defn order-item-component [order]
   [:div.level
    [:div.level-left
     [:div
      [:p.title.is-5.is-marginless
-      [basic/a (:id order)]]
+      [basic/a (:id order) :on-click #(do-edit-order (:id order))]]
      [:small (:date order) " "
       [basic/a (:customer order)]]]]
    [:div.level-right
@@ -33,7 +43,8 @@
                  (for [o orders]
                    ^{:key (:id o)} [order-item-component o])
                  [basic/a "View all orders"
-                  :class "button is-link is-outlined"]]]))
+                  :class "button is-link is-outlined"
+                  :on-click do-list-orders]]]))
 
 (defn popular-book-item [rank bid]
   (let [book (models/get-book bid)]
