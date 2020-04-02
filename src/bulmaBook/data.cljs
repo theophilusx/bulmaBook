@@ -90,6 +90,10 @@
                           :pcode "2320"
                           :country "Australia"}})
 
+(def customer-history {:cs1 7
+                       :cs2 5
+                       :cs3 11})
+
 (def customer-counter 3)
 
 (def order-data {:OR1000 {:id :OR1000

@@ -99,5 +99,16 @@
 (defn number-sold [bid]
   (store/get-in state [:data :book-sales bid]))
 
+(defn loyal-customers []
+  (mapv
+   first
+   (take 3 (reverse
+            (sort-by second
+                     (seq (store/get-in state [:data :customer-history])))))))
+
+(defn customer-historical-orders [cid]
+  (store/get-in state [:data :customer-history cid]))
+
+
 (defn session-user []
   (store/get-in state [:session :user :name]))
