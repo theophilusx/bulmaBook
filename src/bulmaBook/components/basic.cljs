@@ -3,17 +3,24 @@
             [clojure.string :as string]
             [bulmaBook.store :as store]))
 
-(defn a [title & {:keys [href on-click class]
+(defn a [title & {:keys [href on-click class id role aria-label aria-expanded
+                         data-target]
                   :or [href "#"]}]
   [:a {:href href
        :on-click on-click
-       :class [class]}
+       :class class
+       :id id
+       :role role
+       :aria-label aria-label
+       :aria-expanded aria-expanded
+       :data-target data-target}
    title])
 
-(defn img [src & {:keys [width class]}]
+(defn img [src & {:keys [width class id]}]
   [:img {:src src
-         :class [class]
-         :width width}])
+         :class class
+         :width width
+         :id id}])
 
 (declare render-map)
 (declare render-set)
