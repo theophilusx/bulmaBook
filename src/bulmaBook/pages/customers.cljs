@@ -4,12 +4,12 @@
             [reagent.core :as r]
             [bulmaBook.store :as store]
             [bulmaBook.utils :as utils]
-            [bulmaBook.components.basic :refer [breadcrumbs]]
             [bulmaBook.components.tables :as tables]
             [bulmaBook.components.icons :as icons]
             [clojure.string :as string]
             [bulmaBook.models :as models]
-            [bulmaBook.pages.ui :as ui]))
+            [bulmaBook.pages.ui :as ui]
+            [bulmaBook.components.basic :as basic]))
 
 (def customer-list (r/atom {}))
 
@@ -32,9 +32,8 @@
 (defn listing-component [type]
   (if (= type (ui/get-listing-type :customers))
     [:strong (utils/keyword->str type :initial-caps true)]
-    [:a {:href "#"
-         :on-click #(ui/set-listing-type :customers type)}
-     (utils/keyword->str type :initial-caps true)]))
+    [basic/a  (utils/keyword->str type :initial-caps true)
+     :on-click #(ui/set-listing-type :customers type)]))
 
 (defn get-toolbar-data []
   {:left-items [(deftoolbar-item
@@ -76,7 +75,8 @@
    [inputs/input-field "Email" :email :email :model doc :required true
     :placeholder "Email address"
     :idon-data (icons/deficon "fa-envelope" :position :left :size :small )]
-   [inputs/field [[inputs/input :text :address1 :model doc
+   [inputs/field [:<>
+                  [inputs/input :text :address1 :model doc
                    :placeholder "Address line 1" :required true]
                   [inputs/input :text :address2 :model doc
                    :placeholder "Address line 2 (optional)"]]
@@ -132,7 +132,7 @@
 (defn delete-customer-page []
   (fn []
     [:<>
-     [breadcrumbs :ui.customers.page
+     [basic/breadcrumbs :ui.customers.page
       [{:name "Customers"
         :value :customers
         :active false}
@@ -141,7 +141,8 @@
         :active true}]]
      [:div.box
       [customer-display]
-      [inputs/field [[inputs/button "Delete" #(delete-customer)
+      [inputs/field [:<>
+                     [inputs/button "Delete" #(delete-customer)
                       :classes {:button "is-warning"}]
                      [inputs/button "Cancel" #(cancel-delete-customer)]]
        :classes {:field "has-addons"}]]]))
@@ -165,7 +166,8 @@
     (fn []
       [:form.box
        [customer-form-fields doc]
-       [inputs/field [[inputs/button "Save" #(save-edit-customer doc)
+       [inputs/field [:<>
+                      [inputs/button "Save" #(save-edit-customer doc)
                        :classes {:button "is-success"}]
                       [inputs/button "Cancel" #(cancel-edit-customer)]]
         :classes {:field "has-addons"}]])))
@@ -173,7 +175,7 @@
 (defn edit-customer-page []
   (fn []
     [:<>
-     [breadcrumbs :ui.customers.page
+     [basic/breadcrumbs :ui.customers.page
       [{:name "Customers"
         :value :customers
         :active false}
@@ -198,7 +200,8 @@
     (fn []
       [:form.box
        [customer-form-fields doc]
-       [inputs/field [[inputs/button "Save" #(save-new-customer doc)
+       [inputs/field [:<>
+                      [inputs/button "Save" #(save-new-customer doc)
                        :classes {:button "is-success"}]
                       [inputs/button "Cancel" #(cancel-new-customer doc)]]
         :classes {:field "has-addons"}]])))
@@ -206,7 +209,7 @@
 (defn new-customer-page []
   (fn []
     [:<>
-     [breadcrumbs :ui.customers.page
+     [basic/breadcrumbs :ui.customers.page
       [{:name "Customers"
         :value :customers
         :active false}
@@ -226,7 +229,8 @@
                            (tables/defcell
                              (str (count (models/get-customer-orders (:id c)))))
                            (tables/defcell
-                             [inputs/field [[inputs/button "Edit"
+                             [inputs/field [:<>
+                                            [inputs/button "Edit"
                                              #(do-edit (:id c))
                                              :classes
                                              {:button "is-success is-small"}]

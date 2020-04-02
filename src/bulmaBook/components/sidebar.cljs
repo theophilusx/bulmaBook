@@ -1,7 +1,8 @@
 (ns bulmaBook.components.sidebar
   (:require [bulmaBook.utils :refer [spath]]
             [bulmaBook.components.icons :as icons]
-            [bulmaBook.store :as store]))
+            [bulmaBook.store :as store]
+            [bulmaBook.components.basic :as basic]))
 
 (defn is-active? [sid id]
   (if (= (store/get-in store/global-state (spath sid)) id)
@@ -13,15 +14,16 @@
 
 (defn make-item [i sid]
   [:li
-   [:a {:class [(:class i)
-                (when (is-active? sid (:id i)) "is-active")]
-        :href  (:href i)
-        :id    (:id i)
-        :on-click (fn []
-                    (set-active sid (:id i)))}
-    (when (:icon-data i)
-      [icons/icon-component (:icon-data i)])
-    (:title i)]])
+   [basic/a [:<>
+             (when (:icon-data i)
+               [icons/icon-component (:icon-data i)])
+             (:title i)]
+    :class [(:class i)
+            (when (is-active? sid (:id i)) "is-active")]
+    :href  (:href i)
+    :id    (:id i)
+    :on-click (fn []
+                (set-active sid (:id i)))]])
 
 (defn make-menu [m sid]
   [:aside.menu

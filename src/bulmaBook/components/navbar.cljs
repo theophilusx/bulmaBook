@@ -2,7 +2,8 @@
   (:require [reagent.core :as r]
             [bulmaBook.utils :refer [spath]]
             [bulmaBook.store :as store]
-            [bulmaBook.components.icons :as icons]))
+            [bulmaBook.components.icons :as icons]
+            [bulmaBook.components.basic :as basic]))
 
 (defn active? [state id]
   (if (= (:active-item @state) id)
@@ -28,17 +29,19 @@
   (store/assoc-in! store/global-state (spath path) (first id)))
 
 (defn item-a [a state]
-  [:a.navbar-item {:class [(:class a)
-                           (when (active? state (:id a)) "is-active")]
-                   :href (:href a)
-                   :on-click (when (:selectable a)
-                               (fn []
-                                 (toggle-dropdown state)
-                                 (set-active state (:id a))
-                                 (set-choice (:sid @state) (:id a))))}
-   (when (:icon-data a)
-     [icons/icon-component (:icon-data a)])
-   (:contents a)])
+  [basic/a [:<>
+        (when (:icon-data a)
+          [icons/icon-component (:icon-data a)])
+        (:contents a)]
+   :class ["navbar-item"
+           (:class a)
+           (when (active? state (:id a)) "is-active")]
+   :href (:href a)
+   :on-click (when (:selectable a)
+               (fn []
+                 (toggle-dropdown state)
+                 (set-active state (:id a))
+                 (set-choice (:sid @state) (:id a))))])
 
 (defn item-raw [r _]
   [:div.content {:class (:class r)}
@@ -57,10 +60,8 @@
   [:div.navbar-item.has-dropdown {:class [(when (:is-hoverable d) "is-hoverable")
                                           (when (dropdown-active? state (:id d))
                                             "is-active")]}
-   [:a.navbar-link {:id (:id d)
-                    :on-click (fn []
-                                (toggle-dropdown state (:id d)))}
-    (:title d)]
+   [basic/a (:title d) :class "navbar-link"
+    :id (:id d) :on-click #(toggle-dropdown state (:id d))]
    (into
     [:div.navbar-dropdown]
     (for [i (:contents d)]
@@ -79,17 +80,19 @@
     [item-div i state]))
 
 (defn burger [state]
-  [:a.navbar-burger.burger {:class (when (get @state :burger-active)
-                                     "is-active")
-                            :role "button"
-                            :aria-label "menu"
-                            :aria-expanded "false"
-                            :data-target (:sid @state)
-                            :on-click (fn []
-                                        (swap! state update :burger-active not))}
-   [:span {:aria-hidden true}]
-   [:span {:aria-hidden true}]
-   [:span {:aria-hidden true}]])
+  [basic/a [:<>
+            [:span {:aria-hidden true}]
+            [:span {:aria-hidden true}]
+            [:span {:aria-hidden true}]]
+   :class ["navbar-burger"
+           "burger"
+           (when (get @state :burger-active)
+             "is-active")]
+   :role "button"
+   :aria-label "menu"
+   :aria-expanded "false"
+   :data-target (:sid @state)
+   :on-click #(swap! state update :burger-active not)])
 
 (defn brand [state]
   [:div.navbar-brand

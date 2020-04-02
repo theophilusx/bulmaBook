@@ -1,23 +1,23 @@
 (ns bulmaBook.pages.orders
   (:require [reagent.core :as r]
             [bulmaBook.models :as models]
-            [bulmaBook.components.basic :refer [breadcrumbs]]
             [bulmaBook.components.toolbar :refer [toolbar deftoolbar-item]]
             [bulmaBook.components.inputs :as inputs]
             [bulmaBook.components.tables :as tables]
             [bulmaBook.pages.ui :as ui]
             [bulmaBook.utils :as utils]
             [bulmaBook.store :as store]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [bulmaBook.components.basic :as basic]))
 
 (def orders-list (r/atom (models/orders->vec)))
 
 (defn listing-component [type]
   (if (= type (ui/get-listing-type :orders))
     [:strong (utils/keyword->str type :initial-caps true)]
-    [:a {:href "#"
-         :on-click #(ui/set-listing-type :orders type)}
-     (utils/keyword->str type :initial-caps true)]))
+    [basic/a (utils/keyword->str type :initial-caps true)
+     :href "#"
+     :on-click #(ui/set-listing-type :orders type)]))
 
 (defn filter-orders [term]
   (store/reset! orders-list
@@ -93,7 +93,8 @@
                           (inputs/defoption (:title book) :value (name (:id book)))))
                       (keys (models/book-data)))]
     (tables/defcell [inputs/field
-                     [[inputs/select :new-book-id options :model new
+                     [:<>
+                      [inputs/select :new-book-id options :model new
                        :select-size :small]
                       [inputs/number-input :new-book-quantity :min 1 :max 10
                        :model new :value 1 :classes {:input "input is-small"}
@@ -185,14 +186,15 @@
         [:div.column
          [:p.heading [:strong "Books"]]
          [books-table-component doc]]]
-       [inputs/field [[inputs/button "Update Order" #(do-update-order doc)
+       [inputs/field [:<>
+                      [inputs/button "Update Order" #(do-update-order doc)
                        :classes {:button "is-success"}]
                       [inputs/button "Cancel" #(cancel-update-order doc)]]
         :classes {:field "has-addons"}]])))
 
 (defn order-edit-page []
   [:<>
-   [breadcrumbs :ui.orders.page
+   [basic/breadcrumbs :ui.orders.page
     [{:name "Orders"
       :value :orders
       :active false}

@@ -13,9 +13,9 @@
         classes {:save-button {:button "is-success"}}]
     [:form.box
      [inputs/horizontal-field "Email"
-      [[inputs/field [[:div.content
-                       (store/get-in store/global-state
-                                     [:session :user :email])]]]]]
+      [inputs/field [:div.content
+                     (store/get-in store/global-state
+                                   [:session :user :email])]]]
      [inputs/editable-field :text store/global-state fname-sid
       :label "First Name" :classes classes]
      [inputs/editable-field :text store/global-state lname-sid
@@ -24,11 +24,10 @@
       :label "Password" :classes classes]]))
 
 (defn profile []
-  [:<>
-   [:div.columns
-    [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen]
-    [:div.column
-     [basic/breadcrumbs :ui.navbar [{:name "Profile"
-                                     :value :profile
-                                     :active true}]]
-     [profile-edit-form]]]])
+  [:div.columns
+   [:div.column.is-4-tablet.is-3-desktop.is-2-widescreen]
+   [:div.column
+    [basic/breadcrumbs :ui.navbar [{:name "Profile"
+                                    :value :profile
+                                    :active true}]]
+    [profile-edit-form]]])

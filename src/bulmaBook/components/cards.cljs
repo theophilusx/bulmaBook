@@ -1,14 +1,16 @@
 (ns bulmaBook.components.cards
-  (:require [bulmaBook.components.icons :as icons]))
+  (:require [bulmaBook.components.icons :as icons]
+            [bulmaBook.components.basic :as basic]))
 
 (defn card-header [title & {:keys [icon icon-action class]}]
   [:header.card-header {:class [class]}
    [:p.card-header-title title]
    (when icon
-     [:a.card-header-icon {:href "#"
-                           :on-click (when (fn? icon-action)
-                                       #(icon-action %))}
-      [icons/icon-component icon]])])
+     [basic/a [icons/icon-component icon]
+      :class "card-header-icon"
+      :href "#"
+      :on-click (when (fn? icon-action)
+                  #(icon-action %))])])
 
 (defn card-footer [items & {:keys [classes]}]
   (into

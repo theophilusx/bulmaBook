@@ -1,5 +1,6 @@
 (ns bulmaBook.components.paginate
-  (:require [reagent.core :as r]))
+  (:require [reagent.core :as r]
+            [bulmaBook.components.basic :as basic]))
 
 (defn get-page
   "Return the page associated with a page number."
@@ -10,10 +11,10 @@
   "Create a link item for specified page."
   [current page]
   [:li
-   [:a.pagination-link {:class (when (= @current page)
-                                 "is-current")
-                        :on-click #(reset! current page)}
-    (str page)]])
+   [basic/a (str page) :class ["pagination-link"
+                               (when (= @current page)
+                                 "is-current")]
+    :on-click #(reset! current page)]])
 
 (defn paginate
   "Generate a paginated page of records. The `records` argument is a
@@ -52,13 +53,11 @@
                          :role "navigation"
                          :aria-label "pagination"}
         (when-not (= @current 1)
-          [:a.pagination-previous
-           {:on-click #(swap! current dec)}
-           "Previous"])
+          [basic/a "Previous" :class "pagination-previous"
+           :on-click #(swap! current dec)])
         (when-not (= @current (count (keys @pages)))
-          [:a.pagination-next
-           {:on-click #(swap! current inc)}
-           "Next"])
+          [basic/a "Next" :class "pagination-next"
+           :on-click #(swap! current inc)])
         (cond
           (<= (count (keys @pages)) 4)
           (into
@@ -70,7 +69,7 @@
            [:ul.pagination-list]
            (for [i [1 2 3 4 (count (keys @pages))]]
              (if (= i 4)
-               [:li [:a.pagination-ellipsis "\u2026"]]
+               [:li [basic/a "\u2026" :class "pagination-ellipsis"]]
                [make-link current i])))
           (> @current (- (count (keys @pages)) 4))
           (into
@@ -78,7 +77,7 @@
             [make-link current 1]]
            (for [i (range (- (count (keys @pages)) 4))]
              (if (= (- (count (keys @pages)) 4) i)
-               [:li [:a.pagination-ellipsis "\u2026"]]
+               [:li [basic/a "\u2026" :class "pagination-ellipsis"]]
                [make-link current i])))
           :else
           (into
@@ -87,7 +86,7 @@
            (for [i (range (- @current 2) (+ @current 3))]
              (if (or (= (- @current 2) i)
                      (= (+ @current 2) i))
-               [:li [:a.pagination-ellipsis "\u2026"]]
+               [:li [basic/a "\u2026" :class "pagination-ellipsis"]]
                (if (= (+ @current 3) i)
                  [make-link current (count (keys @pages))]
                  [make-link current i])))))]

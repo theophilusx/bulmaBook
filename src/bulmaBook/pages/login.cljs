@@ -25,7 +25,7 @@
   (let [doc (r/atom {})]
     (fn []
       [:form.box
-       [inputs/field [[:img {:src "images/logo-bis.png" :width "1627"}]]
+       [inputs/field [:img {:src "images/logo-bis.png" :width "1627"}]
         :classes {:field "has-text-centered"}]
        [inputs/input-field "Email" :email :email
         :icon-data (icons/deficon "fa-envelope" :position :left :size :small)

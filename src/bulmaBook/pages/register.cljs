@@ -20,18 +20,19 @@
     (fn []
       [:form.box
        [inputs/horizontal-field "Email"
-        [[inputs/input :email :email :classes {:control "has-icons-left"}
-          :icon-data (icons/deficon "fa-envelope" :position :left
-                       :icon-class "is-small")
-          :placeholder "e.g. alexjohnson@example.com" :required true
-          :model doc]]]
+        [inputs/input :email :email :classes {:control "has-icons-left"}
+         :icon-data (icons/deficon "fa-envelope" :position :left
+                      :icon-class "is-small")
+         :placeholder "e.g. alexjohnson@example.com" :required true
+         :model doc]]
        [inputs/horizontal-field "Password"
-        [[inputs/input :password :password
-          :icon-data (icons/deficon "fa-lock" :position :left
-                       :icon-class "is-small")
-          :placeholder "secret" :required true :model doc]]]
+        [inputs/input :password :password
+         :icon-data (icons/deficon "fa-lock" :position :left
+                      :icon-class "is-small")
+         :placeholder "secret" :required true :model doc]]
        [inputs/horizontal-field "Name"
-        [[inputs/input :text :first-name :required true
+        [:<>
+         [inputs/input :text :first-name :required true
           :placeholder "First name" :model doc]
          [inputs/input :text :last-name :required true
           :placeholder "Last name" :model doc]]]
