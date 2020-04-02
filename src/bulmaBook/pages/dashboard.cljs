@@ -75,12 +75,22 @@
                  [basic/a "View all books"
                   :class "button is-link is-outlined" :on-click do-list-books]]]))
 
+(defn do-edit-customer [cid]
+  (ui/set-target :customers cid)
+  (ui/set-subpage :customers :edit-customer)
+  (ui/set-sidebar :customers))
+
+(defn do-list-customers []
+  (ui/set-subpage :customers :customers)
+  (ui/set-sidebar :customers))
+
 (defn loyal-customer-item [rank cid]
   (let [customer (models/get-customer cid)]
     [media/media [:<>
                   [:p.title.is-5.is-spaced.is-marginless
                    [basic/a (str (:first-name customer) " "
-                                 (:last-name customer))]]
+                                 (:last-name customer))
+                    :on-click #(do-edit-customer cid)]]
                   [:p.subtitle.is-6 (:country customer)]]
      :left [media/media-left [:p.number rank] :class "is-marginless"]
      :right [media/media-right (str (models/customer-historical-orders cid)
@@ -95,7 +105,8 @@
                  (for [[rank cid] customer-ranking]
                    ^{:key cid} [loyal-customer-item rank cid])
                  [basic/a "View all customers"
-                  :class "button is-link is-outlined"]]]))
+                  :class "button is-link is-outlined"
+                  :on-click do-list-customers]]]))
 
 (defn dashboard-page []
   (let [stats (models/dashboard-period-data (models/dashboard-period))]
