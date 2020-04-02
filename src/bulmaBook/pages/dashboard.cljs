@@ -51,8 +51,30 @@
     [cards/card [:<>
                  [:h2.title.is-4 "Most popular books"]
                  (for [[rank bid] book-ranking]
-                   [popular-book-item rank bid])
+                   ^{:key bid} [popular-book-item rank bid])
                  [basic/a "View all books"
+                  :class "button is-link is-outlined"]]]))
+
+(defn loyal-customer-item [rank cid]
+  (let [customer (models/get-customer cid)]
+    [media/media [:<>
+                  [:p.title.is-5.is-spaced.is-marginless
+                   [basic/a (str (:first-name customer)
+                                 (:last-name customer))]]
+                  [:p.subtitle.is-6 (:country customer)]]
+     :left [media/media-left [:p.number rank] :class "is-marginless"]
+     :right [media/media-right (str (models/customer-historical-orders cid)
+                                    " orders")]]))
+
+(defn loyal-customer-component []
+  (let [customer-ranking (map-indexed (fn [idx val]
+                                        [(inc idx) val])
+                                      (models/loyal-customers))]
+    [cards/card [:<>
+                 [:h2.title.is-4 "Most loyal customers"]
+                 (for [[rank cid] customer-ranking]
+                   ^{:key cid} [loyal-customer-item rank cid])
+                 [basic/a "View all customers"
                   :class "button is-link is-outlined"]]]))
 
 (defn dashboard-page []
@@ -102,4 +124,6 @@
       [:div.column.is-12-tablet.is-6-desktop.is-4-fullhd
        [latest-orders-component]]
       [:div.column.is-12-tablet.is-6-desktop.is-4-fullhd
-       [popular-books-component]]]]))
+       [popular-books-component]]
+      [:div.column.is-12-tablet.is-6-desktop.is-4-fullhd
+       [loyal-customer-component]]]]))
