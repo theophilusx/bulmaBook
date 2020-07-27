@@ -3,16 +3,15 @@
             [bulmaBook.data :as data]
             [bulmaBook.pages.core :refer [current-page]]
             [bulmaBook.pages.navbar :refer [top-navbar]]
-            [bulmaBook.store :as store]
-            [reagent.core :as reagent ]
-            ;; [clojure.pprint :refer [pprint]]
-            ))
+            [theophilusx.yorick.store :as store]
+            [reagent.core :as reagent]
+            [reagent.dom :as rdom]))
 
 (defn get-element [name]
   (gdom/getElement name))
 
 (defn mount [el component]
-  (reagent/render-component component el))
+  (rdom/render component el))
 
 (defn mount-app []
   (when-let [nb (get-element "navbar")]

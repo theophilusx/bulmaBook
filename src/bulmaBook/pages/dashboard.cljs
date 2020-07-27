@@ -1,11 +1,11 @@
 (ns bulmaBook.pages.dashboard
-  (:require [bulmaBook.components.inputs :as inputs]
-            [bulmaBook.store :as store]
-            [bulmaBook.components.basic :as basic]
-            [bulmaBook.components.cards :as cards]
-            [bulmaBook.components.media :as media]
+  (:require [theophilusx.yorick.input :as inputs]
+            [theophilusx.yorick.store :as store]
+            [theophilusx.yorick.basic :as basic]
+            [theophilusx.yorick.card :as cards]
+            [theophilusx.yorick.media :as media]
             [bulmaBook.models :as models]
-            [bulmaBook.utils :as utils]
+            [theophilusx.yorick.utils :as utils]
             [bulmaBook.pages.ui :as ui]))
 
 (defn do-edit-order [oid]

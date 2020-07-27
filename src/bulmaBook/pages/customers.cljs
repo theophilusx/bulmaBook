@@ -1,15 +1,15 @@
 (ns bulmaBook.pages.customers
-  (:require [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
-            [bulmaBook.components.inputs :as inputs]
+  (:require [theophilusx.yorick.toolbar :refer [deftoolbar-item toolbar]]
+            [theophilusx.yorick.input :as inputs]
             [reagent.core :as r]
-            [bulmaBook.store :as store]
-            [bulmaBook.utils :as utils]
-            [bulmaBook.components.tables :as tables]
-            [bulmaBook.components.icons :as icons]
+            [theophilusx.yorick.store :as store]
+            [theophilusx.yorick.utils :as utils]
+            [theophilusx.yorick.table :as tables]
+            [theophilusx.yorick.icon :as icons]
             [clojure.string :as string]
             [bulmaBook.models :as models]
             [bulmaBook.pages.ui :as ui]
-            [bulmaBook.components.basic :as basic]))
+            [theophilusx.yorick.basic :as basic]))
 
 (def customer-list (r/atom {}))
 

@@ -1,15 +1,15 @@
 (ns bulmaBook.pages.books
-  (:require [bulmaBook.components.basic :refer [breadcrumbs]]
-            [bulmaBook.components.paginate :refer [paginate]]
-            [bulmaBook.components.toolbar :refer [deftoolbar-item toolbar]]
-            [bulmaBook.components.inputs :as inputs]
-            [bulmaBook.components.media :as media]
-            [bulmaBook.store :as store]
+  (:require [theophilusx.yorick.basic :refer [breadcrumbs]]
+            [theophilusx.yorick.paginate :refer [paginate]]
+            [theophilusx.yorick.toolbar :refer [deftoolbar-item toolbar]]
+            [theophilusx.yorick.input :as inputs]
+            [theophilusx.yorick.media :as media]
+            [theophilusx.yorick.store :as store]
             [bulmaBook.models :as models]
             [bulmaBook.pages.ui :as ui]
             [reagent.core :as r]
             [clojure.string :as string]
-            [bulmaBook.components.basic :as basic]))
+            [theophilusx.yorick.basic :as basic]))
 
 (def book-list (r/atom {}))
 

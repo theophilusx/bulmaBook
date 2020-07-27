@@ -1,9 +1,9 @@
 (ns bulmaBook.pages.register
-  (:require [bulmaBook.components.inputs :as inputs]
-            [bulmaBook.components.icons :as icons]
+  (:require [theophilusx.yorick.input :as inputs]
+            [theophilusx.yorick.icon :as icons]
             [bulmaBook.data :as data]
-            [bulmaBook.store :as store]
-            [bulmaBook.utils :refer [spath value->keyword]]
+            [theophilusx.yorick.store :as store]
+            [theophilusx.yorick.utils :refer [spath value->keyword]]
             [reagent.core :as r]))
 
 (defn do-registration [place]

@@ -1,14 +1,14 @@
 (ns bulmaBook.pages.orders
   (:require [reagent.core :as r]
             [bulmaBook.models :as models]
-            [bulmaBook.components.toolbar :refer [toolbar deftoolbar-item]]
-            [bulmaBook.components.inputs :as inputs]
-            [bulmaBook.components.tables :as tables]
+            [theophilusx.yorick.toolbar :refer [toolbar deftoolbar-item]]
+            [theophilusx.yorick.input :as inputs]
+            [theophilusx.yorick.table :as tables]
             [bulmaBook.pages.ui :as ui]
-            [bulmaBook.utils :as utils]
-            [bulmaBook.store :as store]
+            [theophilusx.yorick.utils :as utils]
+            [theophilusx.yorick.store :as store]
             [clojure.string :as string]
-            [bulmaBook.components.basic :as basic]))
+            [theophilusx.yorick.basic :as basic]))
 
 (def orders-list (r/atom (models/orders->vec)))
 
@@ -96,7 +96,7 @@
                      [:<>
                       [inputs/select :new-book-id options :model new
                        :select-size :small]
-                      [inputs/number-input :new-book-quantity :min 1 :max 10
+                      [inputs/number :new-book-quantity :min 1 :max 10
                        :model new :value 1 :classes {:input "input is-small"}
                        :size 2 :maxlength 2]
                       [inputs/button "Add book" #(do-add-book order new)

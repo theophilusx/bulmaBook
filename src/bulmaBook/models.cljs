@@ -1,5 +1,5 @@
 (ns bulmaBook.models
-  (:require [bulmaBook.store :as store]))
+  (:require [theophilusx.yorick.store :as store]))
 
 (def state store/global-state)
 

@@ -1,7 +1,7 @@
 (ns bulmaBook.pages.bug
-  (:require [bulmaBook.store :as store]
-            [bulmaBook.utils :refer [spath]]
-            [bulmaBook.components.inputs :as inputs]
+  (:require [theophilusx.yorick.store :as store]
+            [theophilusx.yorick.utils :refer [spath]]
+            [theophilusx.yorick.input :as inputs]
             [bulmaBook.data :as data]
             [reagent.core :as r]))
 

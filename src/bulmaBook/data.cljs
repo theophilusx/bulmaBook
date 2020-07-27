@@ -1,8 +1,8 @@
 (ns bulmaBook.data
-  (:require [bulmaBook.components.navbar :refer [defnavbar-item]]
-            [bulmaBook.components.sidebar :refer [defsidebar-item]]
-            [bulmaBook.store :as store]
-            [bulmaBook.components.icons :as icons]))
+  (:require [theophilusx.yorick.navbar :refer [defnavbar-item]]
+            [theophilusx.yorick.sidebar :refer [defsidebar-item]]
+            [theophilusx.yorick.store :as store]
+            [theophilusx.yorick.icon :as icons]))
 
 (def user-data {:fred-example-com {:email "fred@example.com"
                                    :password "secret"

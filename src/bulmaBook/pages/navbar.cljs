@@ -1,5 +1,5 @@
 (ns bulmaBook.pages.navbar
-  (:require [bulmaBook.components.navbar :refer [navbar]]
+  (:require [theophilusx.yorick.navbar :refer [navbar]]
             [bulmaBook.data :as data]))
 
 (defn top-navbar []

@@ -1,12 +1,12 @@
 (ns bulmaBook.pages.core
   (:require [bulmaBook.pages.home :refer [home-page]]
-            [bulmaBook.utils :refer [spath]]
+            [theophilusx.yorick.utils :refer [spath]]
             [bulmaBook.pages.login :refer [login]]
             [bulmaBook.pages.register :refer [register]]
             [bulmaBook.pages.profile :refer [profile]]
             [bulmaBook.pages.bug :refer [bug-report]]
-            [bulmaBook.components.basic :refer [render-map]]
-            [bulmaBook.store :as store]
+            [theophilusx.yorick.basic :refer [render-map]]
+            [theophilusx.yorick.store :as store]
             [bulmaBook.data :as data]))
 
 (defn current-page []

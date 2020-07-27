@@ -1,9 +1,9 @@
 (ns bulmaBook.pages.login
-  (:require [bulmaBook.components.inputs :as inputs]
+  (:require [theophilusx.yorick.input :as inputs]
             [bulmaBook.data :as data]
-            [bulmaBook.utils :refer [spath value->keyword]]
-            [bulmaBook.store :as store]
-            [bulmaBook.components.icons :as icons]
+            [theophilusx.yorick.utils :refer [spath value->keyword]]
+            [theophilusx.yorick.store :as store]
+            [theophilusx.yorick.icon :as icons]
             [reagent.core :as r]))
 
 

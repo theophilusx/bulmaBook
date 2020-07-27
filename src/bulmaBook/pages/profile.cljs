@@ -1,8 +1,8 @@
 (ns bulmaBook.pages.profile
-  (:require [bulmaBook.components.inputs :as inputs]
-            [bulmaBook.components.basic :as basic]
-            [bulmaBook.utils :refer [value->keyword]]
-            [bulmaBook.store :as store]))
+  (:require [theophilusx.yorick.input :as inputs]
+            [theophilusx.yorick.basic :as basic]
+            [theophilusx.yorick.utils :refer [value->keyword]]
+            [theophilusx.yorick.store :as store]))
 
 (defn profile-edit-form []
   (let [email-key (value->keyword (store/get-in

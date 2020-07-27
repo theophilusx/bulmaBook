@@ -1,11 +1,11 @@
 (ns bulmaBook.pages.home
-  (:require [bulmaBook.components.sidebar :refer [sidebar]]
+  (:require [theophilusx.yorick.sidebar :refer [sidebar]]
             [bulmaBook.pages.books :refer [books-page]]
             [bulmaBook.pages.dashboard :refer [dashboard-page]]
             [bulmaBook.pages.customers :refer [customers-page]]
             [bulmaBook.pages.orders :refer [orders-page]]
             [bulmaBook.data :as data]
-            [bulmaBook.store :as store]
+            [theophilusx.yorick.store :as store]
             [bulmaBook.pages.ui :as ui]))
 
 (defn home-page []
