@@ -1,7 +1,8 @@
 {:deps {org.clojure/clojure {:mvn/version "1.10.1"}
         org.clojure/clojurescript {:mvn/version "1.10.773"}
         reagent {:mvn/version "0.10.0"}
-        theophilusx/yorick {:mvn/version "1.0.0"}}
+        github-theophilusx/yorick {:git/url "https://github.com/theophilusx/yorick"
+                                   :sha "9daee4eec513bb31209358d39f8d4b51ef03e8c6"}}
  :paths ["src" "resources"]
  :aliases {:fig {:extra-deps
                   {com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
