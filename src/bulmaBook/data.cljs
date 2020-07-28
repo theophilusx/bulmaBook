@@ -1,7 +1,7 @@
 (ns bulmaBook.data
   (:require [theophilusx.yorick.navbar :refer [defnavbar-item]]
             [theophilusx.yorick.sidebar :refer [defsidebar-item]]
-            [theophilusx.yorick.store :as store]
+            [theophilusx.yorick.store :refer [get-in global-state]]
             [theophilusx.yorick.icon :as icons]))
 
 (def user-data {:fred-example-com {:email "fred@example.com"
@@ -159,7 +159,7 @@
 (def navbar-id :ui.navbar)
 
 (defn get-navabar-data []
-  (let [session-name (store/get-in store/global-state [:session :user :name])]
+  (let [session-name (get-in global-state [:session :user :name])]
     (if session-name
       {:sid navbar-id
        :has-shadow true
@@ -181,10 +181,10 @@
                     :title session-name
                     :is-hoverable true
                     :contents [(defnavbar-item :id :profile :contents "Profile"
-                                 :icon-data (icons/deficon "fa-user-circle-o"))
+                                 :icon-data (icons/deficon "fas fa-user"))
                                (defnavbar-item :id :report-bug
                                  :contents "Report Bug"
-                                 :icon-data (icons/deficon "fa-bug"))
+                                 :icon-data (icons/deficon "fas fa-bug"))
                                (defnavbar-item :id :sign-out :contents "Sign Out"
                                  :icon-data (icons/deficon "fa-sign-out"))])]}
       {:sid navbar-id
@@ -208,22 +208,23 @@
 
 (def books-sidebar {:sid :ui.sidebar
                     :default-link :dashboard
-                    :item (defsidebar-item
+                    :data (defsidebar-item
                             :type :menu
                             :title "Menu"
                             :items [(defsidebar-item
                                       :title "Dashboard"
-                                      :icon-data (icons/deficon "fa-tachometer")
+                                      :icon-data (icons/deficon "fas fa-tachometer-alt")
                                       :id :dashboard)
                                     (defsidebar-item
                                       :title "Books"
-                                      :icon-data (icons/deficon "fa-book")
+                                      :icon-data (icons/deficon "fas fa-book")
                                       :id :books)
                                     (defsidebar-item
                                       :title "Customers"
-                                      :icon-data (icons/deficon "fa-address-book")
+                                      :icon-data (icons/deficon "fas fa-address-book")
                                       :id :customers)
                                     (defsidebar-item
                                       :title "Orders"
-                                      :icon-data (icons/deficon "fa-file-text-o")
+                                      :icon-data (icons/deficon "fas fa-file-alt")
                                       :id :orders)])})
+

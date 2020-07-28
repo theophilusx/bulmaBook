@@ -28,12 +28,15 @@
        [inputs/field [:img {:src "images/logo-bis.png" :width "1627"}]
         :classes {:field "has-text-centered"}]
        [inputs/input-field "Email" :email :email
-        :icon-data (icons/deficon "fa-envelope" :position :left :size :small)
-        :placeholder "e.g. alexjohnson@example.com"
-        :required true :model doc]
+        :icon-data (icons/deficon "fas fa-envelope" :position :left :size :small)
+        :attrs {:placeholder "e.g. alexjohnson@example.com"
+                :required true}
+        :model doc]
        [inputs/input-field "Password" :password :password
-        :icon-data (icons/deficon "fa-lock" :position :left :size :small)
-        :placeholder "secret" :required true :model doc]
+        :icon-data (icons/deficon "fas fa-lock" :position :left :size :small)
+        :attrs {:placeholder "secret"
+                :required true}
+        :model doc]
        [inputs/checkbox "Remember me" :remember :model doc]
        [inputs/button "Login" #(do-login doc)
         :classes {:button "is-success"}]])))
